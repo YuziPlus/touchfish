@@ -6,8 +6,8 @@ using System.Windows.Controls;
 
 namespace Touchfish {
 public static class AppRelease {
- public const string Version="v0.4.5",Date="2026-10-10";
- public static readonly string[] PatchNotes={"日志按版本系列折叠，特效全开时显示攻击加成和受伤生命颜色。","合并四张经典鱼人牌，支持 267 / 382，修正寒光先知战吼结算。"};
+ public const string Version="v0.4.6",Date="2026-10-10";
+ public static readonly string[] PatchNotes={"盗贼全部 25 张职业牌与鱼人杀手蟹可用，支持 276 / 382。","加入手牌减费、伺机待发、临时潜行、清场与回手规则，满手牌回手处理亡语和墓地。"};
  public static readonly string[] Notes={
   "首个正式版本，保留小尺寸、无卡图的办公面板外观。",
   "局域网对战：创建与加入房间，房主地址可一键复制，多网卡可切换；双方固定己方视角，操作自动同步，断线后停止操作。",
@@ -27,7 +27,8 @@ public partial class PanelWindow {
  void BuildReleaseNotes(){
   releasePanel=new Grid{Margin=new Thickness(12,8,12,8),Visibility=Visibility.Collapsed};releasePanel.RowDefinitions.Add(new RowDefinition{Height=new GridLength(24)});releasePanel.RowDefinitions.Add(new RowDefinition());Put(shell,releasePanel,4);var heading=new Grid();heading.ColumnDefinitions.Add(new ColumnDefinition());heading.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(64)});heading.Children.Add(T("更新日志 · "+AppRelease.Version,12,Ink));var updates=Btn("版本更新",64);updates.Height=22;updates.FontSize=10;updates.Click+=(s,e)=>OpenUpdates();Grid.SetColumn(updates,1);heading.Children.Add(updates);releasePanel.Children.Add(heading);
   var body=new StackPanel();
-  body.Children.Add(ReleaseSection("v0.4.5",AppRelease.Date,new[]{"后台墓地记录死亡随从、已施放法术和其他离场原因，为后续复活预留；不增加查看入口。","合并四张鱼人牌：寒光智者、寒光先知、老瞎眼与鱼人招潮者，支持 267 / 382。","更新日志按 v0.4.0、v0.3.0 等系列折叠，展开后查看各版本详情。","普通模式开启特效时，加成后的攻击显示绿色，实际受伤的生命显示红色；设为 1 生命上限不视为受伤。"}));
+  body.Children.Add(ReleaseSection("v0.4.6",AppRelease.Date,new[]{"盗贼全部 25 张职业牌和鱼人杀手蟹可用，支持 276 / 382。","支持暗影步手牌减费、伺机待发、临时潜行、剑刃乱舞、背叛、耐心刺客和消失；满手牌回手会销毁并处理亡语与墓地。"}));
+  body.Children.Add(ReleaseSection("v0.4.5","2026-10-10",new[]{"后台墓地记录死亡随从、已施放法术和其他离场原因，为后续复活预留；不增加查看入口。","合并四张鱼人牌：寒光智者、寒光先知、老瞎眼与鱼人招潮者，支持 267 / 382。","更新日志按 v0.4.0、v0.3.0 等系列折叠，展开后查看各版本详情。","普通模式开启特效时，加成后的攻击显示绿色，实际受伤的生命显示红色；设为 1 生命上限不视为受伤。"}));
   body.Children.Add(ReleaseSection("v0.4.4","2026-10-10",new[]{"术士除加拉克苏斯大王外均可用，支持 263 / 382。","艾德温连击达到 12 攻时，特效全开可震屏两秒，联机双方同步等待。","经典八张连击牌全部可用；连击目标、出牌计数和裂颅之击延迟回手统一结算。","瓦莉拉开场白改为“当心你的背后”。","普通模式开启特效时，英雄武器槽和随从冻结关键词显示冰蓝色；关闭特效和极简不启用标记。","公开记录新增英雄冻结提示；水元素、护甲、反击、风怒、解冻和局域网冻结攻击拦截专项通过。"}));
   body.Children.Add(ReleaseSection("v0.4.3","2026-10-10",new[]{"组牌页可直接下拉选择已保存卡组进行编辑，保存更新原卡组。","修复先手换牌后首回合漏抽牌：先手三张加回合抽一张，后手四张加幸运币。","补齐经典德鲁伊全部法术、九张过载牌，支持 247 / 382；显示待锁与已锁水晶。","特效全开时向对手展示完整法术信息，停留两秒后淡出，多张按序排列；本地 test 可预览双方施法，极简禁用。","修复对方对话取消攻击、法术、技能及抉择位置选择。","卡组代码保存在 Windows 用户数据目录，不再依赖程序安装位置；更新或更换程序目录后仍可读取。","首次启动自动读取并合并旧版本程序目录里的卡组代码；卡组草稿与卡组库分开保存。","从已保存卡组切换职业会新建独立卡组；组卡页支持二次确认后删除指定已保存卡组。"}));
   body.Children.Add(ReleaseSection("v0.4.2","2026-10-10",new[]{"新增米尔豪斯·法力风暴、纳特·帕格、游学者周卓、任务达人、末日预言者、憎恶、长鬃草原狮和比斯巨兽，支持数量增至 243 / 382。","条件触发、回合开始与限时费用分别使用公共机制；手中法术允许跨职业使用，组牌限制与未实现效果拦截保留。","合并右键英雄对话、自动开场与落败台词和种族标注；保留无边框、极简禁用对话及随从台词特效开关。"}));
