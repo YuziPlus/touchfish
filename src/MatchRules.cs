@@ -79,6 +79,7 @@ public sealed class MatchRules {
   Register("NEW1_029","NONE",c=>TimedCostRules.GrantFreeSpells(c.Game,1-c.Seat,c.Game.Turn+1));
   foreach(string id in EnrageRules.Ids)Register(id,"NONE",c=>{});
   Register("CS2_063","ENEMY_MINION",WarlockRules.Apply);Register("CS2_064","NONE",WarlockRules.Apply);Register("EX1_301","NONE",WarlockRules.Apply);Register("EX1_303","FRIENDLY_MINION",WarlockRules.Apply);Register("EX1_304","NONE",WarlockRules.Apply);Register("EX1_313","NONE",WarlockRules.Apply);Register("EX1_317","NONE",WarlockRules.Apply);Register("EX1_320","ANY_CHARACTER",WarlockRules.Apply);Register("EX1_596","MINION",WarlockRules.Apply);Register("NEW1_003","DEMON_MINION",WarlockRules.Apply);
+  Register("CS2_233","NONE",RogueRules.Apply,(g,s)=>g.Players[s].WeaponDurability<=0?"需要先装备武器。":null);Register("EX1_126","ENEMY_MINION",RogueRules.Apply);Register("EX1_128","NONE",RogueRules.Apply);Register("EX1_144","FRIENDLY_MINION",RogueRules.Apply);Register("EX1_145","NONE",RogueRules.Apply);Register("EX1_522","NONE",RogueRules.Apply);Register("NEW1_004","NONE",RogueRules.Apply);Register("NEW1_014","FRIENDLY_MINION",RogueRules.Apply);Register("NEW1_017","MURLOC_MINION",RogueRules.Apply);
   // Truesilver Champion's heal and Doomhammer's windfury are implemented by the engine.
   Register("CS2_097","NONE",c=>{});
   foreach(string id in new[]{"EX1_154","EX1_155","EX1_160","EX1_164","EX1_165","EX1_166","EX1_178","EX1_573","NEW1_007","NEW1_008"})Register(id,"NONE",ApplyChoice);

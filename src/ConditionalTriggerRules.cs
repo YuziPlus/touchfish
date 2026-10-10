@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 
 namespace Touchfish {
@@ -34,8 +34,8 @@ public static class TurnStartRules {
 }
 public static class TimedCostRules {
  public static void GrantFreeSpells(MatchEngine game,int seat,int throughTurn){game.Players[seat].FreeSpellsUntilTurn=Math.Max(game.Players[seat].FreeSpellsUntilTurn,throughTurn);}
- public static int Apply(MatchEngine game,int seat,CardRecord card,int cost){return card.Type=="SPELL"&&game.Players[seat].FreeSpellsUntilTurn>=game.Turn?0:cost;}
- public static void Expire(MatchEngine game){foreach(var player in game.Players)if(player.FreeSpellsUntilTurn<=game.Turn)player.FreeSpellsUntilTurn=-1;}
+ public static int Apply(MatchEngine game,int seat,CardRecord card,int cost){if(card.Type=="SPELL")cost=Math.Max(0,cost-game.Players[seat].PreparationDiscount);return card.Type=="SPELL"&&game.Players[seat].FreeSpellsUntilTurn>=game.Turn?0:cost;}
+ public static void Expire(MatchEngine game){foreach(var player in game.Players){player.PreparationDiscount=0;if(player.FreeSpellsUntilTurn<=game.Turn)player.FreeSpellsUntilTurn=-1;}}
 }
 public sealed partial class MatchEngine {
  internal bool TriggerCoinFlip(){return random.Next(2)==0;}
