@@ -14,6 +14,8 @@ public sealed class MatchRules {
   Register("CS2_024","ANY_CHARACTER",c=>{Hit(c,3);c.Game.Freeze(c.Target);});Register("CS2_037","ENEMY_CHARACTER",c=>{Hit(c,1);c.Game.Freeze(c.Target);});Register("CS2_031","ANY_CHARACTER",c=>{var unit=c.Game.Unit(c.Target);bool frozen=c.Target.Hero?c.Game.Players[c.Target.Seat].Frozen:unit.Frozen;if(frozen)Hit(c,4);else c.Game.Freeze(c.Target);});
   Register("CS2_022","MINION",c=>c.Game.Transform(c.Target,"VAN_CS2_tk1"));
   Register("CS2_023","NONE",c=>c.Game.Draw(c.Seat,2));Register("CS2_077","NONE",c=>c.Game.Draw(c.Seat,4));
+  Register("EX1_103","NONE",c=>{foreach(var u in c.Game.Players.SelectMany(p=>p.Board).Where(u=>u.Id!=c.Summoned.Id&&u.Race=="MURLOC"&&u.Health>0).ToArray())c.Game.Buff(new MatchTarget(u.Owner,u.Id),0,2);});
+  Register("EX1_050","NONE",c=>{c.Game.Draw(c.Seat,2);c.Game.Draw(1-c.Seat,2);});
   Register("CS2_025","NONE",c=>Area(c,1-c.Seat,1,false));Register("CS2_032","NONE",c=>Area(c,1-c.Seat,4,false));Register("CS2_028","NONE",c=>{Area(c,1-c.Seat,2,false);foreach(var target in c.Game.Characters(1-c.Seat,false))c.Game.Freeze(target);});Register("CS2_026","NONE",c=>{foreach(var target in c.Game.Characters(1-c.Seat,false))c.Game.Freeze(target);});
   Register("CS2_027","NONE",c=>{c.Game.Summon(c.Seat,"VAN_CS2_mirror");c.Game.Summon(c.Seat,"VAN_CS2_mirror");},(g,s)=>g.Players[s].Board.Count>=7?"战场已满。":null);
   Register("EX1_277","NONE",c=>Missiles(c,3));Register("EX1_384","NONE",c=>Missiles(c,8));
@@ -63,6 +65,7 @@ public sealed class MatchRules {
   Register("DREAM_04","MINION",c=>c.Game.ReturnToHand(c.Target));Register("DREAM_05","MINION",c=>{c.Game.Buff(c.Target,5,5);c.Game.DelayDestroy(c.Target,true,c.Seat);});
   foreach(string id in GiantRules.Ids)Register(id,"NONE",c=>{});
   foreach(string id in AuraRules.Ids)Register(id,"NONE",c=>{});
+  foreach(string id in MurlocSummonRules.CardIds)Register(id,"NONE",c=>{});
   Register("EX1_362","FRIENDLY_MINION",c=>c.Game.Unit(c.Target).Shield=true);
   Register("EX1_363","MINION",c=>{var unit=c.Game.Unit(c.Target);if(c.Seat==0)unit.WisdomBlessings0++;else unit.WisdomBlessings1++;});
   Register("EX1_349","NONE",c=>{int difference=c.Game.Players[1-c.Seat].Hand.Count-c.Game.Players[c.Seat].Hand.Count;if(difference>0)c.Game.Draw(c.Seat,difference);});
