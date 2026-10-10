@@ -21,6 +21,6 @@ public sealed partial class MatchEngine {
  sealed class ComboReturn {public int Seat,Due;public HandCard Card;}
  readonly List<ComboReturn> comboReturns=new List<ComboReturn>();
  public void ScheduleComboReturn(int seat,HandCard card){comboReturns.Add(new ComboReturn{Seat=seat,Due=Turn+2,Card=card});Log.Add("玩家 "+(seat+1)+" · 裂颅之击将在下个己方回合返回手牌");}
- void ReturnComboCards(int seat){foreach(var item in comboReturns.Where(r=>r.Seat==seat&&r.Due<=Turn).ToArray()){comboReturns.Remove(item);var p=Players[seat];if(p.Hand.Count>=10){Log.Add("玩家 "+(seat+1)+" · 裂颅之击回手失败：手牌已满");continue;}p.Hand.Add(new HandCard{Id=nextId++,CardId=item.Card.CardId,Generated=item.Card.Generated});Log.Add("玩家 "+(seat+1)+" · 裂颅之击返回手牌");}}
+ void ReturnComboCards(int seat){foreach(var item in comboReturns.Where(r=>r.Seat==seat&&r.Due<=Turn).ToArray()){comboReturns.Remove(item);var p=Players[seat];if(p.Hand.Count>=10){RecordGraveyard(seat,seat,item.Card.CardId,item.Card.Id,GraveyardReason.ReturnOverflow);Log.Add("玩家 "+(seat+1)+" · 裂颅之击回手失败：手牌已满");continue;}p.Hand.Add(new HandCard{Id=nextId++,CardId=item.Card.CardId,Generated=item.Card.Generated});Log.Add("玩家 "+(seat+1)+" · 裂颅之击返回手牌");}}
 }
 }
