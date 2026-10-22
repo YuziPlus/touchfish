@@ -11,7 +11,27 @@ public static partial class RuleTests {
   g=MatchFixture();var living=g.Summon(0,"VAN_EX1_531");var beast=g.Summon(0,"VAN_CS2_171");g.Damage(new MatchTarget(0,beast.Id),1);g.Cleanup();
   Check(g.AttackValue(living)==4&&living.Health==3,"Living Hyena still receives beast death buff");
  }
- static void Hunter(){HyenaLethalDeathrattleRegression();
+ static void HunterBeastTargets(){
+  foreach(string key in new[]{"DS1_070","EX1_549"})for(int seat=0;seat<2;seat++){
+   var g=MatchFixture("HUNTER","HUNTER");g.Active=seat;var friendly=g.Summon(seat,"VAN_DS1_175");var other=g.Summon(seat,"VAN_CS2_182");var enemy=g.Summon(1-seat,"VAN_DS1_175");int hand=Inject(g,key,seat);int mana=g.Players[seat].Mana,log=g.Log.Count,board=g.Players[seat].Board.Count,played=g.CardsPlayed;
+   foreach(var target in new[]{new MatchTarget(seat,other.Id),new MatchTarget(1-seat,enemy.Id),new MatchTarget(seat),new MatchTarget(1-seat),new MatchTarget(seat,Int32.MaxValue)}){
+    Check(!g.Play(seat,hand,target).Success,key+" rejects non-Beasts, enemy Beasts, heroes and stale targets for seat "+seat);
+    Check(g.Players[seat].Mana==mana&&g.Players[seat].Hand.Any(h=>h.Id==hand)&&g.Players[seat].Board.Count==board&&g.Log.Count==log&&g.CardsPlayed==played&&other.BuffAttack==0&&enemy.BuffAttack==0,key+" invalid target leaves resources and board unchanged");
+   }
+   g.Silence(new MatchTarget(seat,friendly.Id));
+   Check(g.Play(seat,hand,new MatchTarget(seat,friendly.Id)).Success&&g.AttackValue(friendly)==3,key+" accepts a silenced friendly Beast for seat "+seat);
+  }
+  var empty=MatchFixture("HUNTER","MAGE");empty.Summon(0,"VAN_CS2_182");empty.Summon(1,"VAN_DS1_175");
+  Check(!empty.HasTargets(0,"FRIENDLY_BEAST",false),"Heroes and non-Beasts do not count as available Beast battlecry targets");
+  Check(empty.Play(0,Inject(empty,"DS1_070")).Success&&empty.Players[0].Board.Last().CardId=="VAN_DS1_070","Houndmaster can be played without a battlecry when no friendly Beast exists");
+  int wrath=Inject(empty,"EX1_549"),beforeMana=empty.Players[0].Mana;
+  Check(!empty.Play(0,wrath).Success&&empty.Players[0].Mana==beforeMana&&empty.Players[0].Hand.Any(h=>h.Id==wrath),"Bestial Wrath cannot be spent without a legal Beast target");
+  var changed=MatchFixture("HUNTER","MAGE");var unit=changed.Summon(0,"VAN_DS1_175");changed.Transform(new MatchTarget(0,unit.Id),"VAN_CS2_182");
+  Check(!changed.HasTargets(0,"FRIENDLY_BEAST",true),"A transformed former Beast no longer qualifies");
+  changed.Transform(new MatchTarget(0,changed.Players[0].Board.Single().Id),"VAN_DS1_175");
+  Check(changed.HasTargets(0,"FRIENDLY_BEAST",true),"A minion transformed into a Beast qualifies");
+ }
+ static void Hunter(){HyenaLethalDeathrattleRegression();HunterBeastTargets();
   int before=checks;string[] ids={"CS2_237","DS1_070","DS1_183","DS1_184","DS1_188","EX1_531","EX1_536","EX1_537","EX1_538","EX1_544","EX1_549"};
   Check(ids.All(cardId=>matchRules.Supports(catalog.Card("VAN_"+cardId))),"All eleven remaining Hunter cards are registered");
   var hunterCards=catalog.Deckable(catalog.Pool("classic-2014")).Where(c=>c.CardClass=="HUNTER").ToArray();Check(hunterCards.Length==25&&hunterCards.All(matchRules.Supports),"All 25 classic Hunter cards are playable");
