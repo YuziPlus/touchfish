@@ -3,7 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 namespace Touchfish {
-public enum GraveyardReason {MinionDied,SpellCast,Discarded,Burned,WeaponDestroyed,WeaponReplaced,ReturnOverflow}
+public enum GraveyardReason {MinionDied,SpellCast,Discarded,Burned,WeaponDestroyed,WeaponReplaced,ReturnOverflow,RemovedFromDeck}
 // Match-local authoritative history. Never serialized into a LAN player view.
 public sealed class GraveyardEntry {
  public readonly int Sequence,Turn,Seat,OriginalOwner,InstanceId,Attack,MaxHealth;

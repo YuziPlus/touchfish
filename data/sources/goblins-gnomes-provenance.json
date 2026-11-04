@@ -1,0 +1,23 @@
+{
+  "SourceUrl": "https://api.hearthstonejson.com/v1/253932/zhCN/cards.json",
+  "SourceBuild": "253932",
+  "SnapshotSha256": "41d3047f6c8b43c36b21a4bc76a34eeeb5c949cd27d088cf7709356fe4db6b6e",
+  "SourceExtractSha256": "42e473ebebdd75248b743a62540f7e12923ae6c98c731137ed80ec027061e1aa",
+  "PackageSha256": "5a9b12baddb3216dcf112d903517e95a6aa9b98db97ff4afe3bb84bc6b8d1cba",
+  "DeckableCards": 51,
+  "HelperCards": 10,
+  "Cutoff": "2014-12 launch values for new neutral cards only; no changes to frozen Classic/Naxx packages",
+  "Restored": {
+    "GVG_006": "2 mana 2/3, before 29.0",
+    "GVG_109": "4 mana 4/1, before Core 2021",
+    "GVG_114": "8 mana 5/7, before Core 2025",
+    "GVG_091": "2014 untargetable wording"
+  },
+  "Sources": [
+    "https://hearthstone.blizzard.com/en-us/news/17076855",
+    "https://hearthstone.blizzard.com/en-us/news/16752637",
+    "https://hearthstone.blizzard.com/de-de/news/24064735/29-0-patch-notes",
+    "https://bnetcmsus-a.akamaihd.net/cms/content_entry_media/5L4LK5ASYDUL1739227664823.pdf"
+  ],
+  "Scope": "51 new Neutral cards + seven Spare Parts, Chicken, Boom Bot and V-07-TR-0N. Random generation uses the match pool; unopened GvG class cards are not included yet."
+}

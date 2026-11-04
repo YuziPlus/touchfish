@@ -112,6 +112,7 @@ public sealed class MatchRules {
   Register("GAME_I_AM_MURLOC","NONE",HighCostRules.Apply,(g,s)=>g.Players[s].Board.Count>=g.Mode.BoardSlots?"战场已满。":null);Register("GAME_ROGUES_DO_IT","ANY_CHARACTER",HighCostRules.Apply);Register("PRO_001c","NONE",HighCostRules.Apply,(g,s)=>g.Players[s].Board.Count>=g.Mode.BoardSlots?"战场已满。":null);
   Register("EX1_560","NONE",c=>{});Register("EX1_561","HERO",ClassicDragonRules.Alexstrasza);
   NaxxRules.Register(this);
+  GvgRules.Register(this,catalog);
   RuleModules.Configure(this);
  }
  public static string EffectKey(CardRecord card){return !String.IsNullOrEmpty(card.EffectId)?card.EffectId:card.SetId=="classic-2014"||String.IsNullOrEmpty(card.SetId)?card.BaseId:card.Id;}

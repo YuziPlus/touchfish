@@ -1,0 +1,1261 @@
+[
+  {
+    "artist": "Phil Saunders",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 1940,
+    "flavor": "能够召唤机械的机械？然后呢？能够召唤馒头的馒头？唔……",
+    "health": 4,
+    "id": "GVG_006",
+    "mechanics": [
+      "AURA"
+    ],
+    "name": "机械跃迁者",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "你的机械的法力值消耗减少（1）点。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Trent Kaniuga",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 1,
+    "dbfId": 1932,
+    "flavor": "片刻之后，你看到的不再是齿轮和链条，它们可能变成了机器人、蜘蛛坦克、射线发射器和其他各种各样的装置……",
+    "health": 2,
+    "id": "GVG_013",
+    "name": "齿轮大师",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "如果你控制任何机械，便拥有\n+2攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan & Gabor",
+    "attack": 8,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 1982,
+    "flavor": "当你变得足够强大，就不会在意曾经付出过多少代价。",
+    "health": 8,
+    "id": "GVG_016",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "魔能机甲",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "每当你的对手使用一张卡牌时，便移除你的牌库顶的三张牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dany Orizio",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2012,
+    "flavor": "“我想在这家伙上面装上一门炮，你觉得怎么样?”菲兹布里兹看着蜘蛛运输装置说道。",
+    "health": 4,
+    "id": "GVG_044",
+    "name": "蜘蛛坦克",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jaemin Kim",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2032,
+    "flavor": "他非常崇拜伟大的鱼人先知摩戈尔！（哪个鱼人不是呢？）",
+    "health": 2,
+    "id": "GVG_064",
+    "name": "淤泥践踏者",
+    "race": "MURLOC",
+    "races": [
+      "MURLOC"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Vinod Rams",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2033,
+    "flavor": "食人魔的短期失忆症非常严重。",
+    "health": 4,
+    "id": "GVG_065",
+    "mechanics": [
+      "FORGETFUL"
+    ],
+    "name": "食人魔步兵",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "50%几率攻击错误的敌人。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Peet Cooper",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2035,
+    "flavor": "比穴居人的气味更让人受不了的是他们的诗歌。",
+    "health": 3,
+    "id": "GVG_067",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "碎石穴居人",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "每当你的对手施放一个法术，便获得+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Aleksi Briclot",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2036,
+    "flavor": "他这么壮是因为他每天坚持健康的饮食，并且每个星期都去穴居人健身房进行锻炼。",
+    "health": 5,
+    "id": "GVG_068",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "石腭穴居人壮汉",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "每当你的对手施放一个法术，获得\n+2攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jesper Ejsing",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2037,
+    "flavor": "由于可能会因为爆炸而影响患者的治疗，这种类型的机器人已经停产很久了。",
+    "health": 3,
+    "id": "GVG_069",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "老式治疗机器人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>战吼：</b>为你的英雄恢复#8点生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Alex Horley Orlandelli",
+    "attack": 7,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2038,
+    "flavor": "他喜欢在船上颠簸的感觉，比在陆地上走路更有安全感。",
+    "health": 4,
+    "id": "GVG_070",
+    "name": "熟练的水手",
+    "race": "PIRATE",
+    "races": [
+      "PIRATE"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Ben Zhang",
+    "attack": 5,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2039,
+    "flavor": "在它的屁股上印着这样一串文字：“如果你找到它，请将它归还至莫高雷。”",
+    "health": 4,
+    "id": "GVG_071",
+    "name": "迷失的陆行鸟",
+    "race": "BEAST",
+    "races": [
+      "BEAST"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jakub Kasper",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2042,
+    "flavor": "她们看上去很聪明，很有学问，但实际上，她们只是讨厌别人有秘密瞒着她们而已。",
+    "health": 3,
+    "id": "GVG_074",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "科赞秘术师",
+    "rarity": "RARE",
+    "referencedTags": [
+      "SECRET"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼：</b>随机夺取一个敌方<b>奥秘</b>的控制权。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Warren Mahy",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2043,
+    "flavor": "如果你听到有人喊道：“海盗船开炮了！”，那么就算你没有被炸死，也会被浑身弄湿。",
+    "health": 3,
+    "id": "GVG_075",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "船载火炮",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "在你召唤一个海盗后，随机对一个敌人造成2点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Ralph Horsley",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2044,
+    "flavor": "这项武器究竟应该怎么使用？让你的敌人觉得它很可爱然后指望他会把它抱起来？",
+    "health": 1,
+    "id": "GVG_076",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "自爆绵羊",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL",
+      "BEAST"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>亡语：</b>对所有随从造成2点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Chris Seaman",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2046,
+    "flavor": "冰风岗的雪人不仅是蛮力的象征，更是工程师们创作灵感的源泉。",
+    "health": 5,
+    "id": "GVG_078",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "机械雪人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "referencedTags": [
+      "SPARE_PART"
+    ],
+    "set": "GVG",
+    "text": "<b>亡语：</b>使每个玩家获得一张<b>零件</b>牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Nutchapol Thitinunthakorn",
+    "attack": 7,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 8,
+    "dbfId": 2047,
+    "flavor": "在塔纳利斯，有一间生产强袭坦克的兵工厂，但由于其巨额成本，仅有两辆坦克被生产出来。",
+    "health": 7,
+    "id": "GVG_079",
+    "mechanics": [
+      "DIVINE_SHIELD"
+    ],
+    "name": "强袭坦克",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>圣盾</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Seamus Gallagher",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2049,
+    "flavor": "虽然他们不如在陆地上的同类们精于算计，但他们在捕猎方面的本领却更胜一筹。",
+    "health": 3,
+    "id": "GVG_081",
+    "mechanics": [
+      "STEALTH"
+    ],
+    "name": "海地精猎手",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>潜行</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 1,
+    "dbfId": 2050,
+    "flavor": "发条侏儒总是会问：“现在几点？”因为他需要有人定时帮他旋紧发条。",
+    "health": 1,
+    "id": "GVG_082",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "发条侏儒",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "referencedTags": [
+      "SPARE_PART"
+    ],
+    "set": "GVG",
+    "text": "<b>亡语：</b>将一张<b>零件</b>牌置入你的手牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2052,
+    "flavor": "这架精致的飞行器需要飞行员在起飞前做好精确的调校。否则，它只能被叫做“降落器”。",
+    "health": 4,
+    "id": "GVG_084",
+    "mechanics": [
+      "WINDFURY"
+    ],
+    "name": "飞行器",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>风怒</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2053,
+    "flavor": "发明吵吵机器人的工程师先是被工匠学院立即开除，然后被赶出了工匠镇，最后被驱逐出了东部王国。",
+    "health": 2,
+    "id": "GVG_085",
+    "mechanics": [
+      "DIVINE_SHIELD",
+      "TAUNT"
+    ],
+    "name": "吵吵机器人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "techLevel": 2,
+    "text": "<b>嘲讽，圣盾</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jim Nelson",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2057,
+    "flavor": "“明光闪烁！”他们可不会念这样的咒语；你以为这是哪儿？霍格沃茨魔法学校？",
+    "health": 4,
+    "id": "GVG_089",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "明光祭司",
+    "rarity": "RARE",
+    "referencedTags": [
+      "SECRET"
+    ],
+    "set": "GVG",
+    "text": "如果在你的回合结束时，你控制一个<b>奥秘</b>，则为你的英雄恢复#4点生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Alex Horley Orlandelli",
+    "attack": 5,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2058,
+    "flavor": "如果你还在抱怨疯狂投弹者乱扔炸弹，你应该看看这位。",
+    "health": 4,
+    "id": "GVG_090",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "疯狂爆破者",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>造成6点伤害，随机分配到所有其他角色身上。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zero",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2059,
+    "flavor": "在将这款机械装置投入生产之前，侏儒工程师们与法师们不知进行了多少次谈判。",
+    "health": 5,
+    "id": "GVG_091",
+    "mechanics": [
+      "ELUSIVE",
+      "TAUNT"
+    ],
+    "name": "施法者克星X-21",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>嘲讽</b>。<b>扰魔</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jesper Ejsing",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2060,
+    "flavor": "他的实验室总被路过的人误以为是鸡棚。",
+    "health": 2,
+    "id": "GVG_092",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "侏儒实验技师",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>\n抽一张牌，如果该牌是随从牌，则将其变形成为一只小鸡。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 0,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 0,
+    "dbfId": 2061,
+    "flavor": "它被许多工程师认为是工程学造福艾泽拉斯冒险者的起点。",
+    "health": 2,
+    "id": "GVG_093",
+    "mechanics": [
+      "TAUNT"
+    ],
+    "name": "活动假人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>嘲讽</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2062,
+    "flavor": "他是有史以来最熟练、最高效、最有礼貌的服侍机器人。",
+    "health": 4,
+    "id": "GVG_094",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "基维斯",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "在每个玩家的回合结束时，该玩家抽若干牌，直至其手牌数量达到3张。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jesper Ejsing",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2063,
+    "flavor": "他已经不再是一个漫无目的的爆破狂人了，他认为每一次爆炸都应该有其社会意义，或者表明他对生命的态度。",
+    "health": 4,
+    "id": "GVG_095",
+    "name": "地精工兵",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "如果你对手的手牌数量大于或等于6张，便拥有+4攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dan Scott",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2064,
+    "flavor": "在过去，只有地精会驾驶这玩意儿。如今，从末日预言者到精灵龙再到游学者周卓，好像大家都喜欢驾驶收割机。",
+    "health": 3,
+    "id": "GVG_096",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "载人收割机",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>亡语：</b>随机召唤一个法力值消耗为（2）的随从。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jim Nelson",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2065,
+    "flavor": "术士们让城里的驱魔者都开通了驱魔热线，防止在他们召唤出错误的恶魔的时候酿成惨剧。",
+    "health": 3,
+    "id": "GVG_097",
+    "mechanics": [
+      "BATTLECRY",
+      "TAUNT"
+    ],
+    "name": "小个子驱魔者",
+    "rarity": "RARE",
+    "referencedTags": [
+      "DEATHRATTLE"
+    ],
+    "set": "GVG",
+    "text": "<b>嘲讽</b>，<b>战吼：</b>每有一个具有<b>亡语</b>的敌方随从，便获得+1/+1。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan & Gabor",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2066,
+    "flavor": "侏儒士兵们英勇无畏，他们随时准备着回到他们那饱受辐射的、通风糟糕的家园！",
+    "health": 4,
+    "id": "GVG_098",
+    "mechanics": [
+      "CHARGE",
+      "TAUNT"
+    ],
+    "name": "诺莫瑞根步兵",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>冲锋，嘲讽</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Luca Zontini",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2067,
+    "flavor": "榴弹在手，万事无忧。",
+    "health": 3,
+    "id": "GVG_099",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "榴弹投手",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>随机对一个敌方随从造成4点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Gabor Szikszai",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2070,
+    "flavor": "要不你就带我去...工匠镇？",
+    "health": 3,
+    "id": "GVG_102",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "工匠镇技师",
+    "rarity": "COMMON",
+    "referencedTags": [
+      "SPARE_PART"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼：</b>如果你控制一个机械，便获得+1/+1并将一张<b>零件</b>牌置入你的手牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Skan Srisuwan",
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2071,
+    "flavor": "它虽然体型不大，但它学习战斗的能力却非常惊人。",
+    "health": 2,
+    "id": "GVG_103",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "微型战斗机甲",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "在每个回合开始时，获得+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Laurel Austin",
+    "attack": 2,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2072,
+    "flavor": "大地精们将在下个星期召开联合会议。会议的第一项议题是：建立一个牙科诊所。",
+    "health": 3,
+    "id": "GVG_104",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "大胖",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "每当你使用一张攻击力为1的随从牌，便使其获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Michael Phillippi",
+    "attack": 6,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2073,
+    "flavor": "地精科技的巅峰之作。魔像内装饰豪华，配备速溶咖啡机以及足浴按摩器。",
+    "health": 4,
+    "id": "GVG_105",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "载人飞天魔像",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "<b>亡语：</b>随机召唤一个法力值消耗为（4）的随从。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan Boros",
+    "attack": 1,
+    "battlegroundsPremiumDbfId": 58402,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2074,
+    "flavor": "当某个零部件对某个机器人不再有用时，它可能会使另一个机器人焕然一新。",
+    "health": 5,
+    "id": "GVG_106",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "回收机器人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "EPIC",
+    "set": "GVG",
+    "techLevel": 4,
+    "text": "每当一个友方机械死亡，便获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan Boros",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2075,
+    "flavor": "每个人都喜欢他的免胶水强化装置！",
+    "health": 2,
+    "id": "GVG_107",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "强化机器人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "EPIC",
+    "referencedTags": [
+      "DIVINE_SHIELD",
+      "TAUNT",
+      "WINDFURY"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼：</b>随机使你的其他随从分别获得<b>风怒</b>，<b>嘲讽</b>，或者<b>圣盾</b>效果中的一种。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Ben Olson",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2076,
+    "flavor": "他坚信物质守恒的定律，更痴迷于魔法的随机性。",
+    "health": 2,
+    "id": "GVG_108",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "侏儒变形师",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "targetingArrowText": "变形！出发！",
+    "text": "<b>战吼：</b>\n将一个友方随从随机变形成为一个法力值消耗相同的随从。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Ben Olson",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2077,
+    "flavor": "有时候你能够在古拉巴什竞技场的宝箱中发现他。",
+    "health": 1,
+    "id": "GVG_109",
+    "mechanics": [
+      "SPELLPOWER",
+      "STEALTH"
+    ],
+    "name": "小个子法师",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "spellDamage": 1,
+    "text": "<b>潜行，法术伤害+1</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Alex Garner",
+    "attack": 7,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2078,
+    "elite": true,
+    "flavor": "让你见识一下他的厉害！",
+    "health": 7,
+    "id": "GVG_110",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "砰砰博士",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>战吼：</b>\n召唤两个1/1的砰砰机器人。<i>警告：该机器人随时可能爆炸。</i>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Trent Kaniuga",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2079,
+    "elite": true,
+    "flavor": "别按那个最大的红色按钮！",
+    "health": 5,
+    "id": "GVG_111",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "米米尔隆的头部",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "在你的回合开始时，如果你控制至少三个机械，则消灭这些机械，并将其组合成V-07-TR-0N。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Michal Ivan",
+    "attack": 7,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2080,
+    "elite": true,
+    "flavor": "穆戈尔曾经帮助兽人重新打开了黑暗之门。既然你让一个食人魔参与了这件事情，就别指望最后会有什么好结果了。",
+    "health": 6,
+    "id": "GVG_112",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "食人魔勇士穆戈尔",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "所有随从有50%几率攻击错误的敌人。",
+    "type": "MINION"
+  },
+  {
+    "artist": "James Ryman",
+    "attack": 6,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 8,
+    "dbfId": 2081,
+    "elite": true,
+    "flavor": "对于田里的庄稼来说，所有的收割机都是死神。",
+    "health": 9,
+    "id": "GVG_113",
+    "name": "死神4000型",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "同时对其攻击目标相邻的随从造成伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Christopher Moeller",
+    "attack": 5,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2082,
+    "elite": true,
+    "flavor": "当斯尼德在死亡矿井被击败后，他的伐木机在一次拍卖中被一位匿名买家收购。（可能是霍格。）",
+    "health": 7,
+    "id": "GVG_114",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "斯尼德的伐木机",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>亡语：</b>随机召唤一个<b>传说</b>随从。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan & Gabor",
+    "attack": 5,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2083,
+    "elite": true,
+    "flavor": "托什雷的基地是侏儒工程师们在外域的港湾。",
+    "health": 7,
+    "id": "GVG_115",
+    "mechanics": [
+      "BATTLECRY",
+      "DEATHRATTLE"
+    ],
+    "name": "托什雷",
+    "rarity": "LEGENDARY",
+    "referencedTags": [
+      "SPARE_PART"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼，亡语：</b>\n将一张<b>零件</b>牌置入你的手牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Trent Kaniuga",
+    "attack": 9,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 9,
+    "dbfId": 2084,
+    "elite": true,
+    "flavor": "过去他非常执迷于炸药。而现在他更加关怀麻风侏儒们的生计，因为他们能够造成更稳定的伤害。",
+    "health": 7,
+    "id": "GVG_116",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "瑟玛普拉格",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "每当一个敌方随从死亡，召唤一个\n麻风侏儒。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Luke Mancini",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2085,
+    "elite": true,
+    "flavor": "在学校里，加兹鲁维就被认为是“最能制造混乱的人”。",
+    "health": 6,
+    "id": "GVG_117",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "加兹鲁维",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "每当你施放一个法力值消耗为（1）的法术，随机将一张机械牌置入你的手牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Mike Sass",
+    "attack": 6,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2086,
+    "elite": true,
+    "flavor": "他不断震颤着大地，使山脉深处出现了大量洞穴，解决了穴居人的住房问题。",
+    "health": 6,
+    "id": "GVG_118",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "颤地者特罗格佐尔",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "每当你的对手施放一个法术，召唤一个石腭穴居人壮汉。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jomaro Kindred",
+    "attack": 3,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2087,
+    "elite": true,
+    "flavor": "启动布林顿，让所有参加派对的人都嗨起来！",
+    "health": 4,
+    "id": "GVG_119",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "布林顿3000型",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>战吼：</b>为每个玩家装备一把武器。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Ralph Horsley",
+    "attack": 6,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2088,
+    "elite": true,
+    "flavor": "作为一个野兽公敌来说，在这个世界里活下来是非常不容易的。因为你在几分钟前杀死的野兽，会突然再次不知道从哪儿冒出来……",
+    "health": 3,
+    "id": "GVG_120",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "赫米特·奈辛瓦里",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "targetingArrowText": "消灭一个野兽。",
+    "text": "<b>战吼：</b>\n消灭一个野兽。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dan Scott",
+    "attack": 8,
+    "cardClass": "NEUTRAL",
+    "collectible": true,
+    "cost": 12,
+    "dbfId": 2233,
+    "flavor": "虽然体型相仿，他和山岭巨人总是交不上朋友。",
+    "health": 8,
+    "id": "GVG_121",
+    "name": "发条巨人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "你的对手每有一张手牌，本牌的法力值消耗便减少（1）点。",
+    "type": "MINION"
+  },
+  {
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2240,
+    "health": 1,
+    "id": "GVG_092t",
+    "name": "小鸡",
+    "race": "BEAST",
+    "races": [
+      "BEAST"
+    ],
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "attack": 1,
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2235,
+    "health": 1,
+    "id": "GVG_110t",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "砰砰机器人",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "set": "GVG",
+    "text": "<b>亡语：</b>随机对一个敌人造成1-4点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Chris Seaman",
+    "attack": 4,
+    "cardClass": "NEUTRAL",
+    "cost": 8,
+    "dbfId": 2232,
+    "elite": true,
+    "health": 8,
+    "id": "GVG_111t",
+    "mechanics": [
+      "CHARGE"
+    ],
+    "name": "V-07-TR-0N",
+    "race": "MECHANICAL",
+    "races": [
+      "MECHANICAL"
+    ],
+    "set": "GVG",
+    "text": "<b>冲锋</b>\n<b>超级风怒</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Nutchapol Thitinunthakorn",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2151,
+    "id": "PART_001",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "重型护甲",
+    "set": "GVG",
+    "text": "使一个随从获得+1生命值。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Nutthapon Petthai",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2152,
+    "id": "PART_002",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "时间回溯装置",
+    "set": "GVG",
+    "text": "将一个友方随从移回你的手牌。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Peerasak Senalai",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2153,
+    "id": "PART_003",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "生锈的号角",
+    "referencedTags": [
+      "TAUNT"
+    ],
+    "set": "GVG",
+    "text": "使一个随从获得<b>嘲讽</b>。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Nutchapol Thitinunthakorn",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2154,
+    "id": "PART_004",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "隐秘力场",
+    "referencedTags": [
+      "STEALTH"
+    ],
+    "set": "GVG",
+    "text": "直到你的下个回合，使一个友方随从获得<b>潜行</b>。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Peerasak Senalai",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2155,
+    "id": "PART_005",
+    "mechanics": [
+      "FREEZE",
+      "SPARE_PART"
+    ],
+    "name": "紧急冷冻剂",
+    "set": "GVG",
+    "text": "<b>冻结</b>一个随从。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Nutthapon Petthai",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2156,
+    "id": "PART_006",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "形体改造仪",
+    "set": "GVG",
+    "text": "使一个随从的攻击力和生命值\n互换。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Nutchapol Thitinunthakorn",
+    "cardClass": "NEUTRAL",
+    "cost": 1,
+    "dbfId": 2150,
+    "id": "PART_007",
+    "mechanics": [
+      "SPARE_PART"
+    ],
+    "name": "旋风之刃",
+    "set": "GVG",
+    "text": "使一个随从获得+1攻击力。",
+    "type": "SPELL"
+  }
+]

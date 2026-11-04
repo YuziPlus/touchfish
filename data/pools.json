@@ -47,6 +47,35 @@
         "MAGE": 637,
         "PRIEST": 813
       },
+      "Archived": true,
+      "CardReplacements": {
+        "VAN_EX1_536": "NAX_EX1_536"
+      }
+    },
+    {
+      "Id": "goblins-gnomes-2014",
+      "Name": "地精大战侏儒·中立牌",
+      "CardSetIds": [
+        "classic-2014",
+        "naxxramas-2014",
+        "naxxramas-balance-2014",
+        "goblins-gnomes-2014"
+      ],
+      "DeckSize": 30,
+      "CopyLimit": 2,
+      "LegendaryLimit": 1,
+      "DeckstringFormat": 3,
+      "HeroDbfIds": {
+        "WARRIOR": 7,
+        "SHAMAN": 1066,
+        "ROGUE": 930,
+        "PALADIN": 671,
+        "HUNTER": 31,
+        "DRUID": 274,
+        "WARLOCK": 893,
+        "MAGE": 637,
+        "PRIEST": 813
+      },
       "Archived": false,
       "CardReplacements": {
         "VAN_EX1_536": "NAX_EX1_536"

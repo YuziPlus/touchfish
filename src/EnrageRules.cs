@@ -11,7 +11,7 @@ public static class EnrageRules {
 }
 public sealed partial class MatchEngine {
  public bool IsEnraged(BattleUnit unit){return EnrageRules.Active(unit)&&EnrageRules.Supports(Card(unit.CardId).BaseId);}
- public bool HasWindfury(BattleUnit unit){return unit.Windfury||IsEnraged(unit)&&Card(unit.CardId).BaseId=="EX1_412";}
+ public bool HasWindfury(BattleUnit unit){return !unit.Silenced&&Card(unit.CardId).BaseId=="GVG_111t"||unit.Windfury||IsEnraged(unit)&&Card(unit.CardId).BaseId=="EX1_412";}
  public int WeaponAttackValue(int seat){var p=Players[seat];if(p.WeaponDurability<=0)return 0;return System.Math.Max(0,p.WeaponAttack+2*p.Board.Count(u=>IsEnraged(u)&&Card(u.CardId).BaseId=="CS2_221"));}
 }
 }

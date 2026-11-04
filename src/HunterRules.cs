@@ -19,13 +19,13 @@ public static class HunterRules {
   case "DS1_183":MultiShot(c);break;
   case "DS1_184":Track(c);break;
   case "DS1_188":break;
-  case "DS1_070":if(c.Target!=null){var unit=c.Game.Unit(c.Target);if(unit!=null){c.Game.Buff(c.Target,2,2);unit.Taunt=true;}}break;
+  case "DS1_070":if(c.Target!=null){var unit=c.Game.LivingUnit(c.Target);if(unit!=null&&unit.Owner==c.Seat&&unit.Race=="BEAST"){c.Game.Buff(c.Target,2,2);unit.Taunt=true;}}break;
   case "EX1_531":case "CS2_237":break;
   case "EX1_536":break;
   case "EX1_537":ExplosiveShot(c);break;
   case "EX1_538":Unleash(c);break;
   case "EX1_544":Flare(c);break;
-  case "EX1_549":if(c.Target!=null){var beast=c.Game.Unit(c.Target);if(beast!=null){beast.TempAttack+=2;beast.ImmuneUntilTurn=c.Game.Turn;}}break;
+  case "EX1_549":if(c.Target!=null){var beast=c.Game.LivingUnit(c.Target);if(beast!=null&&beast.Owner==c.Seat&&beast.Race=="BEAST"){beast.TempAttack+=2;beast.ImmuneUntilTurn=c.Game.Turn;}}break;
  }}
  static void Track(EffectContext c){var p=c.Game.Players[c.Seat];var preview=TrackingPreview(c.Game,c.Seat);int chosen=TrackingIndex(c.Choice);if(preview.Length==0)return;if(chosen<0)chosen=0;if(chosen>=preview.Length)return;
   for(int i=preview.Length-1;i>=0;i--)if(i!=chosen){string discarded=p.Deck[i];p.Deck.RemoveAt(i);c.Game.RecordGraveyard(c.Seat,c.Seat,discarded,c.Game.NewEffectInstanceId(),GraveyardReason.Discarded);}

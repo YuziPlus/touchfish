@@ -11,7 +11,19 @@ public static partial class RuleTests {
   g=MatchFixture();var living=g.Summon(0,"VAN_EX1_531");var beast=g.Summon(0,"VAN_CS2_171");g.Damage(new MatchTarget(0,beast.Id),1);g.Cleanup();
   Check(g.AttackValue(living)==4&&living.Health==3,"Living Hyena still receives beast death buff");
  }
- static void Hunter(){HyenaLethalDeathrattleRegression();
+ static void FriendlyBeastTargetRegression(){
+  foreach(string cardId in new[]{"DS1_070","EX1_549"}){
+   var g=MatchFixture("HUNTER","MAGE");var scientist=g.Summon(0,"FP1_004");var beast=g.Summon(0,"VAN_DS1_175");var enemyBeast=g.Summon(1,"VAN_DS1_175");int hand=Inject(g,cardId);int mana=g.Players[0].Mana;int board=g.Players[0].Board.Count;int played=g.CardsPlayed;
+   foreach(var target in new[]{new MatchTarget(0,scientist.Id),new MatchTarget(0),new MatchTarget(1,enemyBeast.Id)}){
+    Check(!g.Play(0,hand,target).Success,"Beast-only card rejects non-Beast, hero and enemy Beast: "+cardId);
+    Check(g.Players[0].Mana==mana&&g.Players[0].Hand.Any(h=>h.Id==hand)&&g.Players[0].Board.Count==board&&g.CardsPlayed==played,"Invalid Beast target preserves mana, hand, board and cards played: "+cardId);
+   }
+   Check(scientist.MaxHealth==2&&g.AttackValue(scientist)==2&&!scientist.Taunt&&scientist.ImmuneUntilTurn!=g.Turn,"Scientist receives no Beast-only buffs");
+   g.Silence(new MatchTarget(0,beast.Id));Check(g.Play(0,hand,new MatchTarget(0,beast.Id)).Success,"Silenced friendly Beast remains a legal tribal target: "+cardId);
+  }
+  var empty=MatchFixture("HUNTER","MAGE");empty.Summon(0,"FP1_004");Check(!empty.HasTargets(0,"FRIENDLY_BEAST",false),"Only Scientist on board does not count as a Beast target");int master=Inject(empty,"DS1_070");Check(empty.Play(0,master).Success&&empty.Players[0].Board.Count==2,"Houndmaster can enter without a target when no friendly Beast exists");
+ }
+ static void Hunter(){HyenaLethalDeathrattleRegression();FriendlyBeastTargetRegression();
   int before=checks;string[] ids={"CS2_237","DS1_070","DS1_183","DS1_184","DS1_188","EX1_531","EX1_536","EX1_537","EX1_538","EX1_544","EX1_549"};
   Check(ids.All(cardId=>matchRules.Supports(catalog.Card("VAN_"+cardId))),"All eleven remaining Hunter cards are registered");
   var hunterCards=catalog.Deckable(catalog.Pool("classic-2014")).Where(c=>c.CardClass=="HUNTER").ToArray();Check(hunterCards.Length==25&&hunterCards.All(matchRules.Supports),"All 25 classic Hunter cards are playable");

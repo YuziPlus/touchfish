@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +14,6 @@ public partial class PanelWindow {
  void AddSecretMarkerToolTips(TextBlock text,int seat){int count=Math.Min(5,match.Players[seat].SecretCount);if(count==0)return;string label=text.Text;if(label.Length<count)return;text.Inlines.Clear();text.Inlines.Add(new Run(label.Substring(0,label.Length-count)));for(int i=0;i<count;i++){var mark=new Run("?");ToolTipService.SetToolTip(mark,SecretToolTip(SecretToolTipText(seat,i)));text.Inlines.Add(mark);}}
  void ClearOwnSecretNotice(){if(secretNoticeTimer!=null){secretNoticeTimer.Stop();secretNoticeTimer=null;}if(secretNoticeText!=null&&status.Text==secretNoticeText)status.Text=secretNoticePrevious??"";secretNoticeText=null;}
  void SetMatchStatus(string text){if(secretNoticeText!=null){secretNoticePrevious=text;status.Text=secretNoticeText;}else status.Text=text;}
- void PresentOwnSecretNotices(){if(match==null)return;if(secretNoticeSession!=match.VisualSession||secretNoticeViewer!=matchViewSeat||awaitHandoff){ClearOwnSecretNotice();secretNoticeSession=match.VisualSession;secretNoticeViewer=matchViewSeat;}var events=secretNoticeCursor.Take(match.VisualSession,match.VisualEvents,currentPage=="match"&&!awaitHandoff);var names=events.Where(e=>e.Kind=="secret-armed"&&e.RecipientSeat==matchViewSeat&&e.Seat==matchViewSeat).Select(e=>e.CardName).ToArray();if(names.Length==0)return;ClearOwnSecretNotice();secretNoticePrevious=status.Text;secretNoticeText="疯狂的科学家置入奥秘："+String.Join("、",names);status.Text=secretNoticeText;secretNoticeTimer=new DispatcherTimer{Interval=TimeSpan.FromSeconds(2)};secretNoticeTimer.Tick+=(s,e)=>ClearOwnSecretNotice();secretNoticeTimer.Start();}
+ void PresentOwnSecretNotices(){if(match==null)return;if(secretNoticeSession!=match.VisualSession||secretNoticeViewer!=matchViewSeat||awaitHandoff){ClearOwnSecretNotice();secretNoticeSession=match.VisualSession;secretNoticeViewer=matchViewSeat;}var events=secretNoticeCursor.Take(match.VisualSession,match.VisualEvents,currentPage=="match"&&!awaitHandoff);var names=events.Where(e=>(e.Kind=="secret-armed"||e.Kind=="secret-stolen")&&e.RecipientSeat==matchViewSeat&&e.Seat==matchViewSeat).Select(e=>(e.Kind=="secret-stolen"?"科赞秘术师夺取奥秘：":"疯狂的科学家置入奥秘：")+e.CardName).ToArray();if(names.Length==0)return;ClearOwnSecretNotice();secretNoticePrevious=status.Text;secretNoticeText=String.Join("、",names);status.Text=secretNoticeText;secretNoticeTimer=new DispatcherTimer{Interval=TimeSpan.FromSeconds(2)};secretNoticeTimer.Tick+=(s,e)=>ClearOwnSecretNotice();secretNoticeTimer.Start();}
 }
 }
