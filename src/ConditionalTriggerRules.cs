@@ -18,7 +18,7 @@ public static class ConditionalTriggerRules {
   new ConditionalTrigger{CardId="EX1_559",Timing=MatchTriggerTiming.SpellCast,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>c.Game.GenerateMageFireball(c.Source.Owner)},
   new ConditionalTrigger{CardId="CS2_235",Timing=MatchTriggerTiming.MinionHealed,Condition=c=>true,Apply=c=>c.Game.Draw(c.Source.Owner,1)},
   new ConditionalTrigger{CardId="EX1_341",Timing=MatchTriggerTiming.TurnStart,Condition=c=>c.Source.Owner==c.Seat,Apply=PriestRules.Lightwell},
-  new ConditionalTrigger{CardId="EX1_402",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>c.Source.Owner==c.Damaged.Owner,Apply=c=>c.Game.Players[c.Source.Owner].Armor++},
+  new ConditionalTrigger{CardId="EX1_402",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>c.Source.Owner==c.Damaged.Owner,Apply=c=>c.Game.GainGvgArmor(c.Source.Owner,1)},
   new ConditionalTrigger{CardId="EX1_604",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>true,Apply=c=>c.Source.BuffAttack++},
   new ConditionalTrigger{CardId="EX1_044",Timing=MatchTriggerTiming.CardPlayed,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>c.Game.Buff(new MatchTarget(c.Source.Owner,c.Source.Id),1,1)},
   new ConditionalTrigger{CardId="EX1_100",Timing=MatchTriggerTiming.SpellCast,Condition=c=>c.Card!=null&&c.Card.Type=="SPELL",Apply=c=>c.Game.CopySpellToHand(1-c.Seat,c.Card)},

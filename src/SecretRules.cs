@@ -24,7 +24,7 @@ public sealed partial class MatchEngine {
  void CopySecretMinion(int seat,BattleUnit source){Summon(seat,source.CardId,initialize:copy=>{int id=copy.Id;BattleUnitCopies.Copy(source,copy);copy.Id=id;copy.Owner=copy.OriginalOwner=seat;copy.SummonTurn=Turn;copy.AttacksUsed=0;copy.AuraHealth=0;copy.ReturnSeat=copy.ReturnTurn=-1;});}
  public bool SecretBeforeAttack(int attackerSeat,int attackerId,ref MatchTarget target){int defenderSeat=1-attackerSeat;foreach(var s in SecretQueue(defenderSeat)){if(!SecretPresent(s))continue;if(Finished||attackerId!=0&&Unit(new MatchTarget(attackerSeat,attackerId))==null)return false;bool ownTarget=target.Seat==defenderSeat;switch(Card(s.CardId).BaseId){
   case "EX1_130":if(ownTarget&&Players[defenderSeat].Board.Count<Mode.BoardSlots){RevealSecret(s);var unit=Summon(defenderSeat,"GAME_DEFENDER");target=new MatchTarget(defenderSeat,unit.Id);}break;
-  case "EX1_289":if(ownTarget&&target.Hero){RevealSecret(s);Players[defenderSeat].Armor+=8;}break;
+  case "EX1_289":if(ownTarget&&target.Hero){RevealSecret(s);GainGvgArmor(defenderSeat,8);}break;
   case "EX1_594":if(ownTarget&&target.Hero&&attackerId!=0){RevealSecret(s);var unit=Unit(new MatchTarget(attackerSeat,attackerId));unit.DamageTaken=unit.MaxHealth;Cleanup();return false;}break;
   case "EX1_554":if(ownTarget&&!target.Hero&&Players[defenderSeat].Board.Count<Mode.BoardSlots){RevealSecret(s);for(int n=0;n<3;n++)Summon(defenderSeat,"GAME_SNAKE");}break;
   case "EX1_611":if(attackerId!=0){RevealSecret(s);BounceRogueUnits(new[]{Unit(new MatchTarget(attackerSeat,attackerId))},2);return false;}break;

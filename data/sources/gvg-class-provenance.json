@@ -1,0 +1,14 @@
+{
+  "SourceUrl": "https://api.hearthstonejson.com/v1/25770/zhCN/cards.json",
+  "SourceBuild": 25770,
+  "SourceSha256": "4e104e20b3baff20f78dfc1e7ef07ba76628060cb073de778bfe1cb310cd9c1e",
+  "Collectible": 72,
+  "Helpers": 4,
+  "ReusedUpstreamHelpers": 7,
+  "Scope": "72 class cards added to upstream neutral implementation; no duplicate Parts or neutral IDs",
+  "Reconstruction": [
+    "Removed later Elemental tag",
+    "Restored Shadowboxer character healing before 2018 nerf",
+    "Restored native Mistress of Pain healing instead of modern Lifesteal"
+  ]
+}
