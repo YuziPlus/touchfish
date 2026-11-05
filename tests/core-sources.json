@@ -55,5 +55,5 @@
   "MiracleTurnPlanner.cs",
   "MiracleDrawOdds.cs",
   "SealedRules.cs",
-  "GvgRules.cs"
+  "GvgRules.cs",   "GvgClassRules.cs"
 ]

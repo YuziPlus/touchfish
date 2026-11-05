@@ -54,12 +54,13 @@
     },
     {
       "Id": "goblins-gnomes-2014",
-      "Name": "地精大战侏儒·中立牌",
+      "Name": "地精大战侏儒",
       "CardSetIds": [
         "classic-2014",
         "naxxramas-2014",
         "naxxramas-balance-2014",
-        "goblins-gnomes-2014"
+        "goblins-gnomes-2014",
+        "gvg-2014-classes"
       ],
       "DeckSize": 30,
       "CopyLimit": 2,

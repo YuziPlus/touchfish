@@ -27,7 +27,7 @@ public sealed class MatchRules {
   Register("GAME_EXCESS_MANA","NONE",c=>c.Game.Draw(c.Seat,1));
   Register("EX1_251","NONE",c=>c.Game.ForkedLightning(c.Seat),(g,s)=>g.Players[1-s].Board.Count<2?"对方至少需要两个随从。":null);
   Register("CS2_007","ANY_CHARACTER",c=>c.Game.RestoreHealth(c.Seat,c.Target,8,c.Card.Type=="SPELL",c.Card.Type=="SPELL"));Register("CS2_089","ANY_CHARACTER",c=>c.Game.RestoreHealth(c.Seat,c.Target,6,c.Card.Type=="SPELL",c.Card.Type=="SPELL"));Register("EX1_354","ANY_CHARACTER",c=>{c.Game.RestoreHealth(c.Seat,c.Target,8,c.Card.Type=="SPELL",c.Card.Type=="SPELL");c.Game.Draw(c.Seat,3);});
-  Register("CS2_005","NONE",c=>{c.Game.Players[c.Seat].Armor+=2;c.Game.Players[c.Seat].TempAttack+=2;});Register("EX1_570","NONE",c=>{c.Game.Players[c.Seat].Armor+=4;c.Game.Players[c.Seat].TempAttack+=4;});Register("EX1_169","NONE",c=>OverloadRules.GainTemporaryMana(c.Game,c.Seat,2));
+  Register("CS2_005","NONE",c=>{c.Game.GainGvgArmor(c.Seat,2);c.Game.Players[c.Seat].TempAttack+=2;});Register("EX1_570","NONE",c=>{c.Game.GainGvgArmor(c.Seat,4);c.Game.Players[c.Seat].TempAttack+=4;});Register("EX1_169","NONE",c=>OverloadRules.GainTemporaryMana(c.Game,c.Seat,2));
   Register("CS2_009","MINION",c=>{c.Game.Buff(c.Target,2,2);c.Game.Unit(c.Target).Taunt=true;});Register("CS2_011","NONE",c=>{c.Game.Players[c.Seat].TempAttack+=2;foreach(var unit in c.Game.Players[c.Seat].Board)unit.TempAttack+=2;});
   Register("CS2_012","ENEMY_CHARACTER",c=>{Hit(c,4);foreach(var target in c.Game.Characters(1-c.Seat))if(target.UnitId!=c.Target.UnitId)c.Game.Damage(target,c.Game.SpellDamageAmount(c.Seat,1));});
   Register("EX1_173","ANY_CHARACTER",c=>{Hit(c,5);c.Game.Draw(c.Seat,1);});Register("EX1_161","MINION",c=>{Kill(c);c.Game.Draw(1-c.Seat,2);});
@@ -45,7 +45,7 @@ public sealed class MatchRules {
   Register("CS2_087","MINION",c=>c.Game.Buff(c.Target,3,0));Register("CS2_092","MINION",c=>c.Game.Buff(c.Target,4,4));Register("EX1_371","MINION",c=>c.Game.Unit(c.Target).Shield=true);Register("CS2_093","NONE",c=>Area(c,1-c.Seat,2,true));Register("CS2_094","ANY_CHARACTER",c=>{Hit(c,3);c.Game.Draw(c.Seat,1);});Register("EX1_619","NONE",c=>{foreach(var target in c.Game.Characters(0,false).Concat(c.Game.Characters(1,false)))c.Game.SetHealth(target,1);});Register("EX1_360","MINION",c=>{var unit=c.Game.Unit(c.Target);unit.BuffAttack=1-unit.BaseAttack;});Register("EX1_355","MINION",c=>{var unit=c.Game.Unit(c.Target);unit.BuffAttack+=c.Game.AttackValue(unit);});
   Register("DS1_233","NONE",c=>c.Game.Damage(new MatchTarget(1-c.Seat),c.Game.SpellDamageAmount(c.Seat,5)));Register("CS2_004","MINION",c=>{c.Game.Buff(c.Target,0,2);c.Game.Draw(c.Seat,1);});Register("CS2_234","LOW_ATTACK",Kill);Register("EX1_622","HIGH_ATTACK",Kill);Register("CS2_236","MINION",c=>c.Game.Buff(c.Target,0,c.Game.Unit(c.Target).Health));Register("CS1_129","MINION",c=>{var unit=c.Game.Unit(c.Target);unit.BuffAttack=unit.Health-unit.BaseAttack-unit.TempAttack-EnrageRules.AttackBonus(unit,c.Game.Card(unit.CardId).BaseId)-c.Game.AuraAttack(unit);});Register("EX1_332","MINION",c=>c.Game.Silence(c.Target));
   Register("CS1_112","NONE",c=>{Area(c,1-c.Seat,2,true);foreach(var target in c.Game.Characters(c.Seat))c.Game.RestoreHealth(c.Seat,target,2,c.Card.Type=="SPELL",c.Card.Type=="SPELL");});Register("EX1_621","NONE",c=>{foreach(var target in c.Game.Characters(0,false).Concat(c.Game.Characters(1,false)))c.Game.RestoreHealth(c.Seat,target,4,c.Card.Type=="SPELL",c.Card.Type=="SPELL");});Register("EX1_624","ANY_CHARACTER",c=>{Hit(c,5);c.Game.RestoreHealth(c.Seat,new MatchTarget(c.Seat),5,c.Card.Type=="SPELL",c.Card.Type=="SPELL");});Register("EX1_626","NONE",c=>{foreach(var target in c.Game.Characters(1-c.Seat,false))c.Game.Silence(target);c.Game.Draw(c.Seat,1);});
-  Register("CS2_105","NONE",c=>c.Game.Players[c.Seat].TempAttack+=4);Register("EX1_606","NONE",c=>{c.Game.Players[c.Seat].Armor+=5;c.Game.Draw(c.Seat,1);});Register("EX1_400","NONE",c=>{Area(c,0,1,false);Area(c,1,1,false);});Register("CS2_108","ENEMY_DAMAGED_MINION",Kill,(g,s)=>null);
+  Register("CS2_105","NONE",c=>c.Game.Players[c.Seat].TempAttack+=4);Register("EX1_606","NONE",c=>{c.Game.GainGvgArmor(c.Seat,5);c.Game.Draw(c.Seat,1);});Register("EX1_400","NONE",c=>{Area(c,0,1,false);Area(c,1,1,false);});Register("CS2_108","ENEMY_DAMAGED_MINION",Kill,(g,s)=>null);
   Register("EX1_391","MINION",c=>{Hit(c,2);if(c.Game.Unit(c.Target).Health>0)c.Game.Draw(c.Seat,1);});Register("EX1_408","ANY_CHARACTER",c=>Hit(c,c.Game.Players[c.Seat].Health<=12?6:4));Register("EX1_410","MINION",c=>Hit(c,c.Game.Players[c.Seat].Armor));Register("EX1_607","MINION",c=>{Hit(c,1);c.Game.Buff(c.Target,2,0);});Register("CS2_103","FRIENDLY_MINION",c=>{c.Game.Buff(c.Target,2,0);c.Game.Unit(c.Target).Charge=true;});
   Register("EX1_562","NONE",c=>c.Game.SummonAround(c.Seat,c.Summoned,"GAME_WHELP"));
   // Battlecries are explicit and do not inherit spell damage bonuses.
@@ -113,6 +113,7 @@ public sealed class MatchRules {
   Register("EX1_560","NONE",c=>{});Register("EX1_561","HERO",ClassicDragonRules.Alexstrasza);
   NaxxRules.Register(this);
   GvgRules.Register(this,catalog);
+  GvgClassRules.Register(this,catalog);
   RuleModules.Configure(this);
  }
  public static string EffectKey(CardRecord card){return !String.IsNullOrEmpty(card.EffectId)?card.EffectId:card.SetId=="classic-2014"||String.IsNullOrEmpty(card.SetId)?card.BaseId:card.Id;}
@@ -123,6 +124,7 @@ public sealed class MatchRules {
  public bool IsChoice(CardRecord card){return card!=null&&Choices(card).Length==2;}
  public bool ValidChoice(CardRecord card,string key){return Choices(card).Any(option=>option.Key==key);}
  public MatchChoiceOption[] Choices(CardRecord card){if(card==null)return new MatchChoiceOption[0];switch(card.BaseId){
+  case "GVG_030":case "GVG_032":case "GVG_041":return GvgClassRules.Choices(card);
   case "EX1_154":return new[]{new MatchChoiceOption("three","造成 3 点伤害","对一个随从造成 3 点伤害。"),new MatchChoiceOption("one-draw","造成 1 点伤害并抽牌","对一个随从造成 1 点伤害，然后抽一张牌。")};
   case "EX1_155":return new[]{new MatchChoiceOption("attack","攻击 +4","使一个随从获得 +4 攻击力。"),new MatchChoiceOption("health-taunt","生命 +4 和嘲讽","使一个随从获得 +4 生命值和嘲讽。")};
   case "EX1_160":return new[]{new MatchChoiceOption("buff","全体 +1/+1","使你的所有随从获得 +1/+1。"),new MatchChoiceOption("panther","召唤猎豹","召唤一个 3/2 猎豹。")};
@@ -135,7 +137,7 @@ public sealed class MatchRules {
   case "NEW1_008":return new[]{new MatchChoiceOption("draw","抽 2 张牌","抽两张牌。"),new MatchChoiceOption("heal","恢复 5 点生命值","为你的英雄恢复 5 点生命值。")};
   default:return new MatchChoiceOption[0];}}
  public string Target(CardRecord card,string choice){return Target(card,choice,false);}
- public string Target(CardRecord card,string choice,bool combo){string comboTarget=ComboRules.Target(card,combo);if(comboTarget!=null)return comboTarget;if(!IsChoice(card))return Effect(card).Target;if(!ValidChoice(card,choice))return "NONE";switch(card.BaseId){case "EX1_154":case "EX1_155":case "EX1_166":return "MINION";case "NEW1_007":return choice=="area"?"NONE":"MINION";default:return "NONE";}}
+ public string Target(CardRecord card,string choice,bool combo){string comboTarget=ComboRules.Target(card,combo);if(comboTarget!=null)return comboTarget;if(!IsChoice(card))return Effect(card).Target;if(!ValidChoice(card,choice))return "NONE";switch(card.BaseId){case "GVG_041":return choice=="buff"?"MINION":"NONE";case "EX1_154":case "EX1_155":case "EX1_166":return "MINION";case "NEW1_007":return choice=="area"?"NONE":"MINION";default:return "NONE";}}
  void ApplyChoice(EffectContext c){switch(c.Card.BaseId){
   case "EX1_154":Hit(c,c.Choice=="three"?3:1);if(c.Choice=="one-draw")c.Game.Draw(c.Seat,1);break;
   case "EX1_155":if(c.Choice=="attack")c.Game.Buff(c.Target,4,0);else{c.Game.Buff(c.Target,0,4);c.Game.Unit(c.Target).Taunt=true;}break;

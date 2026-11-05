@@ -1,0 +1,1476 @@
+[
+  {
+    "artist": "Mauricio Herrera",
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1927,
+    "flavor": "把某个法术称作为烈焰轰击并不能把它从根本上与其他地精装置的效果区别开来。",
+    "id": "GVG_001",
+    "name": "烈焰轰击",
+    "playRequirements": {
+      "REQ_MINIMUM_ENEMY_MINIONS": 1
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "对一个随机敌方随从造成\n$4 点伤害。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Gabor Szikszai",
+    "attack": 2,
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1928,
+    "flavor": "在夏天，它依然有一份很体面的工作：制作刨冰。",
+    "health": 3,
+    "id": "GVG_002",
+    "mechanics": [
+      "FREEZE"
+    ],
+    "name": "碎雪机器人",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>冻结</b>任何受到该随从伤害的角色。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Sean O'Daniels",
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1929,
+    "flavor": "艾泽拉斯的普通住民根本不知道让一座传送门稳定下来需要花费多少人力物力。我们每年要花费30%的GDP用于传送门维护。",
+    "id": "GVG_003",
+    "name": "不稳定的传送门",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "将一张随机随从牌置入你的手牌。该随从的法力值消耗减少（3）点。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Glenn Rane",
+    "attack": 5,
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 1934,
+    "flavor": "如果你实在找不到炸弹了，那就随便找一个地精发明的东西，然后把它扔出去……",
+    "health": 4,
+    "id": "GVG_004",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "地精炎术师",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>如果你控制任何机械，则造成4点伤害，随机分配到所有敌人身上。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Alex Garner",
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 1941,
+    "flavor": "麦迪文的残影徘徊于卡拉赞之中，这位昔日强大的守护者运用他的力量在下象棋和玩<i>炉石传说</i>时，不停地作弊。",
+    "id": "GVG_005",
+    "name": "麦迪文的残影",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "复制你的所有随从，并将其置入你的手牌。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Aleksi Briclot",
+    "attack": 7,
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 1939,
+    "elite": true,
+    "flavor": "米米尔隆最喜欢开着烈焰巨兽外出兜风。",
+    "health": 7,
+    "id": "GVG_007",
+    "mechanics": [
+      "TOPDECK"
+    ],
+    "name": "烈焰巨兽",
+    "race": "MECHANICAL",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "当你抽到该牌时，对所有角色造成\n2点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Luca Zontini",
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 1938,
+    "flavor": "既然你们愿意让一个地精成为牧师，就准备好接受这样的后果吧。",
+    "id": "GVG_008",
+    "mechanics": [
+      "AFFECTED_BY_SPELL_POWER"
+    ],
+    "name": "圣光炸弹",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "对所有随从造成等同于其攻击力的伤害。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Matt Dixon",
+    "attack": 2,
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 1,
+    "dbfId": 1937,
+    "flavor": "作为一个投弹手，她干活的时候总是有点敷衍了事。",
+    "health": 1,
+    "id": "GVG_009",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "暗影投弹手",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "<b>战吼：</b>对每个英雄造成3点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Alex Horley Orlandelli",
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 1935,
+    "flavor": "维伦时常会寄给年轻的德莱尼女祭司一些可爱的小卡片，并写上一些寄语，比如，“你选择了圣光，我选择了你。”",
+    "id": "GVG_010",
+    "name": "维伦的恩泽",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "COMMON",
+    "referencedTags": [
+      "SPELLPOWER"
+    ],
+    "set": "GVG",
+    "text": "使一个随从获得+2/+4并具有<b>法术伤害+1</b>。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Jim Nelson",
+    "attack": 3,
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1936,
+    "flavor": "自从侏儒世界放大器被滥用之后，侏儒工程师们就对体型变化装置非常谨慎。",
+    "health": 2,
+    "id": "GVG_011",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "缩小射线工程师",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_IF_AVAILABLE": 0
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "targetingArrowText": "在本回合中，使其获得-2攻击力。",
+    "text": "<b>战吼：</b>在本回合中，使一个随从获得-2攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jesper Ejsing",
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 1,
+    "dbfId": 1933,
+    "flavor": "“把那里夷为平地！”在接到这样的命令后，圣光护卫者们义无反顾地冲上前去，而地精们则回到了他们的军火库。",
+    "id": "GVG_012",
+    "name": "纳鲁之光",
+    "playRequirements": {
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "恢复#3点生命值。如果该目标仍处于受伤状态，则召唤一个圣光护卫者。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Raymond Swanland",
+    "attack": 6,
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 1931,
+    "elite": true,
+    "flavor": "所谓暗影猎手，无非就是精通巫毒妖术的暗影牧师。",
+    "health": 2,
+    "id": "GVG_014",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "沃金",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_IF_AVAILABLE": 0
+    },
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "targetingArrowText": "交换生命值。",
+    "text": "<b>战吼：</b>与另一个随从交换生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jeff Haynie",
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2093,
+    "flavor": "如果你想要构筑一套简单粗暴的套牌，这张牌就是很好的选择。",
+    "id": "GVG_015",
+    "name": "暗色炸弹",
+    "playRequirements": {
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "造成$3点伤害。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "E.M. Gist",
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2094,
+    "flavor": "无论身在何处，能够驯服野兽的技巧都是一个猎人最大的财富。",
+    "id": "GVG_017",
+    "name": "召唤宠物",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "抽一张牌。如果该牌是野兽牌，则其法力值消耗\n减少（4）点。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Carl Critchlow",
+    "attack": 1,
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2172,
+    "flavor": "她总是觉得她的姐姐欢乐女王有点神经质：世间哪有这么多可以令她发笑的事情？",
+    "health": 4,
+    "id": "GVG_018",
+    "mechanics": [
+      "LIFESTEAL"
+    ],
+    "name": "痛苦女王",
+    "race": "DEMON",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>吸血</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Kerem Beyit",
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 1985,
+    "flavor": "能召唤出什么样的恶魔取决于术士的野心和运气。",
+    "id": "GVG_019",
+    "name": "恶魔之心",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "对一个随从造成$5点伤害，如果该随从是友方恶魔，则改为使其获得+5/+5。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Matt Gaser",
+    "attack": 3,
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 1997,
+    "flavor": "包装盒上写着：全新改良，比旧款更邪门！",
+    "health": 5,
+    "id": "GVG_020",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "邪能火炮",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "在你的回合结束时，对一个非机械随从造成2点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Wayne Reynolds",
+    "attack": 9,
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 9,
+    "dbfId": 1986,
+    "elite": true,
+    "flavor": "背叛这种事情，如果是主角做了，他就会翻开历史新的一页；如果是配角做了，他的牺牲会帮助主角翻开历史新的一页。",
+    "health": 7,
+    "id": "GVG_021",
+    "mechanics": [
+      "AURA"
+    ],
+    "name": "玛尔加尼斯",
+    "race": "DEMON",
+    "rarity": "LEGENDARY",
+    "referencedTags": [
+      "IMMUNE"
+    ],
+    "set": "GVG",
+    "text": "你的其他恶魔获得+2/+2。你的英雄获得<b>免疫</b>。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Den",
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2095,
+    "flavor": "工欲善其事，必先利其器。",
+    "id": "GVG_022",
+    "mechanics": [
+      "COMBO"
+    ],
+    "name": "修补匠的磨刀油",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "使你的武器获得+3攻击力。<b>连击：</b>使一个随机友方随从获得+3攻击力。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Zolton Boros",
+    "attack": 3,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1988,
+    "flavor": "这项装置能够随意调整你的发型，或是敌人的身高。",
+    "health": 2,
+    "id": "GVG_023",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "地精自动理发装置",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>战吼：</b>使你的武器获得+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Richard Wright",
+    "attack": 1,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 1989,
+    "durability": 3,
+    "flavor": "扳手的用途很广泛，包括旋紧齿轮和打扁穴居人。",
+    "id": "GVG_024",
+    "name": "齿轮大师的扳手",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "如果你控制任何机械，便获得\n+2攻击力。",
+    "type": "WEAPON"
+  },
+  {
+    "artist": "Danny Beck",
+    "attack": 4,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1990,
+    "flavor": "你不知道他是真的失去了一个眼睛，还是这只是他喜欢的装扮。",
+    "health": 1,
+    "id": "GVG_025",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "独眼欺诈者",
+    "race": "PIRATE",
+    "rarity": "RARE",
+    "referencedTags": [
+      "STEALTH"
+    ],
+    "set": "GVG",
+    "text": "每当你召唤一个海盗，便获得<b>潜行</b>。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Luca Zontini",
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 1991,
+    "flavor": "要完成一次完美的假死，最重要的是发出正确的气味。这需要经常训练或是一瓶特殊的香水。",
+    "id": "GVG_026",
+    "name": "假死",
+    "rarity": "EPIC",
+    "referencedTags": [
+      "DEATHRATTLE"
+    ],
+    "set": "GVG",
+    "text": "触发所有友方随从的<b>亡语</b>。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Brian Despain",
+    "attack": 2,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 1992,
+    "flavor": "战斗机械装置都遵从他的教诲。只有他会用0和1告诉他们怎么战斗。",
+    "health": 2,
+    "id": "GVG_027",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "钢铁武道家",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "在你的回合结束时，使另一个友方机械获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Wei Wang",
+    "attack": 5,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 1993,
+    "elite": true,
+    "flavor": "供求关系是加里维克斯唯一的信条。只要你给钱，他就提供殴打服务。",
+    "health": 8,
+    "id": "GVG_028",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "加里维克斯",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "每当你的对手施放一个法术，获得该法术的复制，并使其获得一个幸运币。",
+    "type": "MINION"
+  },
+  {
+    "cardClass": "NEUTRAL",
+    "cost": 0,
+    "dbfId": 2277,
+    "id": "GVG_028t",
+    "name": "加里维克斯的幸运币",
+    "set": "GVG",
+    "text": "在本回合中，获得一个法力水晶。<i>（不会触发加里维克斯的效果。）</i>",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Dan Scott",
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 1998,
+    "flavor": "有时候你需要祖辈们的指引。你会想知道，如果他们身处你现在的境地，他们的选择会是什么。",
+    "id": "GVG_029",
+    "name": "先祖召唤",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "每个玩家从手牌中将一个随机随从置入战场。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Eva Widermann",
+    "attack": 2,
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2096,
+    "flavor": "它真是太可爱了！哦我的天呐，它为什么要咬我的脸？",
+    "health": 2,
+    "id": "GVG_030",
+    "mechanics": [
+      "CHOOSE_ONE",
+      "TAUNT"
+    ],
+    "name": "电镀机械熊仔",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>嘲讽，抉择：</b>\n+1攻击力；或者+1生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Efrem Palacios",
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 1995,
+    "flavor": "请为环保事业尽一份力，把塑料垃圾放在一个垃圾箱内，把敌方随从的尸体放在另一个垃圾箱内。",
+    "id": "GVG_031",
+    "name": "回收",
+    "playRequirements": {
+      "REQ_ENEMY_TARGET": 0,
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "将一个敌方随从洗入你的对手的牌库。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Chris Rahn",
+    "attack": 2,
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2225,
+    "flavor": "喜好：徒步旅行，拥抱美丽的大自然。厌恶：地精伐木机和拖鞋。（讨厌拖鞋纯粹是因为找不到合脚的。）",
+    "health": 4,
+    "id": "GVG_032",
+    "mechanics": [
+      "CHOOSE_ONE"
+    ],
+    "name": "林地树妖",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>抉择：</b>使每个玩家获得一个法力水晶；或每个玩家抽一张牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Steve Prescott",
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 9,
+    "dbfId": 2001,
+    "flavor": "这棵虽然不是摇钱树，但是却能救好多人的命。",
+    "id": "GVG_033",
+    "name": "生命之树",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "为所有角色恢复所有生命值。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Trent Kaniuga",
+    "attack": 7,
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2002,
+    "entourage": [
+      "PART_007",
+      "PART_006",
+      "PART_005",
+      "PART_001",
+      "PART_003",
+      "PART_002",
+      "PART_004"
+    ],
+    "flavor": "这野兽的爪子和刀剑一样锋利，因为它本来就是由钢铁制成的。",
+    "health": 6,
+    "id": "GVG_034",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "机械野兽",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "referencedTags": [
+      "SPARE_PART"
+    ],
+    "set": "GVG",
+    "text": "每当该随从受到伤害，将一张<b>零件</b>牌置入你的手牌。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Oliver Chipping",
+    "attack": 9,
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2003,
+    "elite": true,
+    "flavor": "玛洛恩之所以讨厌恶魔，是因为他不理解为什么这些又脏又臭的生物会长着和他一样的蹄子。",
+    "health": 7,
+    "id": "GVG_035",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "玛洛恩",
+    "race": "BEAST",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>亡语：</b>将该随从洗入你的牌库。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zoltan & Gabor",
+    "attack": 3,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2004,
+    "durability": 2,
+    "flavor": "人们通常认为萨满祭司控制着元素，而事实上，他们必须经常恳求元素施舍一些它们根本不在意的东西。",
+    "id": "GVG_036",
+    "mechanics": [
+      "DEATHRATTLE"
+    ],
+    "name": "动力战锤",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>亡语：</b>使一个随机友方机械获得+2/+2。",
+    "type": "WEAPON"
+  },
+  {
+    "artist": "Jim Nelson",
+    "attack": 3,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2005,
+    "flavor": "这个打蛋器可好用了。",
+    "health": 2,
+    "id": "GVG_037",
+    "mechanics": [
+      "WINDFURY"
+    ],
+    "name": "自动漩涡打击装置",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>风怒</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Warren Mahy",
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2006,
+    "flavor": "在施放这个法术的时候最好提前带上耳塞。",
+    "id": "GVG_038",
+    "mechanics": [
+      "OVERLOAD"
+    ],
+    "name": "连环爆裂",
+    "overload": 1,
+    "playRequirements": {
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "造成$3到$6点伤害，<b>过载：</b>（1）",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Guangjian Huang",
+    "attack": 0,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2007,
+    "flavor": "在艾泽拉斯很多地区的古玩市场，你都能淘到一些很有收藏价值的老式图腾。",
+    "health": 3,
+    "id": "GVG_039",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "活力图腾",
+    "race": "TOTEM",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "在你的回合结束时，为你的英雄恢复#4点生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Clint Langley",
+    "attack": 2,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2008,
+    "flavor": "任何人只要对元素提出合理的诉求，元素都会回应你。哪怕你只是想喊一句：“哦哇啦咯哇咯咯哦！”",
+    "health": 5,
+    "id": "GVG_040",
+    "mechanics": [
+      "OVERLOAD",
+      "TRIGGER_VISUAL"
+    ],
+    "name": "沙鳞灵魂行者",
+    "overload": 1,
+    "race": "MURLOC",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "每当有其他友方鱼人死亡，便抽一张牌。\n<b>过载：</b>（1）",
+    "type": "MINION"
+  },
+  {
+    "artist": "Trent Kaniuga",
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2009,
+    "flavor": "别担心，我们已经把命名这张牌的家伙给开除了。",
+    "id": "GVG_041",
+    "mechanics": [
+      "CHOOSE_ONE"
+    ],
+    "name": "黑暗私语",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_IF_AVAILABLE": 0
+    },
+    "rarity": "EPIC",
+    "referencedTags": [
+      "TAUNT"
+    ],
+    "set": "GVG",
+    "text": "<b>抉择：</b>召唤5个小精灵；或者使一个随从获得+5/+5并具有<b>嘲讽</b>。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Ruan Jia",
+    "attack": 7,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2010,
+    "elite": true,
+    "flavor": "耐普图隆被称为“猎潮者”。他是四大元素领主之一。他和拉格纳罗斯能够联手为你提供最好的桑拿服务。",
+    "health": 7,
+    "id": "GVG_042",
+    "mechanics": [
+      "BATTLECRY",
+      "OVERLOAD"
+    ],
+    "name": "耐普图隆",
+    "overload": 3,
+    "race": "ELEMENTAL",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>战吼：</b>将四张随机鱼人牌置入你的手牌，<b>过载：</b>（3）",
+    "type": "MINION"
+  },
+  {
+    "artist": "Gino Whitehall",
+    "attack": 2,
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2011,
+    "durability": 2,
+    "flavor": "它可以完成所有火箭炮能完成的任务，只是视觉效果差了点。",
+    "id": "GVG_043",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "重型刃弩",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>战吼：</b>使一个随机友方随从获得+1攻击力。",
+    "type": "WEAPON"
+  },
+  {
+    "artist": "Jaemin Kim",
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2013,
+    "flavor": "榴散弹的弹片伤害远远超出爆炸本身，至于这些小鬼，他们可能是更加致命的弹片。",
+    "id": "GVG_045",
+    "name": "小鬼爆破",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "对一个随从造成$2-$4点伤害。每造成1点伤害，便召唤一个1/1的小鬼。",
+    "type": "SPELL"
+  },
+  {
+    "attack": 1,
+    "cardClass": "WARLOCK",
+    "cost": 1,
+    "dbfId": 2270,
+    "health": 1,
+    "id": "GVG_045t",
+    "name": "小鬼",
+    "race": "DEMON",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Seamus Gallagher",
+    "attack": 2,
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2014,
+    "flavor": "一声长啸百兽惊，贫瘠之地留威名。",
+    "health": 6,
+    "id": "GVG_046",
+    "mechanics": [
+      "BATTLECRY",
+      "TAUNT"
+    ],
+    "name": "百兽之王",
+    "race": "BEAST",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>嘲讽</b>，<b>战吼：</b>你每控制一只其他野兽，便获得+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dave Allsop",
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2015,
+    "flavor": "潜行者们是暗中破坏的高手，他们会让你没有帮手，接着一无所有。",
+    "id": "GVG_047",
+    "mechanics": [
+      "COMBO"
+    ],
+    "name": "暗中破坏",
+    "playRequirements": {
+      "REQ_ENEMY_TARGET": 0,
+      "REQ_MINION_TARGET": 0
+    },
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "消灭一个随机敌方随从，<b>连击：</b>并且摧毁你的对手的\n武器。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Hideaki Takamura",
+    "attack": 3,
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2016,
+    "flavor": "最好不要让它们淋雨。在安戈洛环型山，金刚锈牙兽的数量已经无法控制了。",
+    "health": 3,
+    "id": "GVG_048",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "金刚刃牙兽",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>使你的其他机械获得+2攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Raymond Swanland",
+    "attack": 6,
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2017,
+    "elite": true,
+    "flavor": "祖尔法拉克队是本届巨魔世界杯的夺冠热门球队，他们的队旗上描绘着令人望而生畏的多头蛇加兹瑞拉。",
+    "health": 9,
+    "id": "GVG_049",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "加兹瑞拉",
+    "race": "BEAST",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "每当该随从受到伤害，便获得攻击力\n翻倍。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Andrew Hou",
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2018,
+    "flavor": "只有地精曾经认为这是一项很棒的发明；而现在，连他们也开始有点怀疑了。",
+    "id": "GVG_050",
+    "name": "弹射之刃",
+    "playRequirements": {
+      "REQ_MINIMUM_TOTAL_MINIONS": 1
+    },
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "对一个随机随从造成$1点伤害。重复此效果，直到某个随从死亡。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Tyler Walpole",
+    "attack": 1,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 1,
+    "dbfId": 2019,
+    "flavor": "战斗机器人的量产计划因为其“样本产品”的体型过大而流产。",
+    "health": 3,
+    "id": "GVG_051",
+    "mechanics": [
+      "ENRAGED"
+    ],
+    "name": "战斗机器人",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "受伤时具有+1攻\n击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Michael Sutfin",
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 7,
+    "dbfId": 2020,
+    "flavor": "“使用这张卡牌时的感觉将令你毕生难忘。”许多野蛮人都会这么对你说。",
+    "id": "GVG_052",
+    "name": "重碾",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "消灭一个随从。如果你控制任何受伤的随从，该法术的法力值消耗减少（4）点。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Alex Horley Orlandelli",
+    "attack": 5,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2021,
+    "flavor": "对于侏儒战士来说，一块盾牌可以对其进行全方位的保护。",
+    "health": 5,
+    "id": "GVG_053",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "盾甲侍女",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>战吼：</b>\n获得5点护甲值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Richard Wright",
+    "attack": 4,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2022,
+    "durability": 2,
+    "flavor": "简单、鲁莽、危险，就像一切和食人魔有关的东西一样。",
+    "id": "GVG_054",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "食人魔战槌",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "50%几率攻击错误的敌人。",
+    "type": "WEAPON"
+  },
+  {
+    "artist": "Jesper Ejsing",
+    "attack": 2,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2023,
+    "flavor": "如果它坏了，踢它几下然后再骂一句：“什么破玩意儿！”",
+    "health": 5,
+    "id": "GVG_055",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "废旧螺栓机甲",
+    "playRequirements": {
+      "REQ_FRIENDLY_TARGET": 0,
+      "REQ_TARGET_IF_AVAILABLE": 0,
+      "REQ_TARGET_WITH_RACE": 17
+    },
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "targetingArrowText": "使一个友方机械获得+2/+2。",
+    "text": "<b>战吼：</b>使一个友方机械获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Raymond Swanland",
+    "attack": 6,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2024,
+    "elite": true,
+    "flavor": "钢铁战蝎守护着奥格瑞玛，并在最近刚获得“月度最佳员工”称号！",
+    "health": 5,
+    "id": "GVG_056",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "钢铁战蝎",
+    "race": "MECHANICAL",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "<b>战吼：</b>将一张“地雷” 牌洗入你的对手的牌库。当你的对手抽到该牌，便对其造成10点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Chris Seaman",
+    "cardClass": "WARRIOR",
+    "cost": 6,
+    "dbfId": 2221,
+    "id": "GVG_056t",
+    "mechanics": [
+      "TOPDECK",
+      "ImmuneToSpellpower"
+    ],
+    "name": "地雷",
+    "set": "GVG",
+    "text": "当你抽到这张牌时会发生爆炸。你受到\n10点伤害。抽一张牌。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Jason Chan",
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2025,
+    "flavor": "圣光赐予我力量！",
+    "id": "GVG_057",
+    "name": "光明圣印",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "为你的英雄恢复#4点生命值，并在本回合中\n获得+2攻击力。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Raymond Swanland",
+    "attack": 2,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2026,
+    "flavor": "他愿为他的信仰牺牲，因为他的控制程序就是这么写的。",
+    "health": 2,
+    "id": "GVG_058",
+    "mechanics": [
+      "DIVINE_SHIELD"
+    ],
+    "name": "护盾机器人",
+    "race": "MECHANICAL",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>圣盾</b>",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dany Orizio",
+    "attack": 2,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2027,
+    "durability": 3,
+    "flavor": "你们就是把一个大齿轮从机器上拆下来，在上面刻了点符文图案，然后用胶水粘上把手，就对我说这是一把灌注了神圣之力的强力武器？……好吧，似乎也不赖。",
+    "id": "GVG_059",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "齿轮光锤",
+    "rarity": "EPIC",
+    "referencedTags": [
+      "DIVINE_SHIELD",
+      "TAUNT"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼：</b>使一个随机友方随从获得<b>圣盾</b>和<b>嘲讽</b>。",
+    "type": "WEAPON"
+  },
+  {
+    "artist": "Phroilan Gardner",
+    "attack": 2,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2028,
+    "flavor": "自从乌瑟尔把他招募到麾下之后，他觉得新兵大喊“报告”的声音不再那么烦人了。",
+    "health": 5,
+    "id": "GVG_060",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "军需官",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "<b>战吼：</b>使你的白银之手新兵获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Mike Hayes",
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2029,
+    "flavor": "请不要辜负这些新兵的一腔热血，还有这把锤子。",
+    "id": "GVG_061",
+    "name": "作战动员",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "召唤三个1/1的白银之手新兵，装备一把1/4的武器。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Jim Nelson",
+    "attack": 6,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2030,
+    "flavor": "过去这些“卫士”们都是用真银打造的，但自从把生产线外包给加基森的厂家之后，他们的材质就发生了改变。",
+    "health": 3,
+    "id": "GVG_062",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "钴制卫士",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "referencedTags": [
+      "DIVINE_SHIELD"
+    ],
+    "set": "GVG",
+    "text": "每当你召唤一个机械，便获得<b>圣盾</b>。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Tooth",
+    "attack": 1,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2031,
+    "elite": true,
+    "flavor": "在伯瓦尔身上的冰融化之后，他受邀接受了采访。在采访中他对艾泽拉斯全球气候变暖现象表达了深深的忧虑。",
+    "health": 7,
+    "id": "GVG_063",
+    "name": "伯瓦尔·弗塔根",
+    "rarity": "LEGENDARY",
+    "set": "GVG",
+    "text": "如果该牌在你的手牌中，每当一个友方随从死亡，便获得+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "José Ladrönn",
+    "attack": 5,
+    "cardClass": "SHAMAN",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2034,
+    "flavor": "他们的战斗信条是：闭上眼，然后享受打击的快感。",
+    "health": 4,
+    "id": "GVG_066",
+    "mechanics": [
+      "FORGETFUL",
+      "OVERLOAD",
+      "TRIGGER_VISUAL",
+      "WINDFURY"
+    ],
+    "name": "砂槌萨满祭司",
+    "overload": 1,
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>风怒，过载：</b>（1）\n50%几率攻击错误的敌人。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Dan Scott",
+    "attack": 2,
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2040,
+    "flavor": "一个地精牧师发明了使用暗影作为能源的战斗机器人。",
+    "health": 3,
+    "id": "GVG_072",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "暗影打击装甲",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "每当一个随从获得治疗，便对一个随机敌人造成1点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Howard Lyon",
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2041,
+    "flavor": "戴眼镜的蛇当然会瞄的更准一点。",
+    "id": "GVG_073",
+    "name": "眼镜蛇射击",
+    "playRequirements": {
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_TO_PLAY": 0
+    },
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "对一个随从和敌方英雄造成$3点伤害。",
+    "type": "SPELL"
+  },
+  {
+    "artist": "Josh Harris",
+    "attack": 9,
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 6,
+    "dbfId": 2045,
+    "flavor": "黑暗意志是一个又邪恶又神秘又巨大又不懂得怎么写程序的大坏蛋。",
+    "health": 9,
+    "id": "GVG_077",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "心能魔像",
+    "race": "MECHANICAL",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "在每个回合结束时，如果该随从是你唯一的随从，则消灭\n该随从。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Brandon Kitkouski",
+    "attack": 4,
+    "cardClass": "DRUID",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2048,
+    "flavor": "尖牙德鲁伊生活在哀嚎洞穴里，于是那里成为了大部分部落冒险者第一次遇到暗夜精灵的地方。",
+    "health": 4,
+    "id": "GVG_080",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "尖牙德鲁伊",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "<b>战吼：</b>如果你控制任何野兽，将该随从变形成为7/7。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Massive Black",
+    "attack": 7,
+    "cardClass": "DRUID",
+    "cost": 5,
+    "dbfId": 2230,
+    "health": 7,
+    "id": "GVG_080t",
+    "name": "尖牙德鲁伊",
+    "race": "BEAST",
+    "set": "GVG",
+    "type": "MINION"
+  },
+  {
+    "artist": "Nutchapol Thitinunthakorn",
+    "attack": 5,
+    "cardClass": "PRIEST",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2051,
+    "flavor": "其实他和旧的型号没有任何不同，但是在被贴上了“高级”标签之后，他的售价就能翻一倍。",
+    "health": 5,
+    "id": "GVG_083",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "高级修理机器人",
+    "playRequirements": {
+      "REQ_FRIENDLY_TARGET": 0,
+      "REQ_MINION_TARGET": 0,
+      "REQ_TARGET_IF_AVAILABLE": 0,
+      "REQ_TARGET_WITH_RACE": 17
+    },
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "targetingArrowText": "使一个机械获得+4生命值。",
+    "text": "<b>战吼：</b>使一个友方机械获得+4生命值。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Zero Yue",
+    "attack": 5,
+    "cardClass": "WARRIOR",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2054,
+    "flavor": "冬拥堡垒的城墙一般都会用最坚固的材料在两个半小时内修筑起来。但这并不能阻止攻城战车的长驱直入。",
+    "health": 5,
+    "id": "GVG_086",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "重型攻城战车",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "每当你获得护甲，该随从便获得\n+1攻击力。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jun Kang",
+    "attack": 2,
+    "cardClass": "HUNTER",
+    "collectible": true,
+    "cost": 2,
+    "dbfId": 2055,
+    "flavor": "地精一般都不喜欢使用狙击枪，他们都喜欢直接用炸药解决问题。",
+    "health": 3,
+    "id": "GVG_087",
+    "name": "热砂港狙击手",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "你的英雄技能能够以随从为目标。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Samwise",
+    "attack": 6,
+    "cardClass": "ROGUE",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2056,
+    "flavor": "他通过走后门进入了忍者学院，但总是通不过偷取毕业证书的考试。",
+    "health": 6,
+    "id": "GVG_088",
+    "mechanics": [
+      "FORGETFUL",
+      "STEALTH",
+      "TRIGGER_VISUAL"
+    ],
+    "name": "食人魔忍者",
+    "rarity": "RARE",
+    "set": "GVG",
+    "text": "<b>潜行，</b>50%几率攻击错误的敌人。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Todd Lockwood",
+    "attack": 4,
+    "cardClass": "WARLOCK",
+    "collectible": true,
+    "cost": 5,
+    "dbfId": 2068,
+    "flavor": "和他对话时，你很难与之进行眼神交流。",
+    "health": 4,
+    "id": "GVG_100",
+    "mechanics": [
+      "TRIGGER_VISUAL"
+    ],
+    "name": "漂浮观察者",
+    "race": "DEMON",
+    "rarity": "COMMON",
+    "set": "GVG",
+    "text": "每当你的英雄在你的回合受到伤害，便获得+2/+2。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Anton Zemskov",
+    "attack": 4,
+    "cardClass": "PALADIN",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2069,
+    "flavor": "血色十字军臭名昭著，其领导者们想要通过更名来改善人们对这个组织的看法；但他们知道，把“血色”改成“红”是肯定行不通的。",
+    "health": 3,
+    "id": "GVG_101",
+    "mechanics": [
+      "BATTLECRY"
+    ],
+    "name": "血色净化者",
+    "rarity": "RARE",
+    "referencedTags": [
+      "DEATHRATTLE"
+    ],
+    "set": "GVG",
+    "text": "<b>战吼：</b>\n对所有具有<b>亡语</b>的随从造成2点伤害。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Jonboy Meyers",
+    "attack": 2,
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 4,
+    "dbfId": 2234,
+    "flavor": "有些大块头正需要小个子的保护。",
+    "health": 5,
+    "id": "GVG_122",
+    "mechanics": [
+      "ADJACENT_BUFF",
+      "AURA"
+    ],
+    "name": "小个子扰咒师",
+    "rarity": "EPIC",
+    "set": "GVG",
+    "text": "相邻的随从\n无法成为法术或英雄技能的目标。",
+    "type": "MINION"
+  },
+  {
+    "artist": "Phil Saunders",
+    "attack": 3,
+    "cardClass": "MAGE",
+    "collectible": true,
+    "cost": 3,
+    "dbfId": 2249,
+    "flavor": "地精发明家们从来不会考虑环保和安全这两个因素；而他们认为正是这一点使他们的发明更加出类拔萃。",
+    "health": 3,
+    "id": "GVG_123",
+    "mechanics": [
+      "SPELLPOWER"
+    ],
+    "name": "煤烟喷吐装置",
+    "race": "MECHANICAL",
+    "rarity": "RARE",
+    "set": "GVG",
+    "spellDamage": 1,
+    "targetingArrowText": "使其获得<b>法术伤害+2</b>。",
+    "text": "<b>法术伤害+1</b>",
+    "type": "MINION"
+  }
+]

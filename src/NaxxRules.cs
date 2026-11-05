@@ -32,7 +32,7 @@ public static class NaxxRules {
  public static void Death(MatchEngine g,BattleUnit unit){int seat=unit.Owner;switch(g.Card(unit.CardId).BaseId){
   case "FP1_011":var beasts=g.GenerationPool().Where(c=>c.Race=="BEAST"&&c.Type=="MINION").ToArray();if(beasts.Length>0)g.GiveNaxxCard(seat,beasts[g.RandomIndex(beasts.Length)].Id);break;
   case "FP1_023":var ally=g.RandomTarget(g.Characters(seat,false));if(ally!=null)g.Buff(ally,0,3);break;
-  case "FP1_022":var hand=g.Players[seat].Hand;if(g.Players[seat].Board.Count>=g.Mode.BoardSlots)break;var demons=hand.Where(h=>g.Card(h.CardId).Type=="MINION"&&g.Card(h.CardId).Race=="DEMON").ToArray();if(demons.Length==0)break;var demon=demons[g.RandomIndex(demons.Length)];hand.Remove(demon);g.Summon(seat,demon.CardId,DeathPosition(g,unit));break;
+  case "FP1_022":var hand=g.Players[seat].Hand;if(g.Players[seat].Board.Count>=g.Mode.BoardSlots)break;var demons=hand.Where(h=>g.Card(h.CardId).Type=="MINION"&&g.Card(h.CardId).Race=="DEMON").ToArray();if(demons.Length==0)break;var demon=demons[g.RandomIndex(demons.Length)];hand.Remove(demon);g.SummonHandCard(seat,demon,DeathPosition(g,unit));break;
   case "FP1_026":var target=g.RandomTarget(g.Characters(seat,false));if(target!=null)g.ReturnToHand(target);break;
   case "FP1_004":g.PutSecretFromDeck(seat);break;
   case "FP1_009":g.SummonMinionFromDeck(1-seat);break;
