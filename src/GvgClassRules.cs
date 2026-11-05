@@ -79,6 +79,7 @@ public static class GvgClassRules {
   case "GVG_022":if(p.WeaponDurability>0)p.WeaponAttack+=3;if(c.Combo)RandomBuff(g,s,3,0);break;
   case "GVG_023":if(p.WeaponDurability>0)p.WeaponAttack++;break;
   case "GVG_047":var victim=g.RandomTarget(g.Characters(1-s,false));if(victim!=null)g.Unit(victim).DamageTaken=g.Unit(victim).MaxHealth;if(c.Combo)g.BreakWeapon(1-s);break;
+  case "GVG_056t":break; // A mine copied into hand was not drawn; its draw-only trigger does not fire.
   case "GVG_028t":OverloadRules.GainTemporaryMana(g,s,1);break;
   case "GVG_029":for(int player=s,n=0;n<2;n++,player=1-s){if(g.Players[player].Board.Count>=g.Mode.BoardSlots)continue;var hand=g.Players[player].Hand.Where(h=>g.Card(h.CardId).Type=="MINION").ToArray();if(hand.Length>0){var chosen=hand[g.RandomIndex(hand.Length)];g.Players[player].Hand.Remove(chosen);g.SummonHandCard(player,chosen);}}break;
   case "GVG_038":g.Damage(c.Target,g.SpellDamageAmount(s,3+g.RandomIndex(4)));break;

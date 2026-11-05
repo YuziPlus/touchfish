@@ -75,6 +75,7 @@ public static partial class RuleTests {
   g=GG("HUNTER");g.Summon(0,"GVG_087");g.Players[0].HeroAbilityId=HeroReplacementRules.InfernoId;Check(!g.PowerNeedsTarget(0)&&g.HeroPower(0).Success,"Sniper does not force a target after hero power replacement");
   g=GG();var demon=g.Summon(1,"GVG_021");Check(AgentBridge.Observe(g,0).Enemy.Immune,"AI public observation includes Malganis hero immunity");g.Silence(GT(demon));Check(!AgentBridge.Observe(g,0).Enemy.Immune,"AI observes immunity ending when Malganis is silenced");
   g=GG("WARRIOR");var acolyte=g.Summon(0,"VAN_EX1_007");g.Players[0].Deck.Clear();g.Players[0].Deck.AddRange(new[]{"GVG_007","VAN_CS2_182"});Check(g.GvgBladeDamage(acolyte,1),"Bouncing Blade stops when a draw-triggered Leviathan kills a minion during its hit");
+  g=GG("PRIEST");int deckBefore=g.Players[0].Deck.Count;Check(GP(g,"GVG_056t")&&g.Players[0].Health==30&&g.Players[0].Deck.Count==deckBefore,"A copied mine can be played without falsely firing its draw-only trigger or throwing after payment");
   Check(!matchRules.Supports(new CardRecord{Id="GVG_REVIEW_UNKNOWN",BaseId="GVG_REVIEW_UNKNOWN",EffectId="GVG_REVIEW_UNKNOWN",SetId=GvgClassRules.SetId,Type="MINION"}),"Future unknown class card remains unavailable rather than consuming resources on default error");
  }
  static void GvgThree(){GvgMergeRegression();GvgSmoke(new[]{"PRIEST","ROGUE","SHAMAN"});GvgThreeEffects();}
