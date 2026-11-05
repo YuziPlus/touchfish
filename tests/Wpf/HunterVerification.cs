@@ -10,6 +10,25 @@ public partial class PanelWindow {
   g.Players[1].Board.Clear();g.Players[1].Hand.Clear();g.Players[1].Mana=g.Players[1].MaxMana=10;var scientist=g.Summon(1,"FP1_004");var beast=g.Summon(1,"VAN_DS1_175");
   foreach(string cardId in new[]{"DS1_070","EX1_549"}){int source=Inject(g,cardId,1);PublishLan();PumpLan(()=>guest.match.Players[1].Hand.Any(h=>h.Id==source),"Beast-only card reaches guest");int mana=g.Players[1].Mana,revision=lanAuthority.Revision;guest.DoMatch("play",source,new MatchTarget(1,scientist.Id));PumpLan(()=>!guest.lanWaiting,"Authority replies to invalid Scientist target");Check(lanAuthority.Revision==revision&&g.Players[1].Mana==mana&&g.Players[1].Hand.Any(h=>h.Id==source)&&!scientist.Taunt&&scientist.MaxHealth==2,"LAN authority rejects Beast-only buff on Scientist without consuming resources");guest.DoMatch("play",source,new MatchTarget(1,beast.Id));PumpLan(()=>!guest.lanWaiting&&!g.Players[1].Hand.Any(h=>h.Id==source),"Guest can retarget a friendly Beast after rejection");}
   Check(beast.Taunt&&g.AttackValue(beast)==5&&beast.MaxHealth==3&&beast.ImmuneUntilTurn==g.Turn,"Both Beast-only effects resolve correctly on the actual Beast");
+  VerifyHunterBeastTargets(guest);
  }finally{guest.LeaveLan();guest.Close();LeaveLan();}}
+ void VerifyHunterBeastTargets(PanelWindow guest){
+  var g=lanAuthority.Game;
+  for(int seat=0;seat<2;seat++)foreach(string key in new[]{"DS1_070","EX1_549"}){
+   foreach(var p in g.Players){p.Hand.Clear();p.Board.Clear();p.Mana=p.MaxMana=10;p.ClassId="HUNTER";}
+   g.Active=seat;var beast=g.Summon(seat,"VAN_DS1_175");var nonBeast=g.Summon(seat,"VAN_CS2_182");var enemy=g.Summon(1-seat,"VAN_DS1_175");int hand=Inject(g,key,seat);PublishLan();
+   PumpLan(()=>guest.match.Active==seat&&guest.match.Players[seat].Board.Any(u=>u.Id==beast.Id)&&(seat==0||guest.match.Players[seat].Hand.Any(h=>h.Id==hand)),"Hunter Beast target fixture synchronizes");
+   var actor=seat==0?this:guest;int mana=g.Players[seat].Mana;
+   foreach(var target in new[]{new MatchTarget(seat,nonBeast.Id),new MatchTarget(1-seat,enemy.Id),new MatchTarget(seat)}){
+    actor.BeginCard(hand);if(key=="DS1_070")actor.ClickEmptySlot(seat,2);actor.ClickMatchTarget(target);
+    PumpLan(()=>!actor.lanWaiting,"Invalid Beast target receives authoritative reply");
+    Check(g.Players[seat].Mana==mana&&g.Players[seat].Hand.Any(h=>h.Id==hand)&&nonBeast.BuffAttack==0&&enemy.BuffAttack==0&&g.Players[seat].Board.Count==2,"Hunter invalid target preserves hand, mana and board for "+key+" seat "+seat);
+   }
+   actor.BeginCard(hand);if(key=="DS1_070")actor.ClickEmptySlot(seat,2);actor.ClickMatchTarget(new MatchTarget(seat,beast.Id));
+   PumpLan(()=>!actor.lanWaiting&&!g.Players[seat].Hand.Any(h=>h.Id==hand)&&guest.match.Unit(new MatchTarget(seat,beast.Id)).BuffAttack+guest.match.Unit(new MatchTarget(seat,beast.Id)).TempAttack==2,"Legal friendly Beast resolves and synchronizes");
+   Check(g.AttackValue(beast)==3&&(key=="DS1_070"?beast.Taunt&&beast.MaxHealth==3:beast.ImmuneUntilTurn==g.Turn),"Hunter valid Beast receives intended effect for "+key+" seat "+seat);
+  }
+ }
+
 }
 }
