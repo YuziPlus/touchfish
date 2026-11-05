@@ -1,4 +1,4 @@
-using System;using System.Linq;using Touchfish;
+﻿using System;using System.Linq;using Touchfish;
 public static partial class RuleTests {
  static void WriteCurrentCoverage(string folder){var cards=catalog.Deckable(catalog.Pools.First(p=>!p.Archived));System.IO.Directory.CreateDirectory(System.IO.Path.Combine(folder,"previews"));JsonData.Write(System.IO.Path.Combine(folder,"previews","match-rule-coverage.json"),new{SupportedCards=cards.Count(matchRules.Supports),TotalCards=cards.Count,GvgClassSupported=cards.Count(c=>c.SetId==GvgClassRules.SetId&&matchRules.Supports(c)),GvgNeutralSupported=cards.Count(c=>c.SetId=="goblins-gnomes-2014"&&matchRules.Supports(c)),Cards=cards.Select(c=>new{c.Id,c.Name,Supported=matchRules.Supports(c)}).ToArray(),Scope="Current active multiplayer pool; 123 GvG cards supported"});}
  static int GH(MatchEngine g,string key,int seat=0){return NaxxHand(g,key,seat);}
@@ -62,7 +62,22 @@ public static partial class RuleTests {
   var unavailable=new DeckDocument{PoolId=GvgClassRules.PoolId,ClassId="MAGE"};unavailable.Cards["GVG_110"]=1;Check(new MatchEngine(catalog,unavailable,unavailable,42,true)!=null,"Implemented upstream Dr Boom can start a match");
  }
  static void GvgTwo(){GvgSmoke(new[]{"HUNTER","WARRIOR","WARLOCK"});GvgTwoEffects();}
- static void GvgThree(){GvgSmoke(new[]{"PRIEST","ROGUE","SHAMAN"});GvgThreeEffects();}
+ static void GvgMergeRegression(){
+  var g=GG("SHAMAN");var mech=g.Summon(0,"GVG_058");g.Equip(0,"GVG_036");g.Equip(0,"VAN_CS2_106");Check(g.AttackValue(mech)==4&&mech.MaxHealth==4,"Replacing Powermace triggers its deathrattle exactly once");
+  g=GG("WARLOCK");var watcher=g.Summon(0,"GVG_100");g.Players[0].Armor=3;g.Damage(new MatchTarget(0),2);Check(g.Players[0].Health==30&&g.Players[0].Armor==1&&g.AttackValue(watcher)==6&&watcher.MaxHealth==6,"Armor-only hero damage triggers Floating Watcher");
+  g=GG("SHAMAN");int bolvar=GH(g,"GVG_063");g.Players[0].Hand.Single(h=>h.Id==bolvar).AttackBonus=3;Check(GP(g,"GVG_029")&&g.AttackValue(g.Players[0].Board.Single())==4,"Ancestor's Call preserves Bolvar hand attack enchantment");
+  g=GG("PALADIN");var bot=g.Summon(0,"VAN_EX1_006");bolvar=GH(g,"GVG_063");g.Players[0].Hand.Single(h=>h.Id==bolvar).AttackBonus=3;g.SwapAlarmBot(bot);Check(g.AttackValue(g.Players[0].Board.Single())==4,"Alarm-o-Bot preserves hand attack enchantment without battlecry");
+  g=GG("PALADIN");g.Summon(0,"GVG_104");bolvar=GH(g,"GVG_063");g.Players[0].Hand.Single(h=>h.Id==bolvar).AttackBonus=3;Check(g.Play(0,bolvar).Success&&g.AttackValue(g.Players[0].Board.Last())==4&&g.Players[0].Board.Last().MaxHealth==7,"Hobgoblin checks grown hand attack rather than Bolvar's printed one");
+  g=GG("PALADIN");g.Summon(0,"VAN_EX1_084");bolvar=GH(g,"GVG_063");g.Players[0].Hand.Single(h=>h.Id==bolvar).AttackBonus=4;Check(g.Play(0,bolvar).Success&&!g.HasCharge(g.Players[0].Board.Last()),"Warsong sees hand growth before granting Charge");
+  g=GG("ROGUE");var left=g.Summon(1,"VAN_CS2_182");var snow=g.Summon(1,"GVG_002");var right=g.Summon(1,"VAN_CS2_182");Check(GP(g,"VAN_EX1_126",GT(snow))&&left.Frozen&&right.Frozen,"Snowchugger also freezes damage dealt through Betrayal");
+  g=GG("ROGUE");g.Players[1].Health=20;g.Summon(1,"VAN_CS2_182");var mistress=g.Summon(1,"GVG_018");g.Summon(1,"VAN_CS2_182");Check(GP(g,"VAN_EX1_126",GT(mistress))&&g.Players[1].Health==22,"Mistress heals owner for damage dealt through Betrayal");
+  g=GG("HUNTER");g.Summon(0,"GVG_087");g.Players[0].Shadowform=1;Check(g.HeroPower(0,new MatchTarget(0)).Success&&g.Players[0].Health==28,"Sniper does not restrict a copied Shadowform hero power");
+  g=GG("HUNTER");g.Summon(0,"GVG_087");g.Players[0].HeroAbilityId=HeroReplacementRules.InfernoId;Check(!g.PowerNeedsTarget(0)&&g.HeroPower(0).Success,"Sniper does not force a target after hero power replacement");
+  g=GG();var demon=g.Summon(1,"GVG_021");Check(AgentBridge.Observe(g,0).Enemy.Immune,"AI public observation includes Malganis hero immunity");g.Silence(GT(demon));Check(!AgentBridge.Observe(g,0).Enemy.Immune,"AI observes immunity ending when Malganis is silenced");
+  g=GG("WARRIOR");var acolyte=g.Summon(0,"VAN_EX1_007");g.Players[0].Deck.Clear();g.Players[0].Deck.AddRange(new[]{"GVG_007","VAN_CS2_182"});Check(g.GvgBladeDamage(acolyte,1),"Bouncing Blade stops when a draw-triggered Leviathan kills a minion during its hit");
+  Check(!matchRules.Supports(new CardRecord{Id="GVG_REVIEW_UNKNOWN",BaseId="GVG_REVIEW_UNKNOWN",EffectId="GVG_REVIEW_UNKNOWN",SetId=GvgClassRules.SetId,Type="MINION"}),"Future unknown class card remains unavailable rather than consuming resources on default error");
+ }
+ static void GvgThree(){GvgMergeRegression();GvgSmoke(new[]{"PRIEST","ROGUE","SHAMAN"});GvgThreeEffects();}
  static void GvgTwoEffects(){
   var g=GG("HUNTER");g.Players[0].Deck.Clear();g.Players[0].Deck.Add("VAN_DS1_175");Check(GP(g,"GVG_017")&&g.HandCost(0,g.Players[0].Hand.Single())==0,"Call Pet discounts drawn Beast by four");
   g=GG("HUNTER");g.Players[0].Deck.Clear();g.Players[0].Deck.Add("VAN_CS2_182");Check(GP(g,"GVG_017")&&g.Players[0].Hand.Single().CostAdjustment==0,"Call Pet does not discount non-Beast");

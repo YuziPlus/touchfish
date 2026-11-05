@@ -28,6 +28,6 @@ public static class MidCostRules {
 public sealed partial class MatchEngine {
  public int MidCostDiscount(int seat,CardRecord card){return card.BaseId=="NEW1_022"?WeaponAttackValue(seat):0;}
  public void GiveMidCostCards(int seat,string cardId,int count){var p=Players[seat];int added=0;for(int n=0;n<count;n++){int instance=nextId++;if(p.Hand.Count<Mode.HandLimit){p.Hand.Add(new HandCard{Id=instance,CardId=cardId,Generated=true});added++;}else RecordGraveyard(seat,seat,cardId,instance,GraveyardReason.Burned);}Log.Add(PlayerLabel(seat)+" · 获得生成牌 "+added+" 张");}
- public void SwapAlarmBot(BattleUnit bot){var p=Players[bot.Owner];var candidates=p.Hand.Where(h=>Card(h.CardId).Type=="MINION").ToArray();if(candidates.Length==0)return;var chosen=candidates[random.Next(candidates.Length)];int position=p.Board.IndexOf(bot);p.Hand.Remove(chosen);p.Board.Remove(bot);p.Hand.Add(new HandCard{Id=nextId++,CardId=bot.CardId,Generated=true});RefreshAuras();Summon(bot.Owner,chosen.CardId,position);Log.Add(PlayerLabel(bot.Owner)+" · 报警机器人交换一张随从牌");}
+ public void SwapAlarmBot(BattleUnit bot){var p=Players[bot.Owner];var candidates=p.Hand.Where(h=>Card(h.CardId).Type=="MINION").ToArray();if(candidates.Length==0)return;var chosen=candidates[random.Next(candidates.Length)];int position=p.Board.IndexOf(bot);p.Hand.Remove(chosen);p.Board.Remove(bot);p.Hand.Add(new HandCard{Id=nextId++,CardId=bot.CardId,Generated=true});RefreshAuras();SummonHandCard(bot.Owner,chosen,position);Log.Add(PlayerLabel(bot.Owner)+" · 报警机器人交换一张随从牌");}
 }
 }

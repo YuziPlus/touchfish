@@ -23,7 +23,7 @@ public static class GvgRules {
   new ConditionalTrigger{CardId="GVG_089",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>c.Seat==c.Source.Owner&&c.Game.Players[c.Seat].SecretCount>0,Apply=c=>c.Game.RestoreHealth(c.Source.Owner,new MatchTarget(c.Source.Owner),4)},
   new ConditionalTrigger{CardId="GVG_094",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>true,Apply=c=>c.Game.Draw(c.Seat,Math.Max(0,3-c.Game.Players[c.Seat].HandCount))},
   new ConditionalTrigger{CardId="GVG_103",Timing=MatchTriggerTiming.TurnStart,Condition=c=>true,Apply=c=>c.Game.Buff(Self(c),1,0)},
-  new ConditionalTrigger{CardId="GVG_104",Timing=MatchTriggerTiming.MinionPlayed,Condition=c=>c.Seat==c.Source.Owner&&c.Card!=null&&c.Card.Type=="MINION"&&c.Card.Attack==1&&c.Summoned!=null,Apply=c=>c.Game.Buff(new MatchTarget(c.Summoned.Owner,c.Summoned.Id),2,2)},
+  new ConditionalTrigger{CardId="GVG_104",Timing=MatchTriggerTiming.MinionPlayed,Condition=c=>c.Seat==c.Source.Owner&&c.Card!=null&&c.Card.Type=="MINION"&&c.Card.Attack+(c.PlayedHand==null?0:c.PlayedHand.AttackBonus)==1&&c.Summoned!=null,Apply=c=>c.Game.Buff(new MatchTarget(c.Summoned.Owner,c.Summoned.Id),2,2)},
   new ConditionalTrigger{CardId="GVG_106",Timing=MatchTriggerTiming.MinionDied,Condition=c=>c.Died!=null&&c.Died.Owner==c.Source.Owner&&c.Died.Race=="MECHANICAL",Apply=c=>c.Game.Buff(Self(c),2,2)},
   new ConditionalTrigger{CardId="GVG_111",Timing=MatchTriggerTiming.TurnStart,Condition=c=>c.Seat==c.Source.Owner&&c.Game.Players[c.Seat].Board.Count(u=>u.Health>0&&u.Race=="MECHANICAL")>=3,Apply=c=>c.Game.CombineGvgMechs(c.Source)},
   new ConditionalTrigger{CardId="GVG_116",Timing=MatchTriggerTiming.MinionDied,Condition=c=>c.Died!=null&&c.Died.Owner!=c.Source.Owner,Apply=c=>c.Game.Summon(c.Source.Owner,"VAN_EX1_029")},

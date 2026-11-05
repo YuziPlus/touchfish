@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 namespace Touchfish {
@@ -6,6 +6,7 @@ namespace Touchfish {
 public static class GvgClassRules {
  public const string SetId="gvg-2014-classes";
  public const string PoolId=GvgRules.SetId;
+ public static readonly string[] CardIds={"GVG_001","GVG_002","GVG_003","GVG_004","GVG_005","GVG_007","GVG_008","GVG_009","GVG_010","GVG_011","GVG_012","GVG_014","GVG_015","GVG_017","GVG_018","GVG_019","GVG_020","GVG_021","GVG_022","GVG_023","GVG_024","GVG_025","GVG_026","GVG_027","GVG_028","GVG_028t","GVG_029","GVG_030","GVG_031","GVG_032","GVG_033","GVG_034","GVG_035","GVG_036","GVG_037","GVG_038","GVG_039","GVG_040","GVG_041","GVG_042","GVG_043","GVG_045","GVG_045t","GVG_046","GVG_047","GVG_048","GVG_049","GVG_050","GVG_051","GVG_052","GVG_053","GVG_054","GVG_055","GVG_056","GVG_056t","GVG_057","GVG_058","GVG_059","GVG_060","GVG_061","GVG_062","GVG_063","GVG_066","GVG_072","GVG_073","GVG_077","GVG_080","GVG_080t","GVG_083","GVG_086","GVG_087","GVG_088","GVG_100","GVG_101","GVG_122","GVG_123"};
  public static readonly string[] Parts=Enumerable.Range(1,7).Select(i=>"PART_"+i.ToString("000")).ToArray();
  static readonly string[] PassiveIds={"GVG_072","GVG_034","GVG_035","GVG_002","GVG_007","GVG_122","GVG_123","GVG_058","GVG_062","GVG_049","GVG_087","GVG_051","GVG_054","GVG_086","GVG_018","GVG_020","GVG_021","GVG_077","GVG_100","GVG_024","GVG_025","GVG_027","GVG_028","GVG_088","GVG_036","GVG_037","GVG_039","GVG_040","GVG_066","GVG_045t","GVG_080t"};
  static MatchTarget T(BattleUnit u){return new MatchTarget(u.Owner,u.Id);}
@@ -15,7 +16,7 @@ public static class GvgClassRules {
  public static bool HeroImmune(MatchEngine g,int seat){return Has(g,seat,"GVG_021");}
  public static bool Protected(MatchEngine g,BattleUnit u){return Own(g,u.Owner).Any(s=>!s.Silenced&&g.Card(s.CardId).BaseId=="GVG_122"&&Math.Abs(g.Players[u.Owner].Board.IndexOf(s)-g.Players[u.Owner].Board.IndexOf(u))==1);}
  public static void Register(MatchRules r,CardCatalog catalog){
-  foreach(var c in catalog.Cards.Values.Where(c=>c.SetId==SetId))r.Register(c.Id,"NONE",Apply);
+  foreach(string id in CardIds)r.Register(id,"NONE",Apply);
   foreach(string id in new[]{"GVG_031"})r.Register(id,"ENEMY_MINION",Apply);
   foreach(string id in new[]{"GVG_073","GVG_010","GVG_011","GVG_014","GVG_019","GVG_045","GVG_052"})r.Register(id,"MINION",Apply);
   foreach(string id in new[]{"GVG_012","GVG_015","GVG_038"})r.Register(id,"ANY_CHARACTER",Apply);
@@ -50,7 +51,7 @@ public static class GvgClassRules {
   case "GVG_059":RandomBuff(g,s,0,0,after:b=>{b.Shield=true;b.Taunt=true;});break;
   case "GVG_060":foreach(var b in Own(g,s).Where(b=>g.Card(b.CardId).BaseId=="CS2_101t").ToArray())g.Buff(T(b),2,2);break;
   case "GVG_061":for(int i=0;i<3;i++)g.Summon(s,"VAN_CS2_101t");g.EquipRaw(s,"VAN_CS2_091",1,4,false);break;
-  case "GVG_063":if(c.PlayedHand!=null)c.Summoned.BuffAttack+=c.PlayedHand.AttackBonus;break;
+  case "GVG_063":break; // Hand enchantments are transferred before summon triggers, not as a battlecry.
   case "GVG_101":foreach(var b in g.Players.SelectMany(player=>player.Board).Where(b=>HasDeathrattle(g,b)).ToArray())g.Damage(T(b),2);break;
   // Hunter, Warrior, Warlock: batch 2.
   case "GVG_017":int next=g.NextGvgInstance;g.Draw(s,1);var drawn=p.Hand.FirstOrDefault(h=>h.Id==next);if(drawn!=null&&g.Card(drawn.CardId).Race=="BEAST")drawn.CostAdjustment-=4;break;
@@ -79,7 +80,7 @@ public static class GvgClassRules {
   case "GVG_023":if(p.WeaponDurability>0)p.WeaponAttack++;break;
   case "GVG_047":var victim=g.RandomTarget(g.Characters(1-s,false));if(victim!=null)g.Unit(victim).DamageTaken=g.Unit(victim).MaxHealth;if(c.Combo)g.BreakWeapon(1-s);break;
   case "GVG_028t":OverloadRules.GainTemporaryMana(g,s,1);break;
-  case "GVG_029":for(int player=s,n=0;n<2;n++,player=1-s){if(g.Players[player].Board.Count>=g.Mode.BoardSlots)continue;var hand=g.Players[player].Hand.Where(h=>g.Card(h.CardId).Type=="MINION").ToArray();if(hand.Length>0){var chosen=hand[g.RandomIndex(hand.Length)];g.Players[player].Hand.Remove(chosen);g.Summon(player,chosen.CardId);}}break;
+  case "GVG_029":for(int player=s,n=0;n<2;n++,player=1-s){if(g.Players[player].Board.Count>=g.Mode.BoardSlots)continue;var hand=g.Players[player].Hand.Where(h=>g.Card(h.CardId).Type=="MINION").ToArray();if(hand.Length>0){var chosen=hand[g.RandomIndex(hand.Length)];g.Players[player].Hand.Remove(chosen);g.SummonHandCard(player,chosen);}}break;
   case "GVG_038":g.Damage(c.Target,g.SpellDamageAmount(s,3+g.RandomIndex(4)));break;
   case "GVG_042":for(int i=0;i<4;i++)RandomCard(g,s,b=>b.Race=="MURLOC");break;
   // Seven uncollectible spare parts.
@@ -114,10 +115,12 @@ public static class GvgClassRules {
  };
 }
 public sealed partial class MatchEngine {
- internal bool GvgBladeDamage(BattleUnit unit,int amount){var prior=damageListeners;var queue=damageTriggers;damageListeners=null;damageTriggers=null;try{Damage(new MatchTarget(unit.Owner,unit.Id),amount);bool lethal=Players.Any(p=>p.Board.Any(u=>u.Health<=0));Cleanup();return lethal;}finally{damageListeners=prior;damageTriggers=queue;}}
+ internal bool GvgBladeDamage(BattleUnit unit,int amount){int before=graveyard.Count;var prior=damageListeners;var queue=damageTriggers;damageListeners=null;damageTriggers=null;try{Damage(new MatchTarget(unit.Owner,unit.Id),amount);bool lethal=Players.Any(p=>p.Board.Any(u=>u.Health<=0));Cleanup();return lethal||graveyard.Skip(before).Any(e=>e.Reason==GraveyardReason.MinionDied);}finally{damageListeners=prior;damageTriggers=queue;}}
  int GvgAttackAura(BattleUnit unit){return unit.Race=="DEMON"?2*Players[unit.Owner].Board.Count(s=>s.Id!=unit.Id&&!s.Silenced&&s.Health>0&&Card(s.CardId).BaseId=="GVG_021"):0;}
  int GvgHealthAura(BattleUnit unit){return GvgAttackAura(unit);}
  void GvgCombatHeal(BattleUnit source,int amount){if(source!=null&&!source.Silenced&&Card(source.CardId).BaseId=="GVG_018"&&amount>0)RestoreHealth(source.Owner,new MatchTarget(source.Owner),amount);}
+ internal void GvgMinionDamage(BattleUnit source,MatchTarget target,int amount){if(source==null||amount<=0)return;if(!source.Silenced&&(Card(source.CardId).BaseId=="CS2_033"||Card(source.CardId).BaseId=="GVG_002"))Freeze(target);GvgCombatHeal(source,amount);}
+ public BattleUnit SummonHandCard(int seat,HandCard hand,int position=-1,bool summonEvent=true,bool deferAfterSummon=false){return Summon(seat,hand.CardId,position,summonEvent,deferAfterSummon,initialize:unit=>unit.BuffAttack+=hand.AttackBonus);}
  internal int NextGvgInstance{get{return nextId;}}
  public void GiveGvgCard(int seat,string id,int adjustment=0){int before=nextId;GiveNaxxCard(seat,id);var hand=Players[seat].Hand.FirstOrDefault(h=>h.Id==before);if(hand!=null)hand.CostAdjustment=adjustment;}
  public void ShuffleGvgCard(int seat,string id){var deck=Players[seat].Deck;deck.Insert(random.Next(deck.Count+1),id);}
