@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -114,6 +114,7 @@ public sealed class MatchRules {
   NaxxRules.Register(this);
   GvgRules.Register(this,catalog);
   GvgClassRules.Register(this,catalog);
+  BlackrockRules.Register(this);
   RuleModules.Configure(this);
  }
  public static string EffectKey(CardRecord card){return !String.IsNullOrEmpty(card.EffectId)?card.EffectId:card.SetId=="classic-2014"||String.IsNullOrEmpty(card.SetId)?card.BaseId:card.Id;}
@@ -124,6 +125,7 @@ public sealed class MatchRules {
  public bool IsChoice(CardRecord card){return card!=null&&Choices(card).Length==2;}
  public bool ValidChoice(CardRecord card,string key){return Choices(card).Any(option=>option.Key==key);}
  public MatchChoiceOption[] Choices(CardRecord card){if(card==null)return new MatchChoiceOption[0];switch(card.BaseId){
+  case "BRM_010":return BlackrockRules.Choices();
   case "GVG_030":case "GVG_032":case "GVG_041":return GvgClassRules.Choices(card);
   case "EX1_154":return new[]{new MatchChoiceOption("three","造成 3 点伤害","对一个随从造成 3 点伤害。"),new MatchChoiceOption("one-draw","造成 1 点伤害并抽牌","对一个随从造成 1 点伤害，然后抽一张牌。")};
   case "EX1_155":return new[]{new MatchChoiceOption("attack","攻击 +4","使一个随从获得 +4 攻击力。"),new MatchChoiceOption("health-taunt","生命 +4 和嘲讽","使一个随从获得 +4 生命值和嘲讽。")};
@@ -136,6 +138,7 @@ public sealed class MatchRules {
   case "NEW1_007":return new[]{new MatchChoiceOption("five","造成 5 点伤害","对一个随从造成 5 点伤害。"),new MatchChoiceOption("area","敌方全体 2 点伤害","对所有敌方随从造成 2 点伤害。")};
   case "NEW1_008":return new[]{new MatchChoiceOption("draw","抽 2 张牌","抽两张牌。"),new MatchChoiceOption("heal","恢复 5 点生命值","为你的英雄恢复 5 点生命值。")};
   default:return new MatchChoiceOption[0];}}
+ public string Target(CardRecord card,string choice,MatchEngine game,int seat){return BlackrockRules.Target(card,game,seat)??Target(card,choice,ComboRules.Active(game));}
  public string Target(CardRecord card,string choice){return Target(card,choice,false);}
  public string Target(CardRecord card,string choice,bool combo){string comboTarget=ComboRules.Target(card,combo);if(comboTarget!=null)return comboTarget;if(!IsChoice(card))return Effect(card).Target;if(!ValidChoice(card,choice))return "NONE";switch(card.BaseId){case "GVG_041":return choice=="buff"?"MINION":"NONE";case "EX1_154":case "EX1_155":case "EX1_166":return "MINION";case "NEW1_007":return choice=="area"?"NONE":"MINION";default:return "NONE";}}
  void ApplyChoice(EffectContext c){switch(c.Card.BaseId){

@@ -23,6 +23,6 @@ public sealed partial class MatchEngine {
  readonly ResolutionQueue summonTriggers=new ResolutionQueue();int deferSummonDepth;
  void QueueSummonTrigger(BattleUnit unit,BattleUnit[] listeners,bool deferred){int summoningSeat=unit.Owner;summonTriggers.Enqueue(()=>ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.MinionSummoned,summoningSeat,summoned:unit,listeners:listeners));if(!deferred&&deferSummonDepth==0)FlushSummonTriggers();}
  void FlushSummonTriggers(){summonTriggers.Drain();}
- public void DrawMatchingCard(int seat,string race){var p=Players[seat];var indices=p.Deck.Select((deckCard,i)=>new{Card=Card(deckCard),Index=i}).Where(x=>x.Card.Race==race).ToArray();if(indices.Length==0)return;int index=indices[random.Next(indices.Length)].Index;string id=p.Deck[index];p.Deck.RemoveAt(index);if(p.Hand.Count<Mode.HandLimit){p.Hand.Add(new HandCard{Id=nextId++,CardId=id});Log.Add(PlayerLabel(seat)+" · 抽牌 1 张");}else RecordGraveyard(seat,seat,id,nextId++,GraveyardReason.Burned);}
+ public void DrawMatchingCard(int seat,string race){var p=Players[seat];var indices=p.Deck.Select((deckCard,i)=>new{Card=Card(deckCard),Index=i}).Where(x=>x.Card.Race==race).ToArray();if(indices.Length==0)return;int index=indices[random.Next(indices.Length)].Index;string id=p.Deck[index];p.Deck.RemoveAt(index);p.Deck.Insert(0,id);Draw(seat,1);}
 }
 }

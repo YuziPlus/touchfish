@@ -1,6 +1,6 @@
-﻿using System;using System.Linq;using Touchfish;
+using System;using System.Linq;using Touchfish;
 public static partial class RuleTests {
- static void WriteCurrentCoverage(string folder){var cards=catalog.Deckable(catalog.Pools.First(p=>!p.Archived));System.IO.Directory.CreateDirectory(System.IO.Path.Combine(folder,"previews"));JsonData.Write(System.IO.Path.Combine(folder,"previews","match-rule-coverage.json"),new{SupportedCards=cards.Count(matchRules.Supports),TotalCards=cards.Count,GvgClassSupported=cards.Count(c=>c.SetId==GvgClassRules.SetId&&matchRules.Supports(c)),GvgNeutralSupported=cards.Count(c=>c.SetId=="goblins-gnomes-2014"&&matchRules.Supports(c)),Cards=cards.Select(c=>new{c.Id,c.Name,Supported=matchRules.Supports(c)}).ToArray(),Scope="Current active multiplayer pool; 123 GvG cards supported"});}
+ static void WriteCurrentCoverage(string folder){var cards=catalog.Deckable(catalog.Pools.First(p=>!p.Archived));System.IO.Directory.CreateDirectory(System.IO.Path.Combine(folder,"previews"));JsonData.Write(System.IO.Path.Combine(folder,"previews","match-rule-coverage.json"),new{SupportedCards=cards.Count(matchRules.Supports),TotalCards=cards.Count,BlackrockSupported=cards.Count(c=>c.SetId==BlackrockRules.SetId&&matchRules.Supports(c)),GvgClassSupported=cards.Count(c=>c.SetId==GvgClassRules.SetId&&matchRules.Supports(c)),GvgNeutralSupported=cards.Count(c=>c.SetId=="goblins-gnomes-2014"&&matchRules.Supports(c)),Cards=cards.Select(c=>new{c.Id,c.Name,Supported=matchRules.Supports(c)}).ToArray(),Scope="Current active multiplayer pool; explicit registered effects"});}
  static int GH(MatchEngine g,string key,int seat=0){return NaxxHand(g,key,seat);}
  static MatchEngine GG(string cl="MAGE"){var g=MatchFixture(cl,"MAGE");foreach(var p in g.Players){p.Deck.Clear();p.Deck.AddRange(Enumerable.Repeat("VAN_CS2_182",20));}g.CardPoolId=GvgClassRules.PoolId;return g;}
  static MatchTarget GT(BattleUnit u){return new MatchTarget(u.Owner,u.Id);}
@@ -23,7 +23,7 @@ public static partial class RuleTests {
   Check(catalog.BrowseDeckable("goblins-gnomes-2014").Count==51&&catalog.BrowseDeckable("goblins-gnomes-2014").All(c=>matchRules.Supports(c)),"All 51 upstream neutral cards retain their implementations");
   Check(catalog.Deckable(catalog.Pool(GvgClassRules.PoolId)).Count(matchRules.Supports)==535,"All 535 current cards playable");
   GvgDraftFilters();
-  var legacy=matchRules.TrainingDeck("MAGE");var promoted=DeckRules.ForCurrentPlay(catalog,legacy);Check(promoted.PoolId==GvgClassRules.PoolId&&legacy.PoolId=="classic-2014","Old decks promoted without saved-data mutation");
+  var legacy=matchRules.TrainingDeck("MAGE");var promoted=DeckRules.ForCurrentPlay(catalog,legacy);Check(promoted.PoolId==ArenaDraftSession.CurrentPool(catalog).Id&&legacy.PoolId=="classic-2014","Old decks promoted without saved-data mutation");
   GvgSmoke(new[]{"DRUID","MAGE","PALADIN"});
   var g=GG("DRUID");Check(GP(g,"GVG_030",choice:"health")&&g.Players[0].Board.Single().MaxHealth==3&&g.Players[0].Board.Single().Taunt,"Robo Cub health choice retains Taunt");
   g=GG("DRUID");Check(GP(g,"GVG_030",choice:"attack")&&g.AttackValue(g.Players[0].Board.Single())==3,"Robo Cub attack choice");

@@ -1,0 +1,14 @@
+{
+  "SourceUrl": "https://api.hearthstonejson.com/v1/25770/zhCN/cards.json",
+  "SourceBuild": 25770,
+  "SourceSha256": "4e104e20b3baff20f78dfc1e7ef07ba76628060cb073de778bfe1cb310cd9c1e",
+  "Collectible": 31,
+  "Helpers": 6,
+  "HistoricalChecks": [
+    "Thaurissan 6 mana 5/5",
+    "Dark Iron Skulker 5 mana",
+    "Axe Flinger 2/5",
+    "Blackwing Corruptor deals 3"
+  ],
+  "Policy": "Preserve existing frozen packages. Reconstruct original BRM cards, not a global 2015 balance patch."
+}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 namespace Touchfish {
@@ -37,7 +37,7 @@ public static class AgentBridge {
    var targets=g.Characters(0).Concat(g.Characters(1)).ToArray();
    foreach(var hand in g.Players[seat].Hand){var card=g.Card(hand.CardId);int cost=g.HandCost(seat,hand);if(cost>g.Players[seat].Mana||!g.CanUseCard(seat,card,hand)||!g.Rules.Supports(card)||card.Type=="MINION"&&g.Players[seat].Board.Count>=g.Mode.BoardSlots)continue;var effect=g.Rules.Effect(card);if(effect.Requirement!=null&&effect.Requirement(g,seat)!=null)continue;
     var choices=g.Rules.IsChoice(card,g,seat)?g.Rules.Choices(card,g,seat).Select(c=>c.Key).ToArray():new string[]{null};
-    foreach(string choice in choices){string mask=g.Rules.Target(card,choice,ComboRules.Active(g));var legal=mask=="NONE"?new MatchTarget[]{null}:targets.Where(t=>Valid(g,seat,t,mask,card.Type=="SPELL")).ToArray();if(legal.Length==0&&card.Type=="MINION")legal=new MatchTarget[]{null};foreach(var t in legal)moves.Add(new AgentMove{Kind="play",Key=MatchRules.EffectKey(card),Source=hand.Id,Cost=cost,Target=t==null?null:new MatchTarget(t.Seat,t.UnitId),Position=card.Type=="MINION"?g.Players[seat].Board.Count:-1,Choice=choice});}
+    foreach(string choice in choices){string mask=g.Rules.Target(card,choice,g,seat);var legal=mask=="NONE"?new MatchTarget[]{null}:targets.Where(t=>Valid(g,seat,t,mask,card.Type=="SPELL")).ToArray();if(legal.Length==0&&card.Type=="MINION")legal=new MatchTarget[]{null};foreach(var t in legal)moves.Add(new AgentMove{Kind="play",Key=MatchRules.EffectKey(card),Source=hand.Id,Cost=cost,Target=t==null?null:new MatchTarget(t.Seat,t.UnitId),Position=card.Type=="MINION"?g.Players[seat].Board.Count:-1,Choice=choice});}
    }
    bool taunt=g.Players[1-seat].Board.Any(u=>u.Taunt&&!u.Stealth);
    foreach(var unit in g.Players[seat].Board.Where(u=>g.CanAttack(seat,u)==null))foreach(var target in g.Characters(1-seat).Where(t=>Valid(g,seat,t,"ENEMY_CHARACTER",false)&&(!taunt||!t.Hero&&g.Unit(t).Taunt)))moves.Add(new AgentMove{Kind="attack",Source=unit.Id,Target=new MatchTarget(target.Seat,target.UnitId),Damage=g.AttackValue(unit)});

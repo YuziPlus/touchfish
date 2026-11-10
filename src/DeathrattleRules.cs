@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Touchfish {
 public static class DeathrattleRules {
  static readonly Dictionary<string,Action<MatchEngine,BattleUnit>> effects=new Dictionary<string,Action<MatchEngine,BattleUnit>>{
+  {"BRM_027",BlackrockRules.Death},
   {"GVG_035",GvgClassRules.Death},
  {"GVG_076",GvgRules.Death}, {"GVG_078",GvgRules.Death}, {"GVG_082",GvgRules.Death}, {"GVG_096",GvgRules.Death}, {"GVG_105",GvgRules.Death}, {"GVG_110t",GvgRules.Death}, {"GVG_114",GvgRules.Death}, {"GVG_115",GvgRules.Death},
   {"FP1_001",NaxxRules.RemainingDeath},{"FP1_024",NaxxRules.RemainingDeath},{"FP1_029",NaxxRules.RemainingDeath},{"FP1_014",NaxxRules.RemainingDeath},{"FP1_015",NaxxRules.RemainingDeath},

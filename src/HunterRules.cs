@@ -29,7 +29,7 @@ public static class HunterRules {
  }}
  static void Track(EffectContext c){var p=c.Game.Players[c.Seat];var preview=TrackingPreview(c.Game,c.Seat);int chosen=TrackingIndex(c.Choice);if(preview.Length==0)return;if(chosen<0)chosen=0;if(chosen>=preview.Length)return;
   for(int i=preview.Length-1;i>=0;i--)if(i!=chosen){string discarded=p.Deck[i];p.Deck.RemoveAt(i);c.Game.RecordGraveyard(c.Seat,c.Seat,discarded,c.Game.NewEffectInstanceId(),GraveyardReason.Discarded);}
-  if(p.Deck.Count==0)return;string selected=p.Deck[0];p.Deck.RemoveAt(0);if(p.Hand.Count<c.Game.Mode.HandLimit){p.Hand.Add(new HandCard{Id=c.Game.NewEffectInstanceId(),CardId=selected});c.Game.Log.Add(c.Game.PlayerLabel(c.Seat)+" · 抽牌 1 张");}else c.Game.RecordGraveyard(c.Seat,c.Seat,selected,c.Game.NewEffectInstanceId(),GraveyardReason.Burned);
+  if(p.Deck.Count>0)c.Game.Draw(c.Seat,1);
  }
  static void MultiShot(EffectContext c){c.Game.DamageRandomMinions(1-c.Seat,2,c.Game.SpellDamageAmount(c.Seat,3));}
  static void ExplosiveShot(EffectContext c){var target=c.Game.Unit(c.Target);if(target==null)return;var board=c.Game.Players[target.Owner].Board;int index=board.IndexOf(target);var adjacent=new[]{index>0?board[index-1]:null,index+1<board.Count?board[index+1]:null}.Where(u=>u!=null).ToArray();c.Game.DamageBatch(()=>{c.Game.Damage(c.Target,c.Game.SpellDamageAmount(c.Seat,5));foreach(var unit in adjacent)c.Game.Damage(new MatchTarget(unit.Owner,unit.Id),c.Game.SpellDamageAmount(c.Seat,2));});}
