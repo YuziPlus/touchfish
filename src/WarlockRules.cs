@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 namespace Touchfish {
 public static class WarlockRules {
@@ -12,10 +12,22 @@ public static class WarlockRules {
   case "EX1_304":g.ConsumeNeighbors(c.Seat,c.Summoned);break;
   case "EX1_313":g.Damage(new MatchTarget(c.Seat),5);break;
   case "EX1_317":g.SenseDemons(c.Seat);break;
-  case "EX1_320":int dealt=g.Damage(c.Target,g.SpellDamageAmount(c.Seat,3));bool killed=c.Target.Hero?g.Players[c.Target.Seat].Health<=0:g.Unit(c.Target).Health<=0;if(dealt>0&&killed){g.Cleanup();g.Summon(c.Seat,BaneDemons[g.RandomIndex(BaneDemons.Length)]);}break;
+  case "EX1_320":BaneOfDoom(c);break;
   case "EX1_596":var unit=g.Unit(c.Target);if(unit.Owner==c.Seat&&unit.Race=="DEMON")g.Buff(c.Target,2,2);else g.Damage(c.Target,g.SpellDamageAmount(c.Seat,2));break;
   case "NEW1_003":if(c.Target.Hero)g.DestroyHero(c.Target.Seat);else{var demon=g.Unit(c.Target);demon.DamageTaken=demon.MaxHealth;}g.RestoreHealth(c.Seat,new MatchTarget(c.Seat),5,true,true);break;
  }}
+ static void BaneOfDoom(EffectContext context){
+  var game=context.Game;
+  bool revised=context.Card.Id=="BRM9554_EX1_320";
+  var victim=game.Unit(context.Target);
+  int dealt=game.Damage(context.Target,game.SpellDamageAmount(context.Seat,revised?2:3));
+  bool killed=context.Target.Hero?game.Players[context.Target.Seat].Health<=0:victim!=null&&victim.Health<=0;
+  if(dealt<=0||!killed)return;
+  game.Cleanup();
+  var demons=revised?game.GenerationPool().Where(card=>card.Type=="MINION"&&card.Race=="DEMON").Select(card=>card.Id).ToArray():BaneDemons;
+  if(demons.Length>0)game.Summon(context.Seat,demons[game.RandomIndex(demons.Length)]);
+ }
+
 }
 public sealed partial class MatchEngine {
  internal int RandomIndex(int count){return random.Next(count);}

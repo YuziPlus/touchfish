@@ -1,0 +1,7 @@
+{
+  "SourceUrl": "https://raw.githubusercontent.com/HearthSim/hsdata/2a81ee97953bc598b18dd27d05606980db21c078/CardDefs.xml",
+  "SourceBuild": 9554,
+  "SourceSha256": "ca1ba756530bbe7681cbeef17596a030a7df71e8320f3e0275affc941749f334",
+  "Scope": "12 replacements against pre-TGT client values",
+  "RulePatch": "https://www.bluetracker.gg/wow/topic/us-en/0-hearthstone-patch-notes-2408311-the-approach-to-blackrock-mountain/"
+}

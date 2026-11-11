@@ -6,7 +6,7 @@ public static partial class RuleTests {
  static MatchTarget BT(BattleUnit u){return new MatchTarget(u.Owner,u.Id);}
  static MatchEngine BrmGame(string profession="MAGE"){var g=GvgGame();g.Players[0].ClassId=profession;foreach(var p in g.Players){p.Deck.Clear();p.Deck.AddRange(Enumerable.Repeat("VAN_CS2_182",12));}return g;}
  static void BrmPlay(MatchEngine g,string card,MatchTarget target=null,string choice=null){g.Players[0].Mana=10;var result=g.Play(0,GvgHand(g,card),target,choice:choice);Check(result.Success,card+": "+result.Message);}
- static void Blackrock(){BrmLibrary();BrmSpells();BrmBattlecries();BrmTriggers();BrmCopies();BrmEdges();BrmNetwork();}
+ static void Blackrock(){BrmLibrary();BrmBalance();BrmSpells();BrmBattlecries();BrmTriggers();BrmCopies();BrmEdges();BrmNetwork();}
  static void BrmLibrary(){
   var pool=catalog.Pool(BlackrockRules.SetId);var cards=catalog.Deckable(pool).Where(c=>c.SetId==BlackrockRules.SetId).ToArray();
   Check(cards.Length==31&&cards.All(matchRules.Supports),"All 31 Blackrock collectibles supported");
@@ -14,9 +14,41 @@ public static partial class RuleTests {
   Check(cards.Count(c=>c.CardClass=="NEUTRAL")==13&&cards.Where(c=>c.CardClass!="NEUTRAL").GroupBy(c=>c.CardClass).All(g=>g.Count()==2),"Thirteen neutral plus two per profession");
   Check(catalog.Card("BRM_028").Cost==6&&catalog.Card("BRM_028").Attack==5&&catalog.Card("BRM_008").Cost==5&&catalog.Card("BRM_016").Health==5,"Original 2015 stats");
   Check(!matchRules.Supports(new CardRecord{Id="BRM_future",EffectId="BRM_future",SetId=BlackrockRules.SetId,Type="MINION"}),"Future effects cannot silently become supported");
-  var old=matchRules.TrainingDeck("ROGUE");var code=DeckCode.Encode(catalog,old);var promoted=DeckRules.ForCurrentPlay(catalog,old);Check(promoted.PoolId==pool.Id&&old.PoolId=="classic-2014"&&DeckCode.Encode(catalog,old)==code,"Old decks promoted without rewriting originals");
-  Check(DeckCode.Decode(catalog,DeckCode.Encode(catalog,promoted),pool.Id).Count==30,"Deckstring roundtrip");
-  Check(ArenaDraftSession.CurrentPool(catalog).Id==pool.Id,"Arena uses new full pool");var sealedGame=new SealedSession(catalog,42,matchRules.Supports);Check(sealedGame.PoolId==pool.Id,"Sealed uses new full pool");
+  var old=matchRules.TrainingDeck("ROGUE");var code=DeckCode.Encode(catalog,old);var promoted=DeckRules.ForCurrentPlay(catalog,old);Check(promoted.PoolId==BlackrockRules.CurrentPoolId&&old.PoolId=="classic-2014"&&DeckCode.Encode(catalog,old)==code,"Old decks promoted without rewriting originals");
+  Check(DeckCode.Decode(catalog,DeckCode.Encode(catalog,promoted),promoted.PoolId).Count==30,"Deckstring roundtrip");
+  Check(ArenaDraftSession.CurrentPool(catalog).Id==BlackrockRules.CurrentPoolId,"Arena uses new full pool");var sealedGame=new SealedSession(catalog,42,matchRules.Supports);Check(sealedGame.PoolId==BlackrockRules.CurrentPoolId,"Sealed uses new full pool");
+ }
+ static void BrmBalance(){
+  var pool=catalog.Pool(BlackrockRules.CurrentPoolId);
+  var deckable=catalog.Deckable(pool);
+  Check(deckable.Count==566&&deckable.All(matchRules.Supports),"Revised pool has 566 supported cards");
+  foreach(var entry in pool.CardReplacements){
+   var original=catalog.Card(entry.Key);
+   Check(catalog.ResolveDbf(pool,original.DbfId).Id==entry.Value,"Original deckstring resolves to "+entry.Value);
+  }
+  var old=new DeckDocument{PoolId=BlackrockRules.SetId,ClassId="SHAMAN"};
+  old.Cards.Add("FP1_025",2);
+  var promoted=DeckRules.ForCurrentPlay(catalog,old);
+  Check(promoted.Cards.ContainsKey("BRM9554_FP1_025")&&old.Cards.ContainsKey("FP1_025"),"Saved Blackrock 1.0.0 deck upgrades without mutation");
+  var g=BrmGame();
+  var undertaker=g.Summon(0,"BRM9554_FP1_028");
+  g.Summon(0,"FP1_007");
+  Check(undertaker.BuffAttack==1&&undertaker.BuffHealth==0,"Revised Undertaker gains attack only");
+  g=BrmGame("WARLOCK");
+  var victim=g.Summon(1,"VAN_CS2_182");
+  BrmPlay(g,"BRM9554_EX1_320",BT(victim));
+  Check(victim.Health==3&&g.Players[0].Board.Count==0,"Revised Bane deals two and does not summon without killing");
+  bool expandedPoolObserved=false;
+  for(int seed=0;seed<24;seed++){
+   g=GvgGame(seed);
+   g.Players[0].ClassId="WARLOCK";
+   victim=g.Summon(1,"VAN_CS2_231");
+   BrmPlay(g,"BRM9554_EX1_320",BT(victim));
+   var demon=g.Card(g.Players[0].Board.Single().CardId);
+   Check(demon.Race=="DEMON"&&demon.Collectible&&pool.Contains(demon),"Bane summons an eligible collectible demon");
+   expandedPoolObserved|=!WarlockRules.BaneDemons.Contains(demon.Id);
+  }
+  Check(expandedPoolObserved,"Bane can summon beyond original six demons");
  }
  static void BrmSpells(){
   var g=BrmGame("PALADIN");var a=g.Summon(0,"VAN_CS2_231");var b=g.Summon(1,"VAN_CS2_231");g.DamageBatch(()=>{g.Damage(BT(a),1);g.Damage(BT(b),1);});g.Cleanup();

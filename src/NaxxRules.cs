@@ -11,7 +11,7 @@ public static class NaxxRules {
  public static readonly ConditionalTrigger[] RemainingTriggers={
   new ConditionalTrigger{CardId="FP1_005",Timing=MatchTriggerTiming.TurnStart,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>c.Game.Buff(new MatchTarget(c.Source.Owner,c.Source.Id),1,1)},
   new ConditionalTrigger{CardId="FP1_027",Timing=MatchTriggerTiming.TurnStart,Condition=c=>c.Source.Owner==c.Seat&&c.Source.DamageTaken>0,Apply=c=>c.Game.RestoreHealth(c.Source.Owner,new MatchTarget(c.Source.Owner,c.Source.Id),c.Source.DamageTaken)},
-  new ConditionalTrigger{CardId="FP1_028",Timing=MatchTriggerTiming.MinionSummoned,Condition=c=>c.Summoned!=null&&c.Source.Owner==c.Summoned.Owner&&HasDeathrattle(c.Game,c.Summoned),Apply=c=>c.Game.Buff(new MatchTarget(c.Source.Owner,c.Source.Id),1,1)},
+  new ConditionalTrigger{CardId="FP1_028",Timing=MatchTriggerTiming.MinionSummoned,Condition=c=>c.Summoned!=null&&c.Source.Owner==c.Summoned.Owner&&HasDeathrattle(c.Game,c.Summoned),Apply=c=>c.Game.Buff(new MatchTarget(c.Source.Owner,c.Source.Id),1,c.Source.CardId=="BRM9554_FP1_028"?0:1)},
   new ConditionalTrigger{CardId="FP1_003",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>c.Source.Enchantments.Expiry("echo-copy")==c.Game.Turn,Apply=c=>c.Game.CopyEchoAtEnd(c.Source)},
   new ConditionalTrigger{CardId="FP1_013",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>true,Apply=c=>{var g=c.Game;var deaths=g.GraveyardFor(c.Source.Owner,GraveyardReason.MinionDied).Where(e=>e.Turn==g.Turn).ToArray();foreach(var death in deaths){if(g.Summon(c.Source.Owner,death.CardId)==null)break;}}}
  };

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Touchfish {
 // Original 2015 Blackrock Mountain. New cards use explicit registrations only.
 public static class BlackrockRules {
+ public const string CurrentPoolId="blackrock-mountain-2015-9554";
  public const string SetId="blackrock-mountain-2015",Ragnaros="brm:ragnaros@1",DieInsect="brm:die-insect@1";
  public static readonly string[] CardIds={"BRM_001","BRM_002","BRM_003","BRM_004","BRM_005","BRM_006","BRM_007","BRM_008","BRM_009","BRM_010","BRM_011","BRM_012","BRM_013","BRM_014","BRM_015","BRM_016","BRM_017","BRM_018","BRM_019","BRM_020","BRM_022","BRM_024","BRM_025","BRM_026","BRM_027","BRM_028","BRM_029","BRM_030","BRM_031","BRM_033","BRM_034","BRM_006t","BRM_010t","BRM_010t2","BRM_022t"};
  static BlackrockRules(){HeroReplacementRules.RegisterAbility(new HeroAbilityDefinition(DieInsect,"死吧，虫子！",2,"NONE",(g,s,t)=>{var victim=g.RandomTarget(g.Characters(1-s));if(victim!=null)g.Damage(victim,8*g.AbilityMultiplier(s));}));HeroReplacementRules.RegisterHero(new HeroReplacementDefinition(Ragnaros,"炎魔之王拉格纳罗斯",8,DieInsect));}
