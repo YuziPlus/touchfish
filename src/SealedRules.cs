@@ -3,6 +3,8 @@ namespace Touchfish {
 public sealed class SealedOpenedCard {public string Id,Quality;}
 // Reconstructs published long-run means and hard pity limits, not Blizzard's undisclosed joint sampler.
 public sealed class SealedPackGenerator {
+ const int SpellWeight=5,OtherCardWeight=4;
+ public const int CardsPerPack=5;
  public const string Source="https://hs.blizzard.cn/news/hs-shop.html";
  static readonly double[] rates={.054738,.006089,.217663,.015463,.076123,.087132};
  static readonly int[] limits={40,361,10,142,29,25};
@@ -11,7 +13,15 @@ public sealed class SealedPackGenerator {
  readonly Dictionary<string,int> owned=new Dictionary<string,int>();bool firstLegend=true;
  public SealedPackGenerator(IEnumerable<CardRecord> cards,int seed){eligible=cards.Where(c=>new[]{"COMMON","RARE","EPIC","LEGENDARY"}.Contains(c.Rarity)).ToArray();foreach(string rarity in rarities.Distinct())if(!eligible.Any(c=>c.Rarity==rarity))throw new InvalidDataException("现开卡池缺少稀有度："+rarity);random=new Random(seed);hazards=rates.Select((p,i)=>Hazard(p,limits[i])).ToArray();}
  static double Hazard(double rate,int limit){double low=0,high=1;for(int n=0;n<64;n++){double q=(low+high)/2,mean=q/(1-Math.Pow(1-q,limit));if(mean<rate)low=q;else high=q;}return (low+high)/2;}
- string Draw(string rarity){var pool=eligible.Where(c=>c.Rarity==rarity).ToArray();int cap=rarity=="LEGENDARY"?1:2;var protectedPool=pool.Where(c=>!owned.ContainsKey(c.Id)||owned[c.Id]<cap).ToArray();if(protectedPool.Length>0)pool=protectedPool;string id=pool[random.Next(pool.Length)].Id;int count;owned.TryGetValue(id,out count);owned[id]=count+1;return id;}
+ string Draw(string rarity){var pool=eligible.Where(c=>c.Rarity==rarity).ToArray();int cap=rarity=="LEGENDARY"?1:2;var protectedPool=pool.Where(c=>!owned.ContainsKey(c.Id)||owned[c.Id]<cap).ToArray();if(protectedPool.Length>0)pool=protectedPool;int roll=random.Next(pool.Sum(card=>CardWeight(card)));
+  int index=0;
+  for(;index<pool.Length-1;index++){
+   int weight=CardWeight(pool[index]);
+   if(roll<weight)break;
+   roll-=weight;
+  }
+  string id=pool[index].Id;int count;owned.TryGetValue(id,out count);owned[id]=count+1;return id;}
+ static int CardWeight(CardRecord card){return card.Type=="SPELL"?SpellWeight:OtherCardWeight;}
  public SealedOpenedCard[] Open(){var result=new List<SealedOpenedCard>();bool rare=false;var hit=new bool[6];var due=new bool[6];for(int i=0;i<6;i++){gaps[i]++;int limit=i==0&&firstLegend?10:limits[i];double roll=random.NextDouble();due[i]=gaps[i]>=limit;hit[i]=due[i]||roll<hazards[i];}
   // Reserve hard-pity results before optional rolls. An early result prevents six deadlines coinciding.
   if(hit.All(h=>h)){int defer=Enumerable.Range(0,6).LastOrDefault(i=>!due[i]);if(due.All(d=>d))throw new InvalidOperationException("卡包保底排程异常。");hit[defer]=false;}
@@ -20,7 +30,7 @@ public sealed class SealedPackGenerator {
   if(!rare)result.Add(new SealedOpenedCard{Id=Draw("RARE"),Quality="normal"});
   // Match the published mean of 3.5 normal Commons; extra Rare slots have no publicly specified joint distribution.
   double noHigher=1;for(int i=0;i<5;i++)noHigher*=1-rates[i];double extraRare=1-3.5/(5-rates.Sum()-noHigher);
-  while(result.Count<5)result.Add(new SealedOpenedCard{Id=Draw(random.NextDouble()<extraRare?"RARE":"COMMON"),Quality="normal"});return result.ToArray();
+  while(result.Count<CardsPerPack)result.Add(new SealedOpenedCard{Id=Draw(random.NextDouble()<extraRare?"RARE":"COMMON"),Quality="normal"});return result.ToArray();
  }
 }
 public sealed class SealedView {
@@ -28,7 +38,7 @@ public sealed class SealedView {
  public Dictionary<string,int> Pool,Deck;public SealedOpenedCard[] LastPack;
 }
 public sealed class SealedSession {
- public const int PackCount=18,DeckSize=30;
+ public const int PackCount=22,DeckSize=30;
  public readonly string Session=Guid.NewGuid().ToString("N"),PoolId;readonly CardCatalog catalog;readonly Func<CardRecord,bool> supported;readonly Random random;
  readonly string[][] choices=new string[2][];readonly string[] classes=new string[2];readonly int[] revisions=new int[2],opened=new int[2];readonly bool[] confirmed=new bool[2];
  readonly Dictionary<string,int>[] pools={new Dictionary<string,int>(),new Dictionary<string,int>()},decks={new Dictionary<string,int>(),new Dictionary<string,int>()};readonly SealedPackGenerator[] generators=new SealedPackGenerator[2];readonly SealedOpenedCard[][] last={new SealedOpenedCard[0],new SealedOpenedCard[0]};
