@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 namespace Touchfish {
 public static class LowCostRules {
  public static readonly string[] CardIds={"CS2_146","EX1_001","EX1_049","EX1_055","EX1_059","EX1_080","EX1_082","NEW1_016","NEW1_018","NEW1_019","NEW1_020","NEW1_025"};
@@ -20,9 +21,31 @@ public static class LowCostRules {
  }}
 }
 public sealed partial class MatchEngine {
- readonly ResolutionQueue summonTriggers=new ResolutionQueue();int deferSummonDepth;
- void QueueSummonTrigger(BattleUnit unit,BattleUnit[] listeners,bool deferred){int summoningSeat=unit.Owner;summonTriggers.Enqueue(()=>ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.MinionSummoned,summoningSeat,summoned:unit,listeners:listeners));if(!deferred&&deferSummonDepth==0)FlushSummonTriggers();}
- void FlushSummonTriggers(){summonTriggers.Drain();}
- public void DrawMatchingCard(int seat,string race){var p=Players[seat];var indices=p.Deck.Select((deckCard,i)=>new{Card=Card(deckCard),Index=i}).Where(x=>x.Card.Race==race).ToArray();if(indices.Length==0)return;int index=indices[random.Next(indices.Length)].Index;string id=p.Deck[index];p.Deck.RemoveAt(index);p.Deck.Insert(0,id);Draw(seat,1);}
+ sealed class SummonNotification {
+  internal int Seat;
+  internal BattleUnit Unit;
+  internal BattleUnit[] Listeners;
+ }
+ Queue<SummonNotification> summonTriggers;
+ bool drainingSummons;
+ int deferSummonDepth;
+ void QueueSummonTrigger(BattleUnit unit,BattleUnit[] listeners,bool deferred){
+  if(summonTriggers==null)summonTriggers=new Queue<SummonNotification>();
+  summonTriggers.Enqueue(new SummonNotification{Seat=unit.Owner,Unit=unit,Listeners=listeners});
+  if(!deferred&&deferSummonDepth==0)FlushSummonTriggers();
+ }
+ void FlushSummonTriggers(){
+  if(drainingSummons||summonTriggers==null)return;
+  drainingSummons=true;
+  try{
+   int steps=0;
+   while(summonTriggers.Count>0){
+    if(++steps>10000)throw new InvalidOperationException("结算超过安全上限，可能存在循环触发。");
+    var item=summonTriggers.Dequeue();
+    ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.MinionSummoned,item.Seat,summoned:item.Unit,listeners:item.Listeners);
+   }
+  }finally{drainingSummons=false;}
+ }
+ public void DrawMatchingCard(int seat,string race){NoteHistory(HistoryKind.Unmodeled,seat);var p=Players[seat];var indices=p.Deck.Select((deckCard,i)=>new{Card=Card(deckCard),Index=i}).Where(x=>x.Card.Race==race).ToArray();if(indices.Length==0)return;int index=indices[random.Next(indices.Length)].Index;string id=p.Deck[index];p.Deck.RemoveAt(index);p.Deck.Insert(0,id);Draw(seat,1);}
 }
 }

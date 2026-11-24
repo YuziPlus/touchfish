@@ -16,7 +16,7 @@ public sealed partial class MatchEngine {
  public void SyncTurnClock(){if(clockReplica)return;bool enabled=TurnClockRules.Active(this);if(enabled){if(!clockEnabled||clockTurn!=Turn){clockSequence++;clockDeadline=ClockNowMs()+TurnClockRules.DurationMs;}}else if(clockEnabled){clockSequence++;clockDeadline=0;}clockEnabled=enabled;clockTurn=Turn;}
  public void ReceiveTurnClock(int sequence,int remainingMs){if(sequence<0||remainingMs< -1||remainingMs>TurnClockRules.DurationMs)throw new System.IO.InvalidDataException("回合计时无效。");clockReplica=true;clockSequence=sequence;clockTurn=Turn;clockEnabled=remainingMs>=0;clockDeadline=clockEnabled?ClockNowMs()+remainingMs:0;}
  public void LimitTurnClock(int remainingMs){if(clockEnabled&&remainingMs>=0)clockDeadline=Math.Min(clockDeadline,ClockNowMs()+remainingMs);}
- public bool TryEndTimedTurn(){SyncTurnClock();if(clockReplica||!TurnClockExpired||AnimationPlaying)return false;int logPosition=Log.Count;var result=EndTurn();if(result.Success)Log.Insert(logPosition,"倒计时结束 · 自动结束回合");return result.Success;}
+ public bool TryEndTimedTurn(){SyncTurnClock();if(clockReplica||HasPendingDecision||!TurnClockExpired||AnimationPlaying)return false;int logPosition=Log.Count;var result=EndTurn();if(result.Success)Log.Insert(logPosition,"倒计时结束 · 自动结束回合");return result.Success;}
 }
 public static class ClassicDragonRules {
  public static void Alexstrasza(EffectContext c){var player=c.Game.Players[c.Target.Seat];player.Health=Math.Min(15,c.Game.HeroHealthLimit(c.Target.Seat));}

@@ -27,7 +27,7 @@ public static class HunterRules {
   case "EX1_544":Flare(c);break;
   case "EX1_549":if(c.Target!=null){var beast=c.Game.LivingUnit(c.Target);if(beast!=null&&beast.Owner==c.Seat&&beast.Race=="BEAST"){beast.TempAttack+=2;beast.ImmuneUntilTurn=c.Game.Turn;}}break;
  }}
- static void Track(EffectContext c){var p=c.Game.Players[c.Seat];var preview=TrackingPreview(c.Game,c.Seat);int chosen=TrackingIndex(c.Choice);if(preview.Length==0)return;if(chosen<0)chosen=0;if(chosen>=preview.Length)return;
+ static void Track(EffectContext c){var p=c.Game.Players[c.Seat];var preview=TrackingPreview(c.Game,c.Seat);int chosen=TrackingIndex(c.Choice);if(preview.Length==0)return;if(chosen<0)chosen=0;if(chosen>=preview.Length)return;c.Game.NoteHistory(HistoryKind.Unmodeled,c.Seat);
   for(int i=preview.Length-1;i>=0;i--)if(i!=chosen){string discarded=p.Deck[i];p.Deck.RemoveAt(i);c.Game.RecordGraveyard(c.Seat,c.Seat,discarded,c.Game.NewEffectInstanceId(),GraveyardReason.Discarded);}
   if(p.Deck.Count>0)c.Game.Draw(c.Seat,1);
  }

@@ -38,7 +38,7 @@ public static class GvgClassRules {
  public static void Apply(EffectContext c){var g=c.Game;int s=c.Seat;var p=g.Players[s];var u=g.Unit(c.Target);switch(c.Card.BaseId){
   // Druid, Mage, Paladin: batch 1.
   case "GVG_030":g.Buff(T(c.Summoned),c.Choice=="attack"?1:0,c.Choice=="health"?1:0);break;
-  case "GVG_031":g.Players[u.Owner].Board.Remove(u);g.ShuffleGvgCard(u.Owner,u.CardId);g.RefreshAuras();break;
+  case "GVG_031":g.Players[u.Owner].Board.Remove(u);g.ShuffleGvgCard(u.Owner,u.CardId,true);g.RefreshAuras();break;
   case "GVG_032":if(c.Choice=="draw"){g.Draw(s,1);g.Draw(1-s,1);}else foreach(var player in g.Players){if(player.MaxMana<g.Mode.ManaLimit){player.MaxMana++;player.Mana++;}}break;
   case "GVG_033":foreach(var t in g.Characters(0).Concat(g.Characters(1)).ToArray())g.RestoreHealth(s,t,t.Hero?g.HeroHealthLimit(t.Seat):g.Unit(t).MaxHealth,true,true);break;
   case "GVG_041":if(c.Choice=="wisps"){for(int i=0;i<5;i++)g.Summon(s,"VAN_CS2_231");}else{g.Buff(c.Target,5,5);u.Taunt=true;}break;
@@ -54,7 +54,7 @@ public static class GvgClassRules {
   case "GVG_063":break; // Hand enchantments are transferred before summon triggers, not as a battlecry.
   case "GVG_101":foreach(var b in g.Players.SelectMany(player=>player.Board).Where(b=>HasDeathrattle(g,b)).ToArray())g.Damage(T(b),2);break;
   // Hunter, Warrior, Warlock: batch 2.
-  case "GVG_017":int next=g.NextGvgInstance;g.Draw(s,1);var drawn=p.Hand.FirstOrDefault(h=>h.Id==next);if(drawn!=null&&g.Card(drawn.CardId).Race=="BEAST")drawn.CostAdjustment-=4;break;
+  case "GVG_017":g.NoteHistory(HistoryKind.Unmodeled,s);int next=g.NextGvgInstance;g.Draw(s,1);var drawn=p.Hand.FirstOrDefault(h=>h.Id==next);if(drawn!=null&&g.Card(drawn.CardId).Race=="BEAST")drawn.CostAdjustment-=4;break;
   case "GVG_026":foreach(var b in Own(g,s).ToArray()){if(!p.Board.Contains(b)||b.Health<=0)continue;int at=p.Board.IndexOf(b);b.DeathAnchor=at+1<p.Board.Count?p.Board[at+1].Id:0;DeathrattleRules.Resolve(g,b);g.Cleanup();}break;
   case "GVG_043":RandomBuff(g,s,1,0);break;
   case "GVG_046":g.Buff(T(c.Summoned),Own(g,s).Count(b=>b.Id!=c.Summoned.Id&&b.Race=="BEAST"),0);break;
@@ -64,7 +64,7 @@ public static class GvgClassRules {
   case "GVG_052":u.DamageTaken=u.MaxHealth;break;
   case "GVG_053":g.GainGvgArmor(s,5);break;
   case "GVG_055":g.Buff(c.Target,2,2);break;
-  case "GVG_056":g.ShuffleGvgCard(1-s,"GVG_056t");break;
+  case "GVG_056":g.ShuffleGvgCard(1-s,"GVG_056t",true);break;
   case "GVG_015":g.Damage(c.Target,g.SpellDamageAmount(s,3));break;
   case "GVG_019":if(u.Owner==s&&u.Race=="DEMON")g.Buff(c.Target,5,5);else g.Damage(c.Target,g.SpellDamageAmount(s,5));break;
   case "GVG_045":int imps=g.Damage(c.Target,g.SpellDamageAmount(s,2+g.RandomIndex(3)));for(int i=0;i<imps;i++)g.Summon(s,"GVG_045t");break;
@@ -81,7 +81,7 @@ public static class GvgClassRules {
   case "GVG_047":var victim=g.RandomTarget(g.Characters(1-s,false));if(victim!=null)g.Unit(victim).DamageTaken=g.Unit(victim).MaxHealth;if(c.Combo)g.BreakWeapon(1-s);break;
   case "GVG_056t":break; // A mine copied into hand was not drawn; its draw-only trigger does not fire.
   case "GVG_028t":OverloadRules.GainTemporaryMana(g,s,1);break;
-  case "GVG_029":for(int player=s,n=0;n<2;n++,player=1-s){if(g.Players[player].Board.Count>=g.Mode.BoardSlots)continue;var hand=g.Players[player].Hand.Where(h=>g.Card(h.CardId).Type=="MINION").ToArray();if(hand.Length>0){var chosen=hand[g.RandomIndex(hand.Length)];g.Players[player].Hand.Remove(chosen);g.SummonHandCard(player,chosen);}}break;
+  case "GVG_029":for(int player=s,n=0;n<2;n++,player=1-s){if(g.Players[player].Board.Count>=g.Mode.BoardSlots)continue;var hand=g.Players[player].Hand.Where(h=>g.Card(h.CardId).Type=="MINION").ToArray();if(hand.Length>0){var chosen=hand[g.RandomIndex(hand.Length)];g.Players[player].Hand.Remove(chosen);g.NoteHistory(HistoryKind.SummonFromHand,player,chosen.CardId);g.SummonHandCard(player,chosen);}}break;
   case "GVG_038":g.Damage(c.Target,g.SpellDamageAmount(s,3+g.RandomIndex(4)));break;
   case "GVG_042":for(int i=0;i<4;i++)RandomCard(g,s,b=>b.Race=="MURLOC");break;
   // Seven uncollectible spare parts.
@@ -97,10 +97,10 @@ public static class GvgClassRules {
  public static bool HasDeathrattle(BattleUnit u){return u.ForestDeathrattles>0||u.AncestralSpirits>0;}
  public static bool HasDeathrattle(MatchEngine g,BattleUnit u){return HasDeathrattle(u)||!u.Silenced&&MatchEngine.Has(g.Card(u.CardId),"DEATHRATTLE");}
  static void BouncingBlade(MatchEngine g,int seat){for(int i=0;i<10000&&!g.Finished;i++){var living=g.Players.SelectMany(p=>p.Board).Where(u=>u.Health>0).ToArray();if(living.Length==0||living.All(u=>u.ImmuneUntilTurn==g.Turn||u.CommandingShoutTurn==g.Turn&&u.Health<=1))break;var t=living[g.RandomIndex(living.Length)];if(g.GvgBladeDamage(t,g.SpellDamageAmount(seat,1)))break;}}
- public static void Death(MatchEngine g,BattleUnit u){if(g.Card(u.CardId).BaseId=="GVG_035")g.ShuffleGvgCard(u.Owner,u.CardId);}
+ public static void Death(MatchEngine g,BattleUnit u){if(g.Card(u.CardId).BaseId=="GVG_035")g.ShuffleGvgCard(u.Owner,u.CardId,true);}
  public static void WeaponRemoved(MatchEngine g,int seat,string id){if(id!=null&&g.Card(id).BaseId=="GVG_036")RandomBuff(g,seat,2,2,Mech);}
  public static void HeroDamaged(MatchEngine g,int seat,int amount){if(g.Active!=seat||amount<=0)return;foreach(var u in Own(g,seat).Where(u=>!u.Silenced&&g.Card(u.CardId).BaseId=="GVG_100").ToArray())g.Buff(T(u),2,2);}
- public static void MinionsDied(MatchEngine g,BattleUnit[] dead){foreach(var unit in dead)foreach(var h in g.Players[unit.Owner].Hand.Where(h=>g.Card(h.CardId).BaseId=="GVG_063"))h.AttackBonus++;}
+ public static void MinionsDied(MatchEngine g,BattleUnit[] dead){foreach(var unit in dead){g.NoteHistory(HistoryKind.HandGrowth,unit.Owner,"GVG_063");foreach(var h in g.Players[unit.Owner].Hand.Where(h=>g.Card(h.CardId).BaseId=="GVG_063"))h.AttackBonus++;}}
  public static readonly ConditionalTrigger[] Triggers={
   new ConditionalTrigger{CardId="GVG_034",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>c.Source.Id==c.Damaged.Id,Apply=c=>c.Game.GiveGvgCard(c.Source.Owner,Parts[c.Game.RandomIndex(Parts.Length)])},
   new ConditionalTrigger{CardId="GVG_049",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>c.Source.Id==c.Damaged.Id,Apply=c=>c.Source.BuffAttack+=c.Game.AttackValue(c.Source)},
@@ -123,8 +123,8 @@ public sealed partial class MatchEngine {
  internal void GvgMinionDamage(BattleUnit source,MatchTarget target,int amount){if(source==null||amount<=0)return;if(!source.Silenced&&(Card(source.CardId).BaseId=="CS2_033"||Card(source.CardId).BaseId=="GVG_002"))Freeze(target);GvgCombatHeal(source,amount);}
  public BattleUnit SummonHandCard(int seat,HandCard hand,int position=-1,bool summonEvent=true,bool deferAfterSummon=false){return Summon(seat,hand.CardId,position,summonEvent,deferAfterSummon,initialize:unit=>unit.BuffAttack+=hand.AttackBonus);}
  internal int NextGvgInstance{get{return nextId;}}
- public void GiveGvgCard(int seat,string id,int adjustment=0){int before=nextId;GiveNaxxCard(seat,id);var hand=Players[seat].Hand.FirstOrDefault(h=>h.Id==before);if(hand!=null)hand.CostAdjustment=adjustment;}
- public void ShuffleGvgCard(int seat,string id){var deck=Players[seat].Deck;deck.Insert(random.Next(deck.Count+1),id);}
+ public void GiveGvgCard(int seat,string id,int adjustment=0){GiveNaxxCard(seat,id,adjustment);}
+ public void ShuffleGvgCard(int seat,string id,bool known=false){var deck=Players[seat].Deck;deck.Insert(random.Next(deck.Count+1),id);NoteHistory(known?HistoryKind.ShuffleIn:HistoryKind.Unmodeled,seat,known?id:null);}
  public void GainGvgArmor(int seat,int amount){if(amount<=0)return;Players[seat].Armor+=amount;foreach(var u in Players[seat].Board.Where(u=>u.Health>0&&!u.Silenced&&Card(u.CardId).BaseId=="GVG_086").ToArray())Buff(new MatchTarget(seat,u.Id),1,0);}
  internal void GvgDrawn(int seat,string id){if(!MulliganComplete||id!="GVG_007")return;DamageBatch(()=>{foreach(var t in Characters(0).Concat(Characters(1)).ToArray())Damage(t,2);});Cleanup();}
 }

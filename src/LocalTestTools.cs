@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.IO;
 using System.Windows;
@@ -14,6 +14,9 @@ public partial class PanelWindow {
   testTakeButton=Btn("取牌",38);testTakeButton.Height=21;testTakeButton.FontSize=9;testTakeButton.IsEnabled=CanMatchInput()&&choices.Length>0&&p.Hand.Count<10;testTakeButton.Click+=(s,e)=>TakeTestCard();Grid.SetColumn(testTakeButton,1);row.Children.Add(testTakeButton);
   var back=Btn("返回",34);back.Height=21;back.FontSize=9;back.Click+=(s,e)=>{testTakeOpen=false;RenderMatch();};Grid.SetColumn(back,2);row.Children.Add(back);Put(grid,row,1);return grid;
  }
- void TakeTestCard(){if(!localTest||lanMode||match==null||!match.TestMode||!CanMatchInput())return;var choice=testTakePicker.SelectedItem as Choice;if(choice!=null)ApplyMatchAction(match.TestTakeCard(matchViewSeat,choice.Key));}
+ void TakeTestCard(){if(!localTest||lanMode||match==null||!match.TestMode||!CanMatchInput())return;var choice=testTakePicker.SelectedItem as Choice;if(choice==null)return;
+  var result=match.TestTakeCard(matchViewSeat,choice.Key);
+  if(testReplay!=null)RecordTestReplay(result,new ReplayAction{Kind="take",Seat=matchViewSeat,CardId=choice.Key});
+  ApplyMatchAction(result);}
 }
 }

@@ -5,6 +5,7 @@ namespace Touchfish {
 // Rules enqueue work in insertion order; presentation never enters this queue.
 public sealed class ResolutionQueue {
  readonly Queue<Action> pending=new Queue<Action>();bool draining;
+ internal bool IsResolving{get{return draining||pending.Count!=0;}}
  public int Count{get{return pending.Count;}}
  public void Enqueue(Action action){if(action==null)throw new ArgumentNullException("action");pending.Enqueue(action);}
  public void Drain(){if(draining)return;draining=true;try{int steps=0;while(pending.Count>0){if(++steps>10000)throw new InvalidOperationException("结算超过安全上限，可能存在循环触发。");pending.Dequeue()();}}finally{draining=false;}}

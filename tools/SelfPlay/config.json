@@ -1,0 +1,16 @@
+{
+  "Games": 1,
+  "Seed": 512021,
+  "Parallelism": 1,
+  "Iterations": 32,
+  "MulliganSamples": 8,
+  "MaxDecisions": 1600,
+  "FirstSeat": "paired",
+  "Decks": ["zoo", "freeze"],
+  "Pool": ["zoo", "freeze", "miracle"],
+  "PriorPool": ["zoo", "freeze", "miracle"],
+  "CustomDecks": {},
+  "PoolId": "classic-2014",
+  "Compression": true,
+  "Diagnostics": false
+}

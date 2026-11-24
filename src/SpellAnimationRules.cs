@@ -10,6 +10,6 @@ public sealed partial class MatchEngine {
   pendingSpellImpact=()=>{EmitPyroblastVisual("pyroblast-impact",context);ApplyCardEffect(context);finished();};return true;
  }
  void EmitPyroblastVisual(string kind,EffectContext context){EmitVisual(kind,context.Seat,context.Target.UnitId);VisualEvents[VisualEvents.Count-1].TargetSeat=context.Target.Seat;}
- public bool PollSpellImpact(){if(pendingSpellImpact==null||AnimationNowUtc()<spellImpactAt)return false;var action=pendingSpellImpact;pendingSpellImpact=null;spellImpactAt=DateTime.MaxValue;action();SyncTurnClock();if(Finished)Log.Add(Winner==-1?"对局结束 · 平局":"对局结束 · "+PlayerLabel(Winner)+" 获胜");return true;}
+ public bool PollSpellImpact(){if(pendingSpellImpact==null||AnimationNowUtc()<spellImpactAt)return false;var action=pendingSpellImpact;pendingSpellImpact=null;spellImpactAt=DateTime.MaxValue;resolvingActions++;try{action();SyncTurnClock();MarkSearchStateChanged();}finally{resolvingActions--;}if(Finished)Log.Add(Winner==-1?"对局结束 · 平局":"对局结束 · "+PlayerLabel(Winner)+" 获胜");return true;}
 }
 }

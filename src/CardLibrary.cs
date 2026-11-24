@@ -9,6 +9,12 @@ public sealed class CardRecord {
  public string EffectId;public string Id,BaseId,Name,Text,RawText,CardClass,Type,Rarity,SetId,Race;
  public int DbfId,LegacyDbfId,Cost,Attack,Health,Durability,Overload,SpellDamage;
  public bool Collectible,FriendlySecretsOnly;public string[] Mechanics,Entourage;
+ internal CardRecord CopyForSimulation(){
+  var copy=(CardRecord)MemberwiseClone();
+  copy.Mechanics=Mechanics==null?null:(string[])Mechanics.Clone();
+  copy.Entourage=Entourage==null?null:(string[])Entourage.Clone();
+  return copy;
+ }
 }
 public sealed class CardSetPackage {public int SchemaVersion;public string Id,Name,Version,DisplayName;public bool HiddenInBrowser;public CardRecord[] Cards;}
 public sealed class CardSetInfo {public string Id,Name,Version;public bool HiddenInBrowser;}
@@ -17,6 +23,13 @@ public sealed class PoolDefinition {
  public Dictionary<string,int> HeroDbfIds;
  public Dictionary<string,string> CardReplacements;
  public bool Archived;
+ internal PoolDefinition CopyForSimulation(){
+  var copy=(PoolDefinition)MemberwiseClone();
+  copy.CardSetIds=(string[])CardSetIds.Clone();
+  copy.HeroDbfIds=new Dictionary<string,int>(HeroDbfIds,HeroDbfIds.Comparer);
+  copy.CardReplacements=CardReplacements==null?null:new Dictionary<string,string>(CardReplacements,CardReplacements.Comparer);
+  return copy;
+ }
  public bool Contains(CardRecord card){return CardSetIds.Contains(card.SetId)&&(CardReplacements==null||!CardReplacements.ContainsKey(card.Id));}
 }
 public sealed class PoolFile {public int SchemaVersion;public PoolDefinition[] Pools;}
@@ -52,6 +65,13 @@ public sealed class CardCatalog {
   foreach(var pool in Pools)if(pool.CardReplacements!=null)foreach(var pair in pool.CardReplacements){CardRecord original,replacement;if(!Cards.TryGetValue(pair.Key,out original)||!Cards.TryGetValue(pair.Value,out replacement)||original.BaseId!=replacement.BaseId||!pool.CardSetIds.Contains(original.SetId)||!pool.Contains(replacement)||!original.Collectible||!replacement.Collectible)throw new InvalidDataException("卡池替代卡牌配置无效。");}
   if(Pools.Count==0)throw new InvalidDataException("没有可用卡池。");
  }
+ CardCatalog(CardCatalog source){
+  foreach(var entry in source.Cards)Cards.Add(entry.Key,entry.Value.CopyForSimulation());
+  foreach(var entry in source.ByDbf)ByDbf.Add(entry.Key,Cards[entry.Value.Id]);
+  foreach(var set in source.Sets)Sets.Add(new CardSetInfo{Id=set.Id,Name=set.Name,Version=set.Version,HiddenInBrowser=set.HiddenInBrowser});
+  foreach(var pool in source.Pools)Pools.Add(pool.CopyForSimulation());
+ }
+ internal CardCatalog CopyForSimulation(){return new CardCatalog(this);}
  public static CardCatalog Load(string root){return new CardCatalog(new JsonDirectoryCardSetSource(Path.Combine(root,"data","cardsets")),JsonData.Read<PoolFile>(Path.Combine(root,"data","pools.json")));}
  public List<CardRecord> Deckable(PoolDefinition pool){return Cards.Values.Where(c=>c.Collectible&&pool.Contains(c)&&(c.Type=="MINION"||c.Type=="SPELL"||c.Type=="WEAPON")).OrderBy(c=>c.Cost).ThenBy(c=>c.Name,StringComparer.Ordinal).ToList();}
  public CardRecord ResolveDbf(PoolDefinition pool,int dbf){return Deckable(pool).FirstOrDefault(c=>c.DbfId==dbf||c.LegacyDbfId>0&&c.LegacyDbfId==dbf)??ResolveReplacedDbf(pool,dbf);}

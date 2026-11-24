@@ -49,6 +49,6 @@ public static class TimedCostRules {
 }
 public sealed partial class MatchEngine {
  internal bool TriggerCoinFlip(){return random.Next(2)==0;}
- public void CopySpellToHand(int seat,CardRecord card){var player=Players[seat];if(player.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得法术复制。");return;}player.Hand.Add(new HandCard{Id=nextId++,CardId=card.Id,Generated=true});Log.Add(PlayerLabel(seat)+" · 获得法术复制 1 张。");}
+ public void CopySpellToHand(int seat,CardRecord card){var player=Players[seat];if(player.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得法术复制。");return;}player.Hand.Add(new HandCard{Id=nextId++,CardId=card.Id,Generated=true});if(Has(card,"SECRET")){NoteHistory(HistoryKind.Gain,seat);NoteHistory(HistoryKind.Gain,seat,card.Id,visibleTo:seat);}else NoteHistory(HistoryKind.Gain,seat,card.Id);Log.Add(PlayerLabel(seat)+" · 获得法术复制 1 张。");}
 }
 }

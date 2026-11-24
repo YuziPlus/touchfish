@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 namespace Touchfish {
 public sealed class HeroAbilityDefinition {
  public readonly string Id,Name,Target;public readonly int Cost;
@@ -29,7 +30,39 @@ public sealed partial class MatchEngine {
  public string HeroRace(int seat){var form=HeroReplacementRules.Hero(Players[seat].HeroFormId);return form==null?null:form.Race;}
  public int HeroPowerCost(int seat){var ability=HeroReplacementRules.Ability(Players[seat].HeroAbilityId);return ability==null?2:ability.Cost;}
  public void ReplaceHero(int seat,string definitionId){var form=HeroReplacementRules.Hero(definitionId);if(seat<0||seat>1||form==null)throw new InvalidOperationException("替换英雄定义无效。");var p=Players[seat];p.HeroFormId=form.Id;p.HeroAbilityId=form.AbilityId;if(!form.PreserveHealth)p.HeroMaxHealth=p.Health=form.Health;p.HeroDestroyed=false;if(!form.PreserveArmor)p.Armor=0;p.Armor+=form.ArmorGain;p.Frozen=false;p.FrozenTurn=0;p.TempAttack=0;p.SecretImmuneTurn=-1;p.Shadowform=0;p.PowerUsed=false;p.EmoteText=null;Log.Add(PlayerLabel(seat)+" · 英雄替换："+form.Name+" · 生命 "+p.Health);}
- void UseRegisteredHeroPower(int seat,MatchTarget target,HeroAbilityDefinition ability){var p=Players[seat];if(p.PowerUsed)throw new InvalidOperationException("本回合已使用英雄技能。");if(p.Mana<ability.Cost)throw new InvalidOperationException("英雄技能法力不足。");if(ability.Target!="NONE")ValidateTarget(seat,target,ability.Target,true);if(ability.Requirement!=null)Require(ability.Requirement(this,seat));p.Mana-=ability.Cost;p.PowerUsed=true;Log.Add(PlayerLabel(seat)+" · 英雄技能："+ability.Name+"（"+ability.Cost+"费）");DamageBatch(()=>ability.Apply(this,seat,target));Cleanup();}
+ public string HeroPowerTargetMask(int seat){
+  var player=Players[seat];
+  var ability=HeroReplacementRules.Ability(player.HeroAbilityId);
+  if(ability!=null)return ability.Target;
+  if(player.Shadowform>0||player.ClassId=="MAGE"||player.ClassId=="PRIEST")return "ANY_CHARACTER";
+  if(player.ClassId=="HUNTER"&&GvgClassRules.Has(this,seat,"GVG_087"))return "HUNTER_POWER";
+  return "NONE";
+ }
+ public bool PowerNeedsTarget(int seat){return HeroPowerTargetMask(seat)!="NONE";}
+ static readonly string[] BasicTotems={"VAN_CS2_050","VAN_CS2_051","VAN_CS2_052","VAN_NEW1_009"};
+ string[] AvailableBasicTotems(int seat){
+  return BasicTotems.Where(id=>!Players[seat].Board.Any(unit=>unit.CardId==id)).ToArray();
+ }
+ internal string HeroPowerAvailability(int seat){
+  var player=Players[seat];
+  if(player.PowerUsed)return "本回合已使用英雄技能。";
+  if(player.Mana<HeroPowerCost(seat))return "英雄技能法力不足。";
+  var ability=HeroReplacementRules.Ability(player.HeroAbilityId);
+  if(ability!=null)return ability.Requirement==null?null:ability.Requirement(this,seat);
+  if(player.Shadowform>0)return null;
+  bool full=player.Board.Count>=Mode.BoardSlots;
+  if(player.ClassId=="PALADIN"&&full)return "战场已满。";
+  if(player.ClassId=="SHAMAN"&&(full||AvailableBasicTotems(seat).Length==0))return "没有可召唤的基础图腾。";
+  return null;
+ }
+ void UseRegisteredHeroPower(int seat,MatchTarget target,HeroAbilityDefinition ability){
+  var player=Players[seat];
+  player.Mana-=ability.Cost;
+  player.PowerUsed=true;
+  Log.Add(PlayerLabel(seat)+" · 英雄技能："+ability.Name+"（"+ability.Cost+"费）");
+  DamageBatch(()=>ability.Apply(this,seat,target));
+  Cleanup();
+ }
  public void DestroyHero(int seat){Players[seat].HeroDestroyed=true;Players[seat].Health=0;}
 }
 }

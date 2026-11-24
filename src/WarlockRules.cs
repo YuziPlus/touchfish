@@ -32,7 +32,7 @@ public static class WarlockRules {
 public sealed partial class MatchEngine {
  internal int RandomIndex(int count){return random.Next(count);}
  public void ConsumeNeighbors(int seat,BattleUnit source){var board=Players[seat].Board;int at=board.IndexOf(source);var adjacent=board.Where((u,i)=>Math.Abs(i-at)==1&&u.Health>0).ToArray();int attack=adjacent.Sum(u=>AttackValue(u)),health=adjacent.Sum(u=>u.Health);foreach(var unit in adjacent)unit.DamageTaken=unit.MaxHealth;source.BuffAttack+=attack;source.BuffHealth+=health;}
- public void SenseDemons(int seat){for(int n=0;n<2;n++){var p=Players[seat];var choices=p.Deck.Select((id,i)=>new{Id=id,Index=i}).Where(c=>Card(c.Id).Race=="DEMON").ToArray();if(choices.Length==0){GiveNaxxCard(seat,"GAME_WORTHLESS_IMP");continue;}var chosen=choices[random.Next(choices.Length)];p.Deck.RemoveAt(chosen.Index);p.Deck.Insert(0,chosen.Id);Draw(seat,1);}}
+ public void SenseDemons(int seat){for(int n=0;n<2;n++){var p=Players[seat];var choices=p.Deck.Select((id,i)=>new{Id=id,Index=i}).Where(c=>Card(c.Id).Race=="DEMON").ToArray();if(choices.Length==0){GiveNaxxCard(seat,"GAME_WORTHLESS_IMP");continue;}NoteHistory(HistoryKind.Unmodeled,seat);var chosen=choices[random.Next(choices.Length)];p.Deck.RemoveAt(chosen.Index);p.Deck.Insert(0,chosen.Id);Draw(seat,1);}}
  public void EdwinEntrance(BattleUnit unit){EmitVisual("entrance",unit.Owner,unit.Id,Players[unit.Owner].Board.IndexOf(unit),amount:AttackValue(unit),name:"EX1_613");StartEntranceWait();}
 }
 }

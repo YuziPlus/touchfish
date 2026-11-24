@@ -43,7 +43,7 @@ public static class BlackrockRules {
   new ConditionalTrigger{CardId="BRM_019",Timing=MatchTriggerTiming.MinionDamaged,Condition=c=>HitSelf(c)&&c.Damaged.Health>0,Apply=c=>SummonBeside(c,"BRM_019")},
   new ConditionalTrigger{CardId="BRM_022",Timing=MatchTriggerTiming.MinionDamaged,Condition=HitSelf,Apply=c=>SummonBeside(c,"BRM_022t")},
   new ConditionalTrigger{CardId="BRM_002",Timing=MatchTriggerTiming.SpellResolved,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>{for(int i=0;i<2&&!c.Game.Finished;i++){var t=c.Game.RandomTarget(c.Game.Characters(1-c.Source.Owner));if(t!=null)c.Game.DamageSequenceStep(t,1);}}},
-  new ConditionalTrigger{CardId="BRM_028",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>{foreach(var h in c.Game.Players[c.Source.Owner].Hand)if(c.Game.Card(h.CardId).Cost+h.CostAdjustment>0)h.CostAdjustment--;}}
+  new ConditionalTrigger{CardId="BRM_028",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>c.Source.Owner==c.Seat,Apply=c=>{c.Game.ShiftHandCosts(c.Source.Owner,-1);}}
  };
  // Called after payment but before spell resolution, so the targeted spell sees the new stats.
  public static void SpellTargeted(MatchEngine g,int seat,MatchTarget target){var u=g.Unit(target);if(u!=null&&u.Owner==seat&&u.Health>0&&!u.Silenced&&g.Card(u.CardId).BaseId=="BRM_020")g.Buff(target,1,1);}

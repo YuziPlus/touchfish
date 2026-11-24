@@ -8,6 +8,6 @@ public static class MageRules {
  }}
 }
 public sealed partial class MatchEngine {
- public void GenerateMageFireball(int seat){var p=Players[seat];if(p.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得生成法术。");return;}p.Hand.Add(new HandCard{Id=nextId++,CardId="VAN_CS2_029",Generated=true});Log.Add(PlayerLabel(seat)+" · 获得生成法术 1 张。");}
+ public void GenerateMageFireball(int seat){var p=Players[seat];if(p.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得生成法术。");return;}p.Hand.Add(new HandCard{Id=nextId++,CardId="VAN_CS2_029",Generated=true});NoteHistory(HistoryKind.Gain,seat,"VAN_CS2_029");Log.Add(PlayerLabel(seat)+" · 获得生成法术 1 张。");}
 }
 }

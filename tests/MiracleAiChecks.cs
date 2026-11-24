@@ -10,6 +10,15 @@ public static partial class RuleTests {
   var ai=new MiracleRogueAgent();int steps=0;while(!g.Finished&&steps++<12){var move=ai.Choose(AgentBridge.Observe(g,0));Check(move!=null&&move.Kind!="end"&&AgentBridge.Execute(g,0,move).Success,"Leeroy triple attack/Shadowstep chain legal");}
   Check(g.Winner==0&&steps<=9&&g.Players[0].Mana==0,"18 damage Leeroy/double Shadowstep lethal at eight mana");
   Check(ai.LastSearchNodes<=MiracleBurstPlanner.NodeLimit,"Burst planner respects node budget");
+  g=MiracleGame();
+  g.Players[1].Health=12;
+  g.Players[0].Mana=7;
+  GvgHand(g,"BRM9554_EX1_116");
+  Hand(g,"EX1_144");
+  var revisedBurst=new MiracleBurstPlanner();
+  Check(revisedBurst.Choose(AgentBridge.Observe(g,0))==null,"Revised Leeroy cannot be replayed for two mana");
+  g.Players[0].Mana=8;
+  Check(revisedBurst.Choose(AgentBridge.Observe(g,0))!=null,"Revised Leeroy and Shadowstep deal twelve with eight mana");
   g=MiracleGame();g.Players[1].Health=4;g.Players[0].Mana=2;Hand(g,"EX1_145");Hand(g,"EX1_124");var action=MiracleMove(g);
   Check(action.Key=="EX1_145","Preparation activates Eviscerate combo rather than wasting non-combo damage");AgentBridge.Execute(g,0,action);action=MiracleMove(g);Check(action.Key=="EX1_124"&&AgentBridge.Execute(g,0,action).Success&&g.Winner==0,"Prepared combo Eviscerate completes lethal");
   g=MiracleGame();g.Players[0].Mana=4;int prep=Hand(g,"EX1_145");Hand(g,"CS2_077");Check(MiracleMove(g).Source==prep,"Preparation enables four-mana Sprint");AgentBridge.Execute(g,0,MiracleMove(g));Check(MiracleMove(g).Key=="CS2_077","Sprint chosen after Prep");

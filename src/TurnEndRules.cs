@@ -9,7 +9,7 @@ public static class TurnEndRules {
 }
 public sealed partial class MatchEngine {
  public bool CanUseCard(int seat,CardRecord card,HandCard hand=null){return hand!=null&&hand.Generated|| card.Type=="SPELL"|| card.CardClass=="NEUTRAL"||card.CardClass==Players[seat].ClassId||!card.Collectible&&(TurnEndRules.DreamIds.Contains(card.Id)||card.Id=="GAME_WORTHLESS_IMP");}
- public void GenerateCard(int seat,string id){var p=Players[seat];if(p.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得梦境牌。");return;}p.Hand.Add(new HandCard{Id=nextId++,CardId=id});Log.Add(PlayerLabel(seat)+" · 获得梦境牌 1 张。");}
+ public void GenerateCard(int seat,string id){var p=Players[seat];if(p.Hand.Count>=Mode.HandLimit){Log.Add(PlayerLabel(seat)+" · 手牌已满，未获得梦境牌。");return;}NoteHistory(HistoryKind.Unmodeled,seat);p.Hand.Add(new HandCard{Id=nextId++,CardId=id});Log.Add(PlayerLabel(seat)+" · 获得梦境牌 1 张。");}
  public void DelayDestroy(MatchTarget target,bool atStart,int seat){var unit=Unit(target);if(unit==null)return;if(!atStart)unit.DestroyAtEnd=Turn;else if(seat==0)unit.DestroyAtStart0=Turn+2;else unit.DestroyAtStart1=Turn+2;}
  public void TakeTemporaryControl(int seat,MatchTarget target){var unit=Unit(target);int previous=unit.Owner;Players[previous].Board.Remove(unit);unit.ReturnSeat=previous;unit.ReturnTurn=Turn;unit.Owner=seat;unit.SummonTurn=Turn;unit.AttacksUsed=0;Players[seat].Board.Add(unit);RefreshAuras();}
  void DestroyUnit(BattleUnit unit){unit.DamageTaken=unit.MaxHealth;}

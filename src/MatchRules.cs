@@ -6,27 +6,47 @@ using System.Text.RegularExpressions;
 namespace Touchfish {
 public sealed class MatchRules {
  readonly Dictionary<string,CardEffect> effects=new Dictionary<string,CardEffect>();readonly CardCatalog catalog;
+ Dictionary<string,DecisionProgram> dynamicPrograms;
+ internal void RegisterDynamic(string effectId,DecisionProgram program){
+  if(program==null)throw new ArgumentNullException("program");
+  if(String.IsNullOrEmpty(effectId)||!effectId.Contains(":")||effects.ContainsKey(effectId))
+   throw new ArgumentException("动态效果必须使用独立效果 ID。");
+  if(dynamicPrograms==null)dynamicPrograms=new Dictionary<string,DecisionProgram>();
+  dynamicPrograms.Add(effectId,program);
+  effects.Add(effectId,new CardEffect{Apply=c=>{}});
+ }
+ internal DecisionProgram DynamicProgram(CardRecord card){
+  DecisionProgram program;
+  return dynamicPrograms!=null&&dynamicPrograms.TryGetValue(EffectKey(card),out program)?program:null;
+ }
+ bool initialized,customCallbacks;
+ int builtinTriggerCount;
+ internal bool HasCustomSimulationCallbacks{get{return customCallbacks||Triggers.Count!=builtinTriggerCount;}}
  public readonly List<ConditionalTrigger> Triggers=new List<ConditionalTrigger>(ConditionalTriggerRules.Definitions);
- public void RegisterTrigger(ConditionalTrigger trigger){if(trigger==null||trigger.Condition==null||trigger.Apply==null||String.IsNullOrWhiteSpace(trigger.CardId))throw new ArgumentException("触发定义不完整。");Triggers.Add(trigger);}
+ public void RegisterTrigger(ConditionalTrigger trigger){if(trigger==null||trigger.Condition==null||trigger.Apply==null||String.IsNullOrWhiteSpace(trigger.CardId))throw new ArgumentException("触发定义不完整。");Triggers.Add(trigger);if(initialized)customCallbacks=true;}
  public IEnumerable<string> RegisteredIds{get{return effects.Keys;}}
  static readonly string[] SimpleMechanics={"TAUNT","CHARGE","DIVINE_SHIELD","WINDFURY","POISONOUS","STEALTH","SPELLPOWER","CANT_ATTACK","CANT_BE_TARGETED_BY_ABILITIES","ELUSIVE","OVERLOAD"};
  public MatchRules(CardCatalog source){catalog=source;
   Register("GAME_COIN","NONE",c=>OverloadRules.GainTemporaryMana(c.Game,c.Seat,1));
   Damage("CS2_029",6);Damage("CS1_130",2);Damage("CS2_008",1);Damage("DS1_185",2);Damage("EX1_238",3);Damage("EX1_241",5);Damage("EX1_279",10);Damage("CS2_057",4,"MINION");Damage("CS2_072",2,"UNDAMAGED_MINION");
-  Register("CS2_024","ANY_CHARACTER",c=>{Hit(c,3);c.Game.Freeze(c.Target);});Register("CS2_037","ENEMY_CHARACTER",c=>{Hit(c,1);c.Game.Freeze(c.Target);});Register("CS2_031","ANY_CHARACTER",c=>{var unit=c.Game.Unit(c.Target);bool frozen=c.Target.Hero?c.Game.Players[c.Target.Seat].Frozen:unit.Frozen;if(frozen)Hit(c,4);else c.Game.Freeze(c.Target);});
+  Damage("CS2_024",3,freeze:true);Damage("CS2_037",1,"ENEMY_CHARACTER",true);Register("CS2_031","ANY_CHARACTER",c=>{var unit=c.Game.Unit(c.Target);bool frozen=c.Target.Hero?c.Game.Players[c.Target.Seat].Frozen:unit.Frozen;if(frozen)Hit(c,4);else c.Game.Freeze(c.Target);});
   Register("CS2_022","MINION",c=>c.Game.Transform(c.Target,"VAN_CS2_tk1"));
-  Register("CS2_023","NONE",c=>c.Game.Draw(c.Seat,2));Register("CS2_077","NONE",c=>c.Game.Draw(c.Seat,4));
+  RegisterProgram("CS2_023","NONE",new EffectInstruction(EffectOperation.Draw,2));
+  RegisterProgram("CS2_077","NONE",new EffectInstruction(EffectOperation.Draw,4));
   Register("EX1_103","NONE",c=>{foreach(var u in c.Game.Players.SelectMany(p=>p.Board).Where(u=>u.Id!=c.Summoned.Id&&u.Race=="MURLOC"&&u.Health>0).ToArray())c.Game.Buff(new MatchTarget(u.Owner,u.Id),0,2);});
   Register("EX1_050","NONE",c=>{c.Game.Draw(c.Seat,2);c.Game.Draw(1-c.Seat,2);});
   Register("CS2_025","NONE",c=>Area(c,1-c.Seat,1,false));Register("CS2_032","NONE",c=>Area(c,1-c.Seat,4,false));Register("CS2_028","NONE",c=>{Area(c,1-c.Seat,2,false);foreach(var target in c.Game.Characters(1-c.Seat,false))c.Game.Freeze(target);});Register("CS2_026","NONE",c=>{foreach(var target in c.Game.Characters(1-c.Seat,false))c.Game.Freeze(target);});
-  Register("CS2_027","NONE",c=>{c.Game.Summon(c.Seat,"VAN_CS2_mirror");c.Game.Summon(c.Seat,"VAN_CS2_mirror");},(g,s)=>g.Players[s].Board.Count>=g.Mode.BoardSlots?"战场已满。":null);
+  RegisterProgram("CS2_027","NONE",(g,s)=>g.Players[s].Board.Count>=g.Mode.BoardSlots?"战场已满。":null,
+   new EffectInstruction(EffectOperation.Summon,2,"VAN_CS2_mirror"));
   Register("EX1_277","NONE",c=>Missiles(c,3));Register("EX1_384","NONE",c=>Missiles(c,8));
   Register("CS2_013","NONE",c=>DruidSpellRules.WildGrowth(c.Game,c.Seat));
   Register("EX1_158","NONE",c=>DruidSpellRules.SoulOfForest(c.Game,c.Seat));
   Register("EX1_578","MINION",c=>Hit(c,c.Game.HeroAttack(c.Seat)));
-  Register("GAME_EXCESS_MANA","NONE",c=>c.Game.Draw(c.Seat,1));
+  RegisterProgram("GAME_EXCESS_MANA","NONE",new EffectInstruction(EffectOperation.Draw,1));
   Register("EX1_251","NONE",c=>c.Game.ForkedLightning(c.Seat),(g,s)=>g.Players[1-s].Board.Count<2?"对方至少需要两个随从。":null);
-  Register("CS2_007","ANY_CHARACTER",c=>c.Game.RestoreHealth(c.Seat,c.Target,8,c.Card.Type=="SPELL",c.Card.Type=="SPELL"));Register("CS2_089","ANY_CHARACTER",c=>c.Game.RestoreHealth(c.Seat,c.Target,6,c.Card.Type=="SPELL",c.Card.Type=="SPELL"));Register("EX1_354","ANY_CHARACTER",c=>{c.Game.RestoreHealth(c.Seat,c.Target,8,c.Card.Type=="SPELL",c.Card.Type=="SPELL");c.Game.Draw(c.Seat,3);});
+  RegisterProgram("CS2_007","ANY_CHARACTER",new EffectInstruction(EffectOperation.Heal,8));
+  RegisterProgram("CS2_089","ANY_CHARACTER",new EffectInstruction(EffectOperation.Heal,6));
+  RegisterProgram("EX1_354","ANY_CHARACTER",new EffectInstruction(EffectOperation.Heal,8),new EffectInstruction(EffectOperation.Draw,3));
   Register("CS2_005","NONE",c=>{c.Game.GainGvgArmor(c.Seat,2);c.Game.Players[c.Seat].TempAttack+=2;});Register("EX1_570","NONE",c=>{c.Game.GainGvgArmor(c.Seat,4);c.Game.Players[c.Seat].TempAttack+=4;});Register("EX1_169","NONE",c=>OverloadRules.GainTemporaryMana(c.Game,c.Seat,2));
   Register("CS2_009","MINION",c=>{c.Game.Buff(c.Target,2,2);c.Game.Unit(c.Target).Taunt=true;});Register("CS2_011","NONE",c=>{c.Game.Players[c.Seat].TempAttack+=2;foreach(var unit in c.Game.Players[c.Seat].Board)unit.TempAttack+=2;});
   Register("CS2_012","ENEMY_CHARACTER",c=>{Hit(c,4);foreach(var target in c.Game.Characters(1-c.Seat))if(target.UnitId!=c.Target.UnitId)c.Game.Damage(target,c.Game.SpellDamageAmount(c.Seat,1));});
@@ -37,7 +57,7 @@ public sealed class MatchRules {
   Register("CS2_061","ANY_CHARACTER",c=>{Hit(c,2);c.Game.RestoreHealth(c.Seat,new MatchTarget(c.Seat),2,c.Card.Type=="SPELL",c.Card.Type=="SPELL");});Register("CS2_062","NONE",c=>{Area(c,0,3,true);Area(c,1,3,true);});Register("EX1_308","ANY_CHARACTER",c=>{Hit(c,4);c.Game.DiscardRandom(c.Seat,1);});
   Register("EX1_306","NONE",c=>c.Game.DiscardRandom(c.Seat,1));Register("EX1_310","NONE",c=>c.Game.DiscardRandom(c.Seat,2));Register("NEW1_030","NONE",c=>c.Game.DeathwingBattlecry(c.Seat,c.Summoned));
   Register("EX1_302","MINION",c=>{Hit(c,1);if(c.Game.Unit(c.Target).Health<=0)c.Game.Draw(c.Seat,1);});Register("EX1_309","MINION",c=>{Kill(c);c.Game.RestoreHealth(c.Seat,new MatchTarget(c.Seat),3,c.Card.Type=="SPELL",c.Card.Type=="SPELL");});Register("EX1_312","NONE",c=>{foreach(var target in c.Game.Characters(0,false).Concat(c.Game.Characters(1,false)))c.Game.Unit(target).DamageTaken=c.Game.Unit(target).MaxHealth;});
-  Register("CS2_073","MINION",ComboRules.Apply);Register("EX1_124","ANY_CHARACTER",ComboRules.Apply);Register("CS2_075","NONE",c=>c.Game.Damage(new MatchTarget(1-c.Seat),c.Game.SpellDamageAmount(c.Seat,3)));Register("CS2_076","ENEMY_MINION",Kill);Register("EX1_581","ENEMY_MINION",c=>c.Game.ReturnToHand(c.Target));
+  Register("CS2_073","MINION",ComboRules.Apply);Register("EX1_124","ANY_CHARACTER",ComboRules.Apply);Register("CS2_075","NONE",c=>c.Game.Damage(new MatchTarget(1-c.Seat),c.Game.SpellDamageAmount(c.Seat,3)));Register("CS2_076","ENEMY_MINION",Kill);RegisterProgram("EX1_581","ENEMY_MINION",new EffectInstruction(EffectOperation.Return,1));
   Register("EX1_131","NONE",ComboRules.Apply);Register("EX1_133","ANY_CHARACTER",ComboRules.Apply);Register("EX1_134","NONE",ComboRules.Apply);Register("EX1_137","NONE",ComboRules.Apply);Register("EX1_613","NONE",ComboRules.Apply);Register("NEW1_005","NONE",ComboRules.Apply);
   Register("CS2_074","NONE",c=>c.Game.Players[c.Seat].WeaponAttack+=2,(g,s)=>g.Players[s].WeaponDurability==0?"需要先装备武器。":null);Register("EX1_278","ANY_CHARACTER",c=>{Hit(c,1);c.Game.Draw(c.Seat,1);});Register("EX1_129","NONE",c=>{Area(c,1-c.Seat,1,false);c.Game.Draw(c.Seat,1);});
   Register("CS2_084","MINION",c=>c.Game.SetHealth(c.Target,1));Register("EX1_539","ANY_CHARACTER",c=>Hit(c,c.Game.Players[c.Seat].Board.Any(m=>m.Race=="BEAST")?5:3));Register("EX1_617","NONE",c=>{var target=c.Game.RandomTarget(c.Game.Characters(1-c.Seat,false));if(target!=null)c.Game.Unit(target).DamageTaken=c.Game.Unit(target).MaxHealth;},(g,s)=>g.Players[1-s].Board.Count==0?"对方没有随从。":null);
@@ -115,8 +135,23 @@ public sealed class MatchRules {
   GvgRules.Register(this,catalog);
   GvgClassRules.Register(this,catalog);
   BlackrockRules.Register(this);
+  builtinTriggerCount=Triggers.Count;
+  initialized=true;
   RuleModules.Configure(this);
  }
+ MatchRules(MatchRules source,CardCatalog catalog){
+  this.catalog=catalog;
+  if(source.dynamicPrograms!=null)dynamicPrograms=new Dictionary<string,DecisionProgram>(source.dynamicPrograms);
+  foreach(var entry in source.effects){
+   var effect=entry.Value;
+   effects.Add(entry.Key,new CardEffect{Target=effect.Target,Apply=effect.Apply,Requirement=effect.Requirement});
+  }
+  Triggers.Clear();
+  foreach(var trigger in source.Triggers)Triggers.Add(new ConditionalTrigger{CardId=trigger.CardId,Timing=trigger.Timing,Condition=trigger.Condition,Apply=trigger.Apply});
+  builtinTriggerCount=Triggers.Count;
+  initialized=true;
+ }
+ internal MatchRules CopyForSimulation(CardCatalog catalog){return new MatchRules(this,catalog);}
  public static string EffectKey(CardRecord card){return !String.IsNullOrEmpty(card.EffectId)?card.EffectId:card.SetId=="classic-2014"||String.IsNullOrEmpty(card.SetId)?card.BaseId:card.Id;}
  public void RegisterExtension(string effectId,string target,Action<EffectContext> apply,Func<MatchEngine,int,string> requirement=null){if(String.IsNullOrWhiteSpace(effectId)||!effectId.Contains(":" )||apply==null||effects.ContainsKey(effectId))throw new ArgumentException("扩展效果必须使用独立命名空间和版本，不能覆盖现有效果。");Register(effectId,target,apply,requirement);}
  public bool IsChoice(CardRecord card,MatchEngine game,int seat){return card!=null&&(card.BaseId==HunterRules.TrackingCardId?HunterRules.TrackingOptions(game,seat).Length>1:IsChoice(card));}
@@ -153,8 +188,32 @@ public sealed class MatchRules {
   case "NEW1_007":if(c.Choice=="five")Hit(c,5);else Area(c,1-c.Seat,2,false);break;
   case "NEW1_008":if(c.Choice=="draw")c.Game.Draw(c.Seat,2);else c.Game.RestoreHealth(c.Seat,new MatchTarget(c.Seat),5,c.Card.Type=="SPELL",c.Card.Type=="SPELL");break;
  }}
- internal void Register(string id,string target,Action<EffectContext> action,Func<MatchEngine,int,string> requirement=null){effects[id]=new CardEffect{Target=target,Apply=action,Requirement=requirement};}
- void Damage(string id,int amount,string target="ANY_CHARACTER"){Register(id,target,c=>Hit(c,amount));}
+ internal void Register(string id,string target,Action<EffectContext> action,Func<MatchEngine,int,string> requirement=null){if(initialized)customCallbacks=true;effects[id]=new CardEffect{Target=target,Apply=action,Requirement=requirement};}
+ void Damage(string id,int amount,string target="ANY_CHARACTER",bool freeze=false){
+  var damage=new EffectInstruction(EffectOperation.Damage,amount);
+  if(freeze)RegisterProgram(id,target,damage,new EffectInstruction(EffectOperation.Freeze,1));
+  else RegisterProgram(id,target,damage);
+ }
+ void RegisterProgram(string id,string target,params EffectInstruction[] program){RegisterProgram(id,target,null,program);}
+ void RegisterProgram(string id,string target,Func<MatchEngine,int,string> requirement,params EffectInstruction[] program){
+  Register(id,target,c=>{
+   foreach(var step in program){
+    switch(step.Operation){
+     case EffectOperation.Damage:Hit(c,step.Amount);break;
+     case EffectOperation.Draw:c.Game.Draw(c.Seat,step.Amount);break;
+     case EffectOperation.Heal:c.Game.RestoreHealth(c.Seat,c.Target,step.Amount,c.Card.Type=="SPELL",c.Card.Type=="SPELL");break;
+     case EffectOperation.Freeze:c.Game.Freeze(c.Target);break;
+     case EffectOperation.Return:c.Game.ReturnToHand(c.Target);break;
+     case EffectOperation.Summon:for(int i=0;i<step.Amount;i++)c.Game.Summon(c.Seat,step.Token);break;
+    }
+   }
+  },requirement);
+  effects[id].Program=program;
+ }
+ internal EffectInstruction[] EffectProgram(CardRecord card){
+  CardEffect effect;
+  return effects.TryGetValue(EffectKey(card),out effect)?effect.Program:null;
+ }
  static void Hit(EffectContext context,int amount){context.Game.Damage(context.Target,context.Game.SpellDamageAmount(context.Seat,amount));}
  static void Kill(EffectContext context){var unit=context.Game.Unit(context.Target);unit.DamageTaken=unit.MaxHealth;}
  static void Area(EffectContext context,int seat,int amount,bool hero){foreach(var target in context.Game.Characters(seat,hero))context.Game.Damage(target,context.Game.SpellDamageAmount(context.Seat,amount));}

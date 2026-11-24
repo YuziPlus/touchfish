@@ -19,7 +19,7 @@ public partial class PanelWindow {
  bool libraryWritable=true,draftWritable=true;bool refreshingDeck;List<CardRecord> filteredCards=new List<CardRecord>();List<SavedDeck> savedDecks=new List<SavedDeck>();
  Stack<DeckDocument> deckUndo=new Stack<DeckDocument>();
  static readonly Choice[] Classes={new Choice("MAGE","法师"),new Choice("WARRIOR","战士"),new Choice("WARLOCK","术士"),new Choice("ROGUE","潜行者"),new Choice("PRIEST","牧师"),new Choice("PALADIN","圣骑士"),new Choice("HUNTER","猎人"),new Choice("SHAMAN","萨满"),new Choice("DRUID","德鲁伊")};
- string DeckDirectory{get{return DeckStorage.UserDirectory();}}string LegacyDeckDirectory{get{return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"decks");}}
+ string DeckDirectory{get{return Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"decks");}}string LegacyDeckDirectory{get{return DeckStorage.UserDirectory();}}
  void BuildDeckUi(){
   catalog=CardCatalog.Load(AppDomain.CurrentDomain.BaseDirectory);matchRules=new MatchRules(catalog);draft=new DeckDocument{PoolId=catalog.Pools.First(p=>!p.Archived).Id};
   string draftPath=null;
@@ -72,13 +72,15 @@ public partial class PanelWindow {
  }
  void RefreshVersionPicker(){
   if(versionPicker==null)return;var previous=versionPicker.SelectedItem as Choice;
-  var choices=new[]{new Choice("","全部版本")}.Concat(catalog.Sets.Where(s=>!s.HiddenInBrowser).Select(s=>new Choice(s.Id,s.Name))).ToArray();
+  var choices=new[]{new Choice("","全部版本")}.Concat(catalog.Sets.Where(s=>!s.HiddenInBrowser&&s.Id!=GvgClassRules.SetId).Select(s=>new Choice(s.Id,s.Id==GvgRules.SetId?"地精大战侏儒":s.Name))).ToArray();
   bool old=refreshingDeck;refreshingDeck=true;try{versionPicker.ItemsSource=choices;versionPicker.SelectedItem=choices.FirstOrDefault(c=>previous!=null&&c.Key==previous.Key)??choices[0];}finally{refreshingDeck=old;}
  }
  void RefreshCollection(){
   if(collectionRows==null||costPicker==null||typePicker==null||classFilterPicker==null||showAllCards==null)return;var pool=catalog.Pool(draft.PoolId);string query=searchBox.Text.Trim();string cost=costPicker.SelectedItem==null?"all":((Choice)costPicker.SelectedItem).Key;string type=typePicker.SelectedItem==null?"all":((Choice)typePicker.SelectedItem).Key;
   string ownership=classFilterPicker.SelectedItem==null?"available":((Choice)classFilterPicker.SelectedItem).Key;
-  string version=versionPicker==null||versionPicker.SelectedItem==null?"":((Choice)versionPicker.SelectedItem).Key;var all=catalog.BrowseForPool(pool,version);filteredCards=all.Where(c=>(ownership=="class"?c.CardClass==draft.ClassId:ownership=="neutral"?c.CardClass=="NEUTRAL":query.Length>0||showAllCards.IsChecked==true||c.CardClass==draft.ClassId||c.CardClass=="NEUTRAL")&&(type=="all"||c.Type==type)&&(cost=="all"||(cost=="7"?c.Cost>=7:c.Cost==Int32.Parse(cost)))&&CardSearchMatches(c,query)).ToList();
+  string version=versionPicker==null||versionPicker.SelectedItem==null?"":((Choice)versionPicker.SelectedItem).Key;var all=catalog.BrowseForPool(pool,version);
+  if(version==GvgRules.SetId)all=all.Concat(catalog.BrowseForPool(pool,GvgClassRules.SetId)).OrderBy(card=>card.Cost).ThenBy(card=>card.Name,StringComparer.Ordinal).ToList();
+  filteredCards=all.Where(c=>(ownership=="class"?c.CardClass==draft.ClassId:ownership=="neutral"?c.CardClass=="NEUTRAL":query.Length>0||showAllCards.IsChecked==true||c.CardClass==draft.ClassId||c.CardClass=="NEUTRAL")&&(type=="all"||c.Type==type)&&(cost=="all"||(cost=="7"?c.Cost>=7:c.Cost==Int32.Parse(cost)))&&CardSearchMatches(c,query)).ToList();
   collectionRows.Children.Clear();foreach(var card in filteredCards)collectionRows.Children.Add(CardLine(card,0,false));if(filteredCards.Count==0){var empty=T(query.Length==0?"当前筛选无卡牌。":"没有匹配的卡牌。可检查费用、类型筛选，或缩短关键词。",10,Muted);empty.TextWrapping=TextWrapping.Wrap;empty.Margin=new Thickness(5);collectionRows.Children.Add(empty);}collectionCount.Text="牌库  "+filteredCards.Count+" / "+all.Count;ApplyFonts(deckPanel);
  }
  static bool CardSearchMatches(CardRecord card,string query){string text=(card.Name+" "+card.Text+" "+card.Id).Normalize(NormalizationForm.FormKC);var words=query.Normalize(NormalizationForm.FormKC).Split(new[]{' ','\t','\r','\n'},StringSplitOptions.RemoveEmptyEntries);return words.All(word=>text.IndexOf(word,StringComparison.OrdinalIgnoreCase)>=0);}
@@ -91,7 +93,16 @@ public partial class PanelWindow {
   var action=Btn(inDeck?"−":"+",19);action.Height=21;action.FontSize=12;action.ToolTip=inDeck?"移除一张":!catalog.Pool(draft.PoolId).Contains(card)?"当前卡池外，仅供查看":"加入一张";action.IsEnabled=inDeck||DeckRules.CanAdd(catalog,draft,card)==null;action.Opacity=action.IsEnabled?1:.3;action.Click+=(s,e)=>{if(inDeck)RemoveCard(card);else AddCard(card);};Grid.SetColumn(action,4);grid.Children.Add(action);
   var row=new Border{Child=grid,Tag=card,ToolTip=grid.ToolTip,Background=B("#FFFFFF"),BorderBrush=Line,BorderThickness=new Thickness(0,0,0,1),Cursor=Cursors.Hand,Focusable=true};row.MouseLeftButtonDown+=(s,e)=>{ShowDeckCard(card);if(e.ClickCount==2&&!inDeck)AddCard(card);};row.KeyDown+=(s,e)=>{if(e.Key==Key.Enter){ShowDeckCard(card);e.Handled=true;}};row.MouseEnter+=(s,e)=>row.Background=B("#F3F6F5");row.MouseLeave+=(s,e)=>row.Background=B("#FFFFFF");return row;
  }
- string DisplayedCardSetName(CardRecord card){var pool=catalog.Pool(draft.PoolId);if(pool.CardReplacements!=null){var original=pool.CardReplacements.FirstOrDefault(p=>p.Value==card.Id);if(original.Key!=null)return catalog.Sets.First(s=>s.Id==catalog.Card(original.Key).SetId).Name;}return catalog.Sets.First(s=>s.Id==card.SetId).Name;}
+ string DisplayedCardSetName(CardRecord card){
+  var pool=catalog.Pool(draft.PoolId);
+  string setId=card.SetId;
+  if(pool.CardReplacements!=null){
+   var original=pool.CardReplacements.FirstOrDefault(p=>p.Value==card.Id);
+   if(original.Key!=null)setId=catalog.Card(original.Key).SetId;
+  }
+  if(setId==GvgRules.SetId||setId==GvgClassRules.SetId)return "地精大战侏儒";
+  return catalog.Sets.First(s=>s.Id==setId).Name;
+ }
  void ShowDeckCard(CardRecord card){cardInfo.Text=card.Name+" · "+DisplayedCardSetName(card)+(!catalog.Pool(draft.PoolId).Contains(card)?" · 当前卡池外，仅供查看":"")+(matchRules.Supports(card)?"":"【暂不可用】")+"  ·  "+card.Cost+" 费  ·  "+ClassLabel(card.CardClass)+"  ·  "+RarityLabel(card.Rarity)+(card.Type=="MINION"&&!String.IsNullOrEmpty(card.Race)?"  ·  种族："+RaceLabel(card.Race):"")+(matchRules.Supports(card)?" · 可对战":" · 效果未实现");cardEffect.Text=card.Text.Length>0?card.Text:"无特殊效果。";}
  void AddCard(CardRecord card){string error=DeckRules.CanAdd(catalog,draft,card);if(error!=null){Notice(error);return;}RememberDeck();int count;draft.Cards.TryGetValue(card.Id,out count);draft.Cards[card.Id]=count+1;RefreshDeck();PersistDraft();ShowDeckCard(card);Notice("已加入 "+card.Name);}
  void RemoveCard(CardRecord card){if(!draft.Cards.ContainsKey(card.Id))return;RememberDeck();if(--draft.Cards[card.Id]==0)draft.Cards.Remove(card.Id);RefreshDeck();PersistDraft();Notice("已移除一张 "+card.Name);}
