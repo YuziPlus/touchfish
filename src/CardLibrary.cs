@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -78,7 +78,7 @@ public sealed class CardCatalog {
  CardRecord ResolveReplacedDbf(PoolDefinition pool,int dbf){if(pool.CardReplacements==null)return null;foreach(var pair in pool.CardReplacements){var old=Card(pair.Key);if(old.DbfId==dbf||old.LegacyDbfId>0&&old.LegacyDbfId==dbf)return Card(pair.Value);}return null;}
  public List<CardRecord> BrowseDeckable(string setId=null){if(!String.IsNullOrEmpty(setId)&&!Sets.Any(s=>s.Id==setId))throw new InvalidDataException("未知卡牌版本："+setId);return Cards.Values.Where(c=>c.Collectible&&(String.IsNullOrEmpty(setId)||c.SetId==setId)&&(c.Type=="MINION"||c.Type=="SPELL"||c.Type=="WEAPON")).OrderBy(c=>c.Cost).ThenBy(c=>c.Name,StringComparer.Ordinal).ToList();}
  public List<CardRecord> BrowseForPool(PoolDefinition pool,string setId=null){return BrowseDeckable(setId).Where(c=>!Sets.First(s=>s.Id==c.SetId).HiddenInBrowser).Select(c=>pool.CardReplacements!=null&&pool.CardReplacements.ContainsKey(c.Id)?Card(pool.CardReplacements[c.Id]):c).GroupBy(c=>c.Id).Select(g=>g.First()).OrderBy(c=>c.Cost).ThenBy(c=>c.Name,StringComparer.Ordinal).ToList();}
- public CardRecord Card(string id){CardRecord card;if(!Cards.TryGetValue(id,out card))throw new InvalidDataException("未知卡牌："+id);return card;}
+ public CardRecord Card(string id){string baseId;int bonus;if(MatchEngine.TryReadTournamentBuff(id,out baseId,out bonus))id=baseId;CardRecord card;if(!Cards.TryGetValue(id,out card))throw new InvalidDataException("未知卡牌："+id);return card;}
  public PoolDefinition Pool(string id){var pool=Pools.FirstOrDefault(p=>p.Id==id);if(pool==null)throw new InvalidDataException("未知卡池："+id);return pool;}
 }
 public sealed class DeckDocument {

@@ -140,6 +140,97 @@
         "MAGE": 637,
         "PRIEST": 813
       },
+      "Archived": true,
+      "CardReplacements": {
+        "VAN_EX1_536": "NAX_EX1_536",
+        "VAN_CS2_237": "BRM9554_CS2_237",
+        "VAN_EX1_095": "BRM9554_EX1_095",
+        "VAN_EX1_116": "BRM9554_EX1_116",
+        "VAN_EX1_131": "BRM9554_EX1_131",
+        "VAN_EX1_308": "BRM9554_EX1_308",
+        "VAN_EX1_544": "BRM9554_EX1_544",
+        "FP1_025": "BRM9554_FP1_025",
+        "FP1_028": "BRM9554_FP1_028",
+        "VAN_EX1_320": "BRM9554_EX1_320",
+        "BRM_012": "BRM9554_BRM_012",
+        "VAN_CS2_221": "BRM9554_CS2_221",
+        "VAN_EX1_137": "BRM9554_EX1_137"
+      }
+    },
+    {
+      "Id": "grand-tournament-neutral-2015",
+      "Name": "冠军的试炼·中立",
+      "CardSetIds": [
+        "classic-2014",
+        "naxxramas-2014",
+        "naxxramas-balance-2014",
+        "goblins-gnomes-2014",
+        "gvg-2014-classes",
+        "blackrock-mountain-2015",
+        "blackrock-balance-2015",
+        "grand-tournament-neutral-2015"
+      ],
+      "DeckSize": 30,
+      "CopyLimit": 2,
+      "LegendaryLimit": 1,
+      "DeckstringFormat": 3,
+      "HeroDbfIds": {
+        "WARRIOR": 7,
+        "SHAMAN": 1066,
+        "ROGUE": 930,
+        "PALADIN": 671,
+        "HUNTER": 31,
+        "DRUID": 274,
+        "WARLOCK": 893,
+        "MAGE": 637,
+        "PRIEST": 813
+      },
+      "Archived": true,
+      "CardReplacements": {
+        "VAN_EX1_536": "NAX_EX1_536",
+        "VAN_CS2_237": "BRM9554_CS2_237",
+        "VAN_EX1_095": "BRM9554_EX1_095",
+        "VAN_EX1_116": "BRM9554_EX1_116",
+        "VAN_EX1_131": "BRM9554_EX1_131",
+        "VAN_EX1_308": "BRM9554_EX1_308",
+        "VAN_EX1_544": "BRM9554_EX1_544",
+        "FP1_025": "BRM9554_FP1_025",
+        "FP1_028": "BRM9554_FP1_028",
+        "VAN_EX1_320": "BRM9554_EX1_320",
+        "BRM_012": "BRM9554_BRM_012",
+        "VAN_CS2_221": "BRM9554_CS2_221",
+        "VAN_EX1_137": "BRM9554_EX1_137"
+      }
+    },
+    {
+      "Id": "grand-tournament-2015",
+      "Name": "冠军的试炼",
+      "CardSetIds": [
+        "classic-2014",
+        "naxxramas-2014",
+        "naxxramas-balance-2014",
+        "goblins-gnomes-2014",
+        "gvg-2014-classes",
+        "blackrock-mountain-2015",
+        "blackrock-balance-2015",
+        "grand-tournament-neutral-2015",
+        "grand-tournament-classes-2015"
+      ],
+      "DeckSize": 30,
+      "CopyLimit": 2,
+      "LegendaryLimit": 1,
+      "DeckstringFormat": 3,
+      "HeroDbfIds": {
+        "WARRIOR": 7,
+        "SHAMAN": 1066,
+        "ROGUE": 930,
+        "PALADIN": 671,
+        "HUNTER": 31,
+        "DRUID": 274,
+        "WARLOCK": 893,
+        "MAGE": 637,
+        "PRIEST": 813
+      },
       "Archived": false,
       "CardReplacements": {
         "VAN_EX1_536": "NAX_EX1_536",

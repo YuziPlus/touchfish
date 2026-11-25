@@ -73,5 +73,8 @@
   "SealedRules.cs",
   "GvgRules.cs",
   "GvgClassRules.cs",
-  "BlackrockRules.cs"
+  "BlackrockRules.cs",
+  "TournamentRules.cs",
+  "TournamentClassRules.cs",
+  "TournamentClassState.cs"
 ]

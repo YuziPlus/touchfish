@@ -14,9 +14,10 @@ public static partial class RuleTests {
   Check(cards.Count(c=>c.CardClass=="NEUTRAL")==13&&cards.Where(c=>c.CardClass!="NEUTRAL").GroupBy(c=>c.CardClass).All(g=>g.Count()==2),"Thirteen neutral plus two per profession");
   Check(catalog.Card("BRM_028").Cost==6&&catalog.Card("BRM_028").Attack==5&&catalog.Card("BRM_008").Cost==5&&catalog.Card("BRM_016").Health==5,"Original 2015 stats");
   Check(!matchRules.Supports(new CardRecord{Id="BRM_future",EffectId="BRM_future",SetId=BlackrockRules.SetId,Type="MINION"}),"Future effects cannot silently become supported");
-  var old=matchRules.TrainingDeck("ROGUE");var code=DeckCode.Encode(catalog,old);var promoted=DeckRules.ForCurrentPlay(catalog,old);Check(promoted.PoolId==BlackrockRules.CurrentPoolId&&old.PoolId=="classic-2014"&&DeckCode.Encode(catalog,old)==code,"Old decks promoted without rewriting originals");
+  var current=catalog.Pools.Single(p=>!p.Archived);
+  var old=matchRules.TrainingDeck("ROGUE");var code=DeckCode.Encode(catalog,old);var promoted=DeckRules.ForCurrentPlay(catalog,old);Check(promoted.PoolId==current.Id&&old.PoolId=="classic-2014"&&DeckCode.Encode(catalog,old)==code,"Old decks promoted without rewriting originals");
   Check(DeckCode.Decode(catalog,DeckCode.Encode(catalog,promoted),promoted.PoolId).Count==30,"Deckstring roundtrip");
-  Check(ArenaDraftSession.CurrentPool(catalog).Id==BlackrockRules.CurrentPoolId,"Arena uses new full pool");var sealedGame=new SealedSession(catalog,42,matchRules.Supports);Check(sealedGame.PoolId==BlackrockRules.CurrentPoolId,"Sealed uses new full pool");
+  Check(ArenaDraftSession.CurrentPool(catalog).Id==current.Id,"Arena uses active full pool");var sealedGame=new SealedSession(catalog,42,matchRules.Supports);Check(sealedGame.PoolId==current.Id,"Sealed uses active full pool");
  }
  static void BrmBalance(){
   var pool=catalog.Pool(BlackrockRules.CurrentPoolId);
@@ -41,6 +42,7 @@ public static partial class RuleTests {
   bool expandedPoolObserved=false;
   for(int seed=0;seed<24;seed++){
    g=GvgGame(seed);
+   g.CardPoolId=pool.Id;
    g.Players[0].ClassId="WARLOCK";
    victim=g.Summon(1,"VAN_CS2_231");
    BrmPlay(g,"BRM9554_EX1_320",BT(victim));

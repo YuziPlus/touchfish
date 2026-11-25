@@ -1,0 +1,11 @@
+{
+  "SourceBuild": 25770,
+  "SourceUrl": "https://api.hearthstonejson.com/v1/25770/zhCN/cards.json",
+  "SourceSha256": "4e104e20b3baff20f78dfc1e7ef07ba76628060cb073de778bfe1cb310cd9c1e",
+  "Collectible": 82,
+  "Helpers": 6,
+  "HistoricalOverrides": [
+    "AT_019 summons Dreadsteed immediately, original 2015 rule",
+    "AT_046 summons any eligible totem, original 2015 rule"
+  ]
+}

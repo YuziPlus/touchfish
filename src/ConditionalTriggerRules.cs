@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Linq;
 
 namespace Touchfish {
-public enum MatchTriggerTiming { CardPlayed, SpellCast, TurnStart, MinionDamaged, TurnEnd, SourceDied, MinionHealed, CharacterHealed, MinionSummoned, SpellResolved, MinionDied, CardResolved, MinionPlayed }
+public enum MatchTriggerTiming { CardPlayed, SpellCast, TurnStart, MinionDamaged, TurnEnd, SourceDied, MinionHealed, CharacterHealed, MinionSummoned, SpellResolved, MinionDied, CardResolved, MinionPlayed, HeroPowerUsed }
 public sealed class MatchTriggerContext {
  public MatchEngine Game;public int Seat,Amount;public int PaidCost=-1;public CardRecord Card;public HandCard PlayedHand;public BattleUnit Source,Damaged,Healed,Summoned,Died;public MatchTarget HealedTarget;
 }
@@ -40,7 +40,7 @@ public static class ConditionalTriggerRules {
  }
 }
 public static class TurnStartRules {
- public static void Resolve(MatchEngine game,int seat){ConditionalTriggerRules.Resolve(game,MatchTriggerTiming.TurnStart,seat);}
+ public static void Resolve(MatchEngine game,int seat){game.TournamentTurnStart(seat);ConditionalTriggerRules.Resolve(game,MatchTriggerTiming.TurnStart,seat);}
 }
 public static class TimedCostRules {
  public static void GrantFreeSpells(MatchEngine game,int seat,int throughTurn){var p=game.Players[seat];p.FreeSpellsUntilTurn=Math.Max(p.FreeSpellsUntilTurn,throughTurn);p.SpellCostPenalty=0;p.SpellCostPenaltyUntilTurn=-1;}

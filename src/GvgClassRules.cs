@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections.Generic;
 namespace Touchfish {
@@ -98,7 +98,7 @@ public static class GvgClassRules {
  public static bool HasDeathrattle(MatchEngine g,BattleUnit u){return HasDeathrattle(u)||!u.Silenced&&MatchEngine.Has(g.Card(u.CardId),"DEATHRATTLE");}
  static void BouncingBlade(MatchEngine g,int seat){for(int i=0;i<10000&&!g.Finished;i++){var living=g.Players.SelectMany(p=>p.Board).Where(u=>u.Health>0).ToArray();if(living.Length==0||living.All(u=>u.ImmuneUntilTurn==g.Turn||u.CommandingShoutTurn==g.Turn&&u.Health<=1))break;var t=living[g.RandomIndex(living.Length)];if(g.GvgBladeDamage(t,g.SpellDamageAmount(seat,1)))break;}}
  public static void Death(MatchEngine g,BattleUnit u){if(g.Card(u.CardId).BaseId=="GVG_035")g.ShuffleGvgCard(u.Owner,u.CardId,true);}
- public static void WeaponRemoved(MatchEngine g,int seat,string id){if(id!=null&&g.Card(id).BaseId=="GVG_036")RandomBuff(g,seat,2,2,Mech);}
+ public static void WeaponRemoved(MatchEngine g,int seat,string id){if(id!=null&&g.Card(id).BaseId=="AT_050"){g.Players[seat].HeroAbilityId="tgt:lightning-jolt";g.Players[seat].Shadowform=0;g.Players[seat].PowerUsed=false;g.Players[seat].PowersThisTurn=0;}if(id!=null&&g.Card(id).BaseId=="GVG_036")RandomBuff(g,seat,2,2,Mech);}
  public static void HeroDamaged(MatchEngine g,int seat,int amount){if(g.Active!=seat||amount<=0)return;foreach(var u in Own(g,seat).Where(u=>!u.Silenced&&g.Card(u.CardId).BaseId=="GVG_100").ToArray())g.Buff(T(u),2,2);}
  public static void MinionsDied(MatchEngine g,BattleUnit[] dead){foreach(var unit in dead){g.NoteHistory(HistoryKind.HandGrowth,unit.Owner,"GVG_063");foreach(var h in g.Players[unit.Owner].Hand.Where(h=>g.Card(h.CardId).BaseId=="GVG_063"))h.AttackBonus++;}}
  public static readonly ConditionalTrigger[] Triggers={
@@ -121,7 +121,7 @@ public sealed partial class MatchEngine {
  int GvgHealthAura(BattleUnit unit){return GvgAttackAura(unit);}
  void GvgCombatHeal(BattleUnit source,int amount){if(source!=null&&!source.Silenced&&Card(source.CardId).BaseId=="GVG_018"&&amount>0)RestoreHealth(source.Owner,new MatchTarget(source.Owner),amount);}
  internal void GvgMinionDamage(BattleUnit source,MatchTarget target,int amount){if(source==null||amount<=0)return;if(!source.Silenced&&(Card(source.CardId).BaseId=="CS2_033"||Card(source.CardId).BaseId=="GVG_002"))Freeze(target);GvgCombatHeal(source,amount);}
- public BattleUnit SummonHandCard(int seat,HandCard hand,int position=-1,bool summonEvent=true,bool deferAfterSummon=false){return Summon(seat,hand.CardId,position,summonEvent,deferAfterSummon,initialize:unit=>unit.BuffAttack+=hand.AttackBonus);}
+ public BattleUnit SummonHandCard(int seat,HandCard hand,int position=-1,bool summonEvent=true,bool deferAfterSummon=false){return Summon(seat,hand.CardId,position,summonEvent,deferAfterSummon,initialize:unit=>{unit.BuffAttack+=hand.AttackBonus;unit.BuffHealth+=hand.HealthBonus;});}
  internal int NextGvgInstance{get{return nextId;}}
  public void GiveGvgCard(int seat,string id,int adjustment=0){GiveNaxxCard(seat,id,adjustment);}
  public void ShuffleGvgCard(int seat,string id,bool known=false){var deck=Players[seat].Deck;deck.Insert(random.Next(deck.Count+1),id);NoteHistory(known?HistoryKind.ShuffleIn:HistoryKind.Unmodeled,seat,known?id:null);}

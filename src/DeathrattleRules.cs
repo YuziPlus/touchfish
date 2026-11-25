@@ -5,6 +5,7 @@ using System.Linq;
 namespace Touchfish {
 public static class DeathrattleRules {
  static readonly Dictionary<string,Action<MatchEngine,BattleUnit>> effects=new Dictionary<string,Action<MatchEngine,BattleUnit>>{
+  {"AT_009",TournamentClassRules.Death},{"AT_019",TournamentClassRules.Death},{"AT_036",TournamentClassRules.Death},{"AT_038",TournamentClassRules.Death},{"AT_123",TournamentRules.Death},{"AT_128",TournamentRules.Death},
   {"BRM_027",BlackrockRules.Death},
   {"GVG_035",GvgClassRules.Death},
  {"GVG_076",GvgRules.Death}, {"GVG_078",GvgRules.Death}, {"GVG_082",GvgRules.Death}, {"GVG_096",GvgRules.Death}, {"GVG_105",GvgRules.Death}, {"GVG_110t",GvgRules.Death}, {"GVG_114",GvgRules.Death}, {"GVG_115",GvgRules.Death},

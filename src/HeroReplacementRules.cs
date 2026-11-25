@@ -28,12 +28,12 @@ public static class HeroReplacementRules {
 public sealed partial class MatchEngine {
  public int HeroHealthLimit(int seat){return Players[seat].HeroMaxHealth>0?Players[seat].HeroMaxHealth:Mode.StartingHealth;}
  public string HeroRace(int seat){var form=HeroReplacementRules.Hero(Players[seat].HeroFormId);return form==null?null:form.Race;}
- public int HeroPowerCost(int seat){var ability=HeroReplacementRules.Ability(Players[seat].HeroAbilityId);return ability==null?2:ability.Cost;}
- public void ReplaceHero(int seat,string definitionId){var form=HeroReplacementRules.Hero(definitionId);if(seat<0||seat>1||form==null)throw new InvalidOperationException("替换英雄定义无效。");var p=Players[seat];p.HeroFormId=form.Id;p.HeroAbilityId=form.AbilityId;if(!form.PreserveHealth)p.HeroMaxHealth=p.Health=form.Health;p.HeroDestroyed=false;if(!form.PreserveArmor)p.Armor=0;p.Armor+=form.ArmorGain;p.Frozen=false;p.FrozenTurn=0;p.TempAttack=0;p.SecretImmuneTurn=-1;p.Shadowform=0;p.PowerUsed=false;p.EmoteText=null;Log.Add(PlayerLabel(seat)+" · 英雄替换："+form.Name+" · 生命 "+p.Health);}
+ public int HeroPowerCost(int seat){var ability=HeroReplacementRules.Ability(Players[seat].HeroAbilityId);var p=Players[seat];int cost=TournamentRules.Has(this,seat,"AT_085")?1:ability==null?2:ability.Cost;return Math.Max(0,cost-p.PowerDiscount+(p.PowerTaxTurn==Turn?p.PowerTax:0));}
+ public void ReplaceHero(int seat,string definitionId){var form=HeroReplacementRules.Hero(definitionId);if(seat<0||seat>1||form==null)throw new InvalidOperationException("替换英雄定义无效。");var p=Players[seat];p.HeroFormId=form.Id;p.HeroAbilityId=form.AbilityId;if(!form.PreserveHealth)p.HeroMaxHealth=p.Health=form.Health;p.HeroDestroyed=false;if(!form.PreserveArmor)p.Armor=0;p.Armor+=form.ArmorGain;p.Frozen=false;p.FrozenTurn=0;p.TempAttack=0;p.SecretImmuneTurn=-1;p.Shadowform=0;p.PowerUsed=false;p.PowersThisTurn=0;p.EmoteText=null;Log.Add(PlayerLabel(seat)+" · 英雄替换："+form.Name+" · 生命 "+p.Health);}
  public string HeroPowerTargetMask(int seat){
   var player=Players[seat];
   var ability=HeroReplacementRules.Ability(player.HeroAbilityId);
-  if(ability!=null)return ability.Target;
+  if(ability!=null){if((ability.Id=="tgt:basic-HUNTER"||ability.Id=="tgt:upgraded-HUNTER")&&GvgClassRules.Has(this,seat,"GVG_087"))return "HUNTER_POWER";return ability.Target;}
   if(player.Shadowform>0||player.ClassId=="MAGE"||player.ClassId=="PRIEST")return "ANY_CHARACTER";
   if(player.ClassId=="HUNTER"&&GvgClassRules.Has(this,seat,"GVG_087"))return "HUNTER_POWER";
   return "NONE";
@@ -45,7 +45,7 @@ public sealed partial class MatchEngine {
  }
  internal string HeroPowerAvailability(int seat){
   var player=Players[seat];
-  if(player.PowerUsed)return "本回合已使用英雄技能。";
+  if(PowerSpent(seat))return "本回合已使用英雄技能。";
   if(player.Mana<HeroPowerCost(seat))return "英雄技能法力不足。";
   var ability=HeroReplacementRules.Ability(player.HeroAbilityId);
   if(ability!=null)return ability.Requirement==null?null:ability.Requirement(this,seat);
@@ -57,11 +57,12 @@ public sealed partial class MatchEngine {
  }
  void UseRegisteredHeroPower(int seat,MatchTarget target,HeroAbilityDefinition ability){
   var player=Players[seat];
-  player.Mana-=ability.Cost;
+  player.Mana-=HeroPowerCost(seat);
   player.PowerUsed=true;
   Log.Add(PlayerLabel(seat)+" · 英雄技能："+ability.Name+"（"+ability.Cost+"费）");
   DamageBatch(()=>ability.Apply(this,seat,target));
   Cleanup();
+  if(!Finished)FinishTournamentPower(seat);
  }
  public void DestroyHero(int seat){Players[seat].HeroDestroyed=true;Players[seat].Health=0;}
 }

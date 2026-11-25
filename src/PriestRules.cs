@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 namespace Touchfish {
 public static class PriestRules {
@@ -9,7 +9,7 @@ public static class PriestRules {
   case "EX1_339":g.CopyPriestCards(c.Seat,g.Players[1-c.Seat].Deck.ToArray(),2);break;
   case "EX1_345":var candidates=g.Players[1-c.Seat].Deck.Where(id=>g.Card(id).Type=="MINION").ToArray();g.Summon(c.Seat,candidates.Length==0?"VAN_EX1_345t":candidates[g.RandomIndex(candidates.Length)]);break;
   case "EX1_623":g.Buff(c.Target,0,3);break;
-  case "EX1_625":var p=g.Players[c.Seat];if(p.Shadowform<2){p.HeroAbilityId=null;p.Shadowform++;p.PowerUsed=false;}break;
+  case "EX1_625":var p=g.Players[c.Seat];if(p.Shadowform<2){p.HeroAbilityId=null;p.Shadowform++;p.PowerUsed=false;p.PowersThisTurn=0;}break;
  }}
  public static void Lightwell(MatchTriggerContext c){var g=c.Game;var targets=g.Characters(c.Source.Owner).Where(t=>t.Hero?g.Players[t.Seat].Health<g.HeroHealthLimit(t.Seat):g.Unit(t).DamageTaken>0).ToArray();var target=g.RandomTarget(targets);if(target!=null)g.RestoreHealth(c.Source.Owner,target,3);}
 }

@@ -87,14 +87,15 @@ public static class AgentBridge {
   var attackTargets=game.Characters(1-seat).Where(target=>Valid(game,seat,target,"ENEMY_CHARACTER",false)
    &&(!taunt||!target.Hero&&game.Unit(target).Taunt)).ToArray();
   foreach(var unit in player.Board.Where(unit=>game.CanAttack(seat,unit)==null))
-   foreach(var target in attackTargets)
+   foreach(var target in attackTargets.Where(t=>!t.Hero||unit.Silenced||game.Card(unit.CardId).BaseId!="AT_125"))
     yield return new AgentMove{Kind="attack",Source=unit.Id,Target=CopyTarget(target),Damage=game.AttackValue(unit)};
   if(game.CanHeroAttack(seat)==null)
    foreach(var target in attackTargets)
     yield return new AgentMove{Kind="attack",Target=CopyTarget(target),Damage=game.HeroAttack(seat)};
   if(game.HeroPowerAvailability(seat)==null){
    string mask=game.HeroPowerTargetMask(seat);
-   if(mask=="NONE")yield return new AgentMove{Kind="power",Cost=view.PowerCost};
+   if(player.HeroAbilityId=="tgt:upgraded-SHAMAN"){foreach(var id in MatchEngine.TournamentTotems)yield return new AgentMove{Kind="power",Cost=view.PowerCost,Choice=id};}
+   else if(mask=="NONE")yield return new AgentMove{Kind="power",Cost=view.PowerCost};
    else foreach(var target in targets.Where(target=>Valid(game,seat,target,mask,true)))
     yield return new AgentMove{Kind="power",Cost=view.PowerCost,Target=CopyTarget(target),Damage=TargetedPowerDamage(game,seat,view)};
   }
@@ -103,9 +104,9 @@ public static class AgentBridge {
  static int TargetedPowerDamage(MatchEngine game,int seat,AgentObservation view){
   var player=game.Players[seat];
   if(HeroReplacementRules.Ability(player.HeroAbilityId)!=null)return 0;
-  if(player.Shadowform>0)return (player.Shadowform+1)*view.PowerDamage;
-  if(player.ClassId=="HUNTER")return 2*view.PowerDamage;
-  return player.ClassId=="MAGE"?view.PowerDamage:0;
+  if(player.Shadowform>0)return game.TournamentPowerDamage(seat,player.Shadowform+1);
+  if(player.ClassId=="HUNTER")return game.TournamentPowerDamage(seat,2);
+  return player.ClassId=="MAGE"?game.TournamentPowerDamage(seat,1):0;
  }
  static MatchTarget CopyTarget(MatchTarget target){
   return target==null?null:new MatchTarget(target.Seat,target.UnitId);
@@ -130,7 +131,7 @@ public static class AgentBridge {
    WeaponId=player.WeaponId,WeaponAttack=game.WeaponAttackValue(seat),WeaponDurability=player.WeaponDurability,
    HeroAttacks=player.HeroAttacks,WeaponWindfury=player.WeaponWindfury,HeroAttack=game.HeroAttack(seat),
    Frozen=player.Frozen,Immune=player.SecretImmuneTurn==game.Turn||GvgClassRules.HeroImmune(game,seat),
-   PowerUsed=player.PowerUsed,Board=player.Board.Select(unit=>ObserveUnit(game,seat,unit)).ToArray()
+   PowerUsed=game.PowerSpent(seat),Board=player.Board.Select(unit=>ObserveUnit(game,seat,unit)).ToArray()
   };
  }
  static AgentUnit ObserveUnit(MatchEngine game,int seat,BattleUnit unit){
@@ -153,7 +154,7 @@ public static class AgentBridge {
  }
  public static ActionResult Execute(MatchEngine g,int seat,AgentMove move){
   if(move==null||g.Active!=seat||!g.MulliganComplete||g.Finished)return new ActionResult{Message="人机操作已失效。"};
-  switch(move.Kind){case "play":return g.Play(seat,move.Source,move.Target,move.Position,move.Choice);case "attack":return g.Attack(seat,move.Source,move.Target);case "power":return g.HeroPower(seat,move.Target);case "end":return g.EndTurn();default:return new ActionResult{Message="未知人机操作。"};}
+  switch(move.Kind){case "play":return g.Play(seat,move.Source,move.Target,move.Position,move.Choice);case "attack":return g.Attack(seat,move.Source,move.Target);case "power":return g.HeroPower(seat,move.Target,move.Choice);case "end":return g.EndTurn();default:return new ActionResult{Message="未知人机操作。"};}
  }
 }
 public sealed partial class MatchEngine {
