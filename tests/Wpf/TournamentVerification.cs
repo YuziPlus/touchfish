@@ -11,15 +11,34 @@ public partial class PanelWindow {
   if(VerificationRun.Visual){
    var original=draft;
    draft=new DeckDocument{ClassId="DRUID",PoolId=TournamentClassRules.PoolId};
-   SyncDeckControls();RefreshDeck();showAllCards.IsChecked=true;
-   versionPicker.SelectedItem=versionPicker.Items.Cast<Choice>().First(c=>c.Key==TournamentRules.SetId);RefreshCollection();
-   Check(filteredCards.Count==50&&filteredCards.All(c=>matchRules.Supports(c)),"All 50 neutral cards appear as playable");
-   versionPicker.SelectedItem=versionPicker.Items.Cast<Choice>().First(c=>c.Key==TournamentClassRules.SetId);
-   Check(filteredCards.Count==82&&filteredCards.All(c=>matchRules.Supports(c)),"All 82 class cards appear as playable");
+   draft.Cards["VAN_CS2_231"]=1;
+   SyncDeckControls();RefreshDeck();showAllCards.IsChecked=false;
+   var beforeFilters=draft.Copy();
+   var versions=versionPicker.Items.Cast<Choice>().ToArray();
+   versionPicker.SelectedItem=versions.Single(c=>c.Key==TournamentRules.SetId);
+   classFilterPicker.SelectedItem=classFilterPicker.Items.Cast<Choice>().Single(c=>c.Key=="class");
+   Check(filteredCards.Count==9&&filteredCards.All(c=>c.CardClass=="DRUID"&&matchRules.Supports(c)),"Tournament class filter exposes all nine Druid cards");
+   Check(((Choice)versionPicker.SelectedItem).Label=="冠军的试炼"&&versions.All(c=>c.Key!=TournamentClassRules.SetId),"Both Tournament packs share a single version selector entry");
+   Check(SameDeck(draft,beforeFilters),"Changing version and class filters preserves the deck");
+   showAllCards.IsChecked=true;
+   Check(filteredCards.Count==82&&filteredCards.All(c=>c.CardClass!="NEUTRAL"&&matchRules.Supports(c)),"All-library class filter shows all 82 Tournament class cards");
+   var foreign=filteredCards.Single(c=>c.Id=="AT_008");
+   Check(!((Grid)CardLine(foreign,0,false).Child).Children.OfType<Button>().Single().IsEnabled,"Other class cards can be browsed without being added to the draft");
+   classFilterPicker.SelectedItem=classFilterPicker.Items.Cast<Choice>().Single(c=>c.Key=="neutral");
+   Check(filteredCards.Count==50&&filteredCards.All(c=>c.CardClass=="NEUTRAL"&&matchRules.Supports(c)),"Tournament neutral filter shows all 50 neutral cards");
+   classFilterPicker.SelectedIndex=0;
+   Check(filteredCards.Count==132,"All-library view shows both Tournament packs");
+   showAllCards.IsChecked=false;
+   classFilterPicker.SelectedItem=classFilterPicker.Items.Cast<Choice>().Single(c=>c.Key=="class");
+   classPicker.SelectedItem=Classes.Single(c=>c.Key=="HUNTER");
+   Check(filteredCards.Count==10&&filteredCards.All(c=>c.CardClass=="HUNTER"),"Changing the draft profession refreshes the Tournament class filter");
+   classPicker.SelectedItem=Classes.Single(c=>c.Key=="DRUID");
+   ApplyMode(false);ShowPage("deck");Render(Path.Combine(folder,"tournament-profession-normal.png"));
+   ApplyMode(true);Render(Path.Combine(folder,"tournament-profession-minimal.png"));
    searchBox.Text="AT_045";var aviana=filteredCards.Single();
    Check(aviana.Id=="AT_045"&&aviana.DbfId==2796,"Deck builder finds the historical Aviana record");
    ApplyMode(false);ShowPage("deck");ShowDeckCard(aviana);Render(Path.Combine(folder,"tournament-aviana.png"));
-   searchBox.Text="";versionPicker.SelectedIndex=0;draft=original;SyncDeckControls();
+   searchBox.Text="";classFilterPicker.SelectedIndex=0;versionPicker.SelectedIndex=0;draft=original;SyncDeckControls();RefreshDeck();
   }
   if(VerificationRun.Network){
    var guest=new PanelWindow(true){ShowInTaskbar=false,Opacity=0};guest.Show();

@@ -38,7 +38,7 @@ public partial class PanelWindow {
   searchBox=Input("");searchBox.ToolTip="搜索全库名称、效果或卡牌 ID；其他职业仅可查看";searchBox.Margin=new Thickness(0,0,4,2);searchBox.TextChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};filters.Children.Add(searchBox);
   costPicker=Picker(new Choice[]{new Choice("all","费用"),new Choice("0","0"),new Choice("1","1"),new Choice("2","2"),new Choice("3","3"),new Choice("4","4"),new Choice("5","5"),new Choice("6","6"),new Choice("7","7+")});costPicker.ToolTip="费用筛选";costPicker.SelectedIndex=0;costPicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(costPicker,1);filters.Children.Add(costPicker);costPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
   typePicker=Picker(new Choice[]{new Choice("all","全部"),new Choice("MINION","随从"),new Choice("SPELL","法术"),new Choice("WEAPON","武器")});typePicker.SelectedIndex=0;typePicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(typePicker,2);filters.Children.Add(typePicker);typePicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
-  classFilterPicker=Picker(new Choice[]{new Choice("available","本职+中立"),new Choice("class","职业卡"),new Choice("neutral","中立卡")});classFilterPicker.SelectedIndex=0;classFilterPicker.ToolTip="筛选当前职业卡牌和中立卡牌";classFilterPicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(classFilterPicker,3);filters.Children.Add(classFilterPicker);classFilterPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
+  classFilterPicker=Picker(new Choice[]{new Choice("available","本职+中立"),new Choice("class","职业卡"),new Choice("neutral","中立卡")});classFilterPicker.SelectedIndex=0;classFilterPicker.ToolTip="筛选职业卡或中立卡；勾选全库后可查看其他职业卡";classFilterPicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(classFilterPicker,3);filters.Children.Add(classFilterPicker);classFilterPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
   showAllCards=new CheckBox{Content="全库",FontSize=10,Foreground=Muted,VerticalAlignment=VerticalAlignment.Center};showAllCards.ToolTip="包含其他职业卡；可与职业卡/中立卡筛选组合使用";showAllCards.Checked+=(s,e)=>RefreshCollection();showAllCards.Unchecked+=(s,e)=>RefreshCollection();Grid.SetColumn(showAllCards,4);filters.Children.Add(showAllCards);Put(deckPanel,filters,1);
   var lists=new Grid();lists.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(1.4,GridUnitType.Star)});lists.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(5)});lists.ColumnDefinitions.Add(new ColumnDefinition());
   collectionRows=new StackPanel();deckRows=new StackPanel();collectionCount=T("牌库",10,Muted);deckCount=T("卡组 0/30",10,Muted);lists.Children.Add(ListPane(collectionCount,collectionRows));var deckPane=new Grid();deckPane.RowDefinitions.Add(new RowDefinition{Height=new GridLength(24)});deckPane.RowDefinitions.Add(new RowDefinition());savedDeckPicker=Picker(new Choice[0]);savedDeckPicker.ToolTip="直接选择已保存卡组进行编辑";savedDeckPicker.Margin=new Thickness(0,0,0,3);deckPane.Children.Add(savedDeckPicker);savedDeckPicker.SelectionChanged+=(s,e)=>{if(syncingSavedDeckPicker)return;var choice=savedDeckPicker.SelectedItem as Choice;if(choice==null||String.IsNullOrEmpty(choice.Key))return;var saved=savedDecks.FirstOrDefault(d=>d.Id==choice.Key);if(saved!=null)LoadSavedDeckForEditing(saved);};Put(deckPane,ListPane(deckCount,deckRows),1);Grid.SetColumn(deckPane,2);lists.Children.Add(deckPane);Put(deckPanel,lists,2);
@@ -72,15 +72,35 @@ public partial class PanelWindow {
  }
  void RefreshVersionPicker(){
   if(versionPicker==null)return;var previous=versionPicker.SelectedItem as Choice;
-  var choices=new[]{new Choice("","全部版本")}.Concat(catalog.Sets.Where(s=>!s.HiddenInBrowser&&s.Id!=GvgClassRules.SetId).Select(s=>new Choice(s.Id,s.Id==GvgRules.SetId?"地精大战侏儒":s.Name))).ToArray();
+  var versions=catalog.Sets.Where(set=>!set.HiddenInBrowser).GroupBy(set=>CollectionVersionKey(set.Id));
+  var choices=new[]{new Choice("","全部版本")}.Concat(versions.Select(group=>new Choice(group.Key,CollectionVersionLabel(group.Key,group.First().Name)))).ToArray();
   bool old=refreshingDeck;refreshingDeck=true;try{versionPicker.ItemsSource=choices;versionPicker.SelectedItem=choices.FirstOrDefault(c=>previous!=null&&c.Key==previous.Key)??choices[0];}finally{refreshingDeck=old;}
+ }
+ static string CollectionVersionKey(string setId){
+  if(setId==GvgClassRules.SetId)return GvgRules.SetId;
+  return setId==TournamentClassRules.SetId?TournamentRules.SetId:setId;
+ }
+ static string CollectionVersionLabel(string key,string fallback){
+  if(key==GvgRules.SetId)return "地精大战侏儒";
+  return key==TournamentRules.SetId?"冠军的试炼":fallback;
  }
  void RefreshCollection(){
   if(collectionRows==null||costPicker==null||typePicker==null||classFilterPicker==null||showAllCards==null)return;var pool=catalog.Pool(draft.PoolId);string query=searchBox.Text.Trim();string cost=costPicker.SelectedItem==null?"all":((Choice)costPicker.SelectedItem).Key;string type=typePicker.SelectedItem==null?"all":((Choice)typePicker.SelectedItem).Key;
   string ownership=classFilterPicker.SelectedItem==null?"available":((Choice)classFilterPicker.SelectedItem).Key;
-  string version=versionPicker==null||versionPicker.SelectedItem==null?"":((Choice)versionPicker.SelectedItem).Key;var all=catalog.BrowseForPool(pool,version);
-  if(version==GvgRules.SetId)all=all.Concat(catalog.BrowseForPool(pool,GvgClassRules.SetId)).OrderBy(card=>card.Cost).ThenBy(card=>card.Name,StringComparer.Ordinal).ToList();
-  filteredCards=all.Where(c=>(ownership=="class"?c.CardClass==draft.ClassId:ownership=="neutral"?c.CardClass=="NEUTRAL":query.Length>0||showAllCards.IsChecked==true||c.CardClass==draft.ClassId||c.CardClass=="NEUTRAL")&&(type=="all"||c.Type==type)&&(cost=="all"||(cost=="7"?c.Cost>=7:c.Cost==Int32.Parse(cost)))&&CardSearchMatches(c,query)).ToList();
+  string version=versionPicker==null||versionPicker.SelectedItem==null?"":((Choice)versionPicker.SelectedItem).Key;
+  var all=version.Length==0?catalog.BrowseForPool(pool):catalog.Sets
+   .Where(set=>!set.HiddenInBrowser&&CollectionVersionKey(set.Id)==version)
+   .SelectMany(set=>catalog.BrowseForPool(pool,set.Id)).Distinct()
+   .OrderBy(card=>card.Cost).ThenBy(card=>card.Name,StringComparer.Ordinal).ToList();
+  bool browseAll=showAllCards.IsChecked==true;
+  filteredCards=all.Where(card=>{
+   bool neutral=card.CardClass=="NEUTRAL";
+   bool ownClass=card.CardClass==draft.ClassId;
+   bool classMatches=ownership=="class"?!neutral&&(ownClass||browseAll)
+    :ownership=="neutral"?neutral:ownClass||neutral||browseAll||query.Length>0;
+   return classMatches&&(type=="all"||card.Type==type)
+    &&(cost=="all"||(cost=="7"?card.Cost>=7:card.Cost==Int32.Parse(cost)))&&CardSearchMatches(card,query);
+  }).ToList();
   collectionRows.Children.Clear();foreach(var card in filteredCards)collectionRows.Children.Add(CardLine(card,0,false));if(filteredCards.Count==0){var empty=T(query.Length==0?"当前筛选无卡牌。":"没有匹配的卡牌。可检查费用、类型筛选，或缩短关键词。",10,Muted);empty.TextWrapping=TextWrapping.Wrap;empty.Margin=new Thickness(5);collectionRows.Children.Add(empty);}collectionCount.Text="牌库  "+filteredCards.Count+" / "+all.Count;ApplyFonts(deckPanel);
  }
  static bool CardSearchMatches(CardRecord card,string query){string text=(card.Name+" "+card.Text+" "+card.Id).Normalize(NormalizationForm.FormKC);var words=query.Normalize(NormalizationForm.FormKC).Split(new[]{' ','\t','\r','\n'},StringSplitOptions.RemoveEmptyEntries);return words.All(word=>text.IndexOf(word,StringComparison.OrdinalIgnoreCase)>=0);}
@@ -100,8 +120,8 @@ public partial class PanelWindow {
    var original=pool.CardReplacements.FirstOrDefault(p=>p.Value==card.Id);
    if(original.Key!=null)setId=catalog.Card(original.Key).SetId;
   }
-  if(setId==GvgRules.SetId||setId==GvgClassRules.SetId)return "地精大战侏儒";
-  return catalog.Sets.First(s=>s.Id==setId).Name;
+  var set=catalog.Sets.First(item=>item.Id==setId);
+  return CollectionVersionLabel(CollectionVersionKey(setId),set.Name);
  }
  void ShowDeckCard(CardRecord card){cardInfo.Text=card.Name+" · "+DisplayedCardSetName(card)+(!catalog.Pool(draft.PoolId).Contains(card)?" · 当前卡池外，仅供查看":"")+(matchRules.Supports(card)?"":"【暂不可用】")+"  ·  "+card.Cost+" 费  ·  "+ClassLabel(card.CardClass)+"  ·  "+RarityLabel(card.Rarity)+(card.Type=="MINION"&&!String.IsNullOrEmpty(card.Race)?"  ·  种族："+RaceLabel(card.Race):"")+(matchRules.Supports(card)?" · 可对战":" · 效果未实现");cardEffect.Text=card.Text.Length>0?card.Text:"无特殊效果。";}
  void AddCard(CardRecord card){string error=DeckRules.CanAdd(catalog,draft,card);if(error!=null){Notice(error);return;}RememberDeck();int count;draft.Cards.TryGetValue(card.Id,out count);draft.Cards[card.Id]=count+1;RefreshDeck();PersistDraft();ShowDeckCard(card);Notice("已加入 "+card.Name);}
