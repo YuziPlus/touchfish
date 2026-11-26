@@ -5,6 +5,38 @@ using System.Windows;
 using System.Windows.Controls;
 namespace Touchfish {
 public partial class PanelWindow {
+ void VerifyCollectionSearch(string folder){
+  var all=catalog.BrowseForPool(catalog.Pool(draft.PoolId));
+  searchBox.Text="海盗";
+  var pirates=all.Where(c=>c.Race=="PIRATE"||c.Name.Contains("海盗")||c.Text.Contains("海盗")).ToArray();
+  Check(filteredCards.SequenceEqual(pirates)&&pirates.Any(c=>c.Id=="VAN_NEW1_018")&&pirates.Any(c=>c.Id=="GVG_075"),"Pirate search includes all tribe members and synergy effects");
+  searchBox.Text="传说";
+  Check(filteredCards.SequenceEqual(all.Where(c=>c.Rarity=="LEGENDARY")),"Legendary search matches catalog rarity exactly");
+  searchBox.Text="海盗　传说";
+  Check(filteredCards.SequenceEqual(pirates.Where(c=>c.Rarity=="LEGENDARY"))&&filteredCards.Any(c=>c.Id=="AT_070"),"Mixed tribe and rarity includes Skycap'n Kragg");
+  Render(Path.Combine(folder,"collection-search-pirates.png"));
+  searchBox.Text="拥有冲锋";
+  Check(filteredCards.Any(c=>c.Id=="VAN_CS2_146"),"Effect phrase spans a historical line break");
+  searchBox.Text="法强";
+  Check(filteredCards.Any(c=>c.Id=="VAN_EX1_563"),"Mechanic alias finds spell damage");
+  searchBox.Text="拼点";
+  Check(filteredCards.Count==8&&filteredCards.Any(c=>c.Id=="AT_058"),"Joust keyword finds the historical reveal effects");
+  searchBox.Text="战吼";
+  Check(all.Where(c=>c.Mechanics!=null&&c.Mechanics.Contains("BATTLECRY")).All(filteredCards.Contains),"Battlecry search includes all tagged cards");
+  searchBox.Text="ａｔ＿０７０";
+  Check(filteredCards.Count==1&&filteredCards[0].Id=="AT_070","Rapid consecutive queries show the latest fullwidth card ID");
+  searchBox.Text="";showAllCards.IsChecked=true;UpdateLayout();
+  Check(filteredCards.Count==all.Count&&collectionRows.ItemContainerGenerator.ContainerFromIndex(0)!=null&&collectionRows.ItemContainerGenerator.ContainerFromIndex(100)==null,"Full library creates controls only near the viewport");
+  var last=filteredCards.Last();collectionRows.ScrollIntoView(last);UpdateLayout();
+  var container=(ListBoxItem)collectionRows.ItemContainerGenerator.ContainerFromItem(last);
+  Check(container!=null&&((Border)container.Content).Tag==last,"Scrolling to the end realizes the correct card");
+  searchBox.Text="海盗";ApplyMode(true);UpdateLayout();
+  Check(collectionRows.ItemContainerGenerator.ContainerFromIndex(0)!=null,"Changing the query after scrolling returns to the first match");
+  Render(Path.Combine(folder,"collection-search-minimal.png"));
+  searchBox.Text="无匹配结果xyz";UpdateLayout();
+  Check(filteredCards.Count==0&&collectionEmpty.IsVisible,"Empty result hint stays visible");
+  searchBox.Text="";showAllCards.IsChecked=false;ApplyMode(false);
+ }
  public void PreviewTournament(string folder){
   Directory.CreateDirectory(folder);previewRun=true;
   LeaveLan();ApplyTheme(true,true);
@@ -38,7 +70,9 @@ public partial class PanelWindow {
    searchBox.Text="AT_045";var aviana=filteredCards.Single();
    Check(aviana.Id=="AT_045"&&aviana.DbfId==2796,"Deck builder finds the historical Aviana record");
    ApplyMode(false);ShowPage("deck");ShowDeckCard(aviana);Render(Path.Combine(folder,"tournament-aviana.png"));
-   searchBox.Text="";classFilterPicker.SelectedIndex=0;versionPicker.SelectedIndex=0;draft=original;SyncDeckControls();RefreshDeck();
+   searchBox.Text="";classFilterPicker.SelectedIndex=0;versionPicker.SelectedIndex=0;
+   VerifyCollectionSearch(folder);
+   draft=original;SyncDeckControls();RefreshDeck();
   }
   if(VerificationRun.Network){
    var guest=new PanelWindow(true){ShowInTaskbar=false,Opacity=0};guest.Show();

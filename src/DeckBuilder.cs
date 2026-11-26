@@ -15,7 +15,7 @@ public sealed class SavedDeck {public string Id,Name,Code,PoolId;}
 public partial class PanelWindow {
  CardCatalog catalog;DeckDocument draft;Grid deckPanel,codePanel;Button deckTab,exportButton,saveDeckButton;
  bool syncingSavedDeckPicker;ComboBox savedDeckPicker;ComboBox versionPicker,classPicker,poolPicker,typePicker,costPicker,classFilterPicker;TextBox searchBox,deckNameBox,codeBox;
- CheckBox showAllCards;StackPanel collectionRows,deckRows,savedRows;TextBlock collectionCount,deckCount,cardInfo,cardEffect,deckNotice,codeNotice;
+ CheckBox showAllCards;CollectionCardList collectionRows;TextBlock collectionEmpty;StackPanel deckRows,savedRows;TextBlock collectionCount,deckCount,cardInfo,cardEffect,deckNotice,codeNotice;
  bool libraryWritable=true,draftWritable=true;bool refreshingDeck;List<CardRecord> filteredCards=new List<CardRecord>();List<SavedDeck> savedDecks=new List<SavedDeck>();
  Stack<DeckDocument> deckUndo=new Stack<DeckDocument>();
  static readonly Choice[] Classes={new Choice("MAGE","法师"),new Choice("WARRIOR","战士"),new Choice("WARLOCK","术士"),new Choice("ROGUE","潜行者"),new Choice("PRIEST","牧师"),new Choice("PALADIN","圣骑士"),new Choice("HUNTER","猎人"),new Choice("SHAMAN","萨满"),new Choice("DRUID","德鲁伊")};
@@ -35,13 +35,15 @@ public partial class PanelWindow {
   classPicker=Picker(Classes);classPicker.Margin=new Thickness(0,0,5,2);Grid.SetColumn(classPicker,1);heading.Children.Add(classPicker);classPicker.SelectionChanged+=(s,e)=>{if(refreshingDeck||classPicker.SelectedItem==null)return;RememberDeck();bool preserved=ChangeDraftClass(((Choice)classPicker.SelectedItem).Key);int removed=PruneDeck();RefreshDeck();PersistDraft();Notice(preserved?"已另存为新职业卡组，原卡组代码已保留。":removed>0?"已移出 "+removed+" 张其他职业牌。":"已切换职业。");};
   poolPicker=Picker(DeckPoolChoices());poolPicker.Margin=new Thickness(0,0,0,2);Grid.SetColumn(poolPicker,2);heading.Children.Add(poolPicker);poolPicker.SelectionChanged+=(s,e)=>{if(refreshingDeck||poolPicker.SelectedItem==null)return;RememberDeck();SwitchDeckPool(((Choice)poolPicker.SelectedItem).Key);PruneDeck();SyncDeckControls();RefreshDeck();PersistDraft();};versionPicker=Picker(new Choice[0]);versionPicker.ToolTip="按卡牌版本查看；不改变当前卡组或卡池。";versionPicker.Margin=new Thickness(4,0,0,2);Grid.SetColumn(versionPicker,3);heading.Children.Add(versionPicker);RefreshVersionPicker();versionPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};Put(deckPanel,heading,0);
   var filters=new Grid();filters.ColumnDefinitions.Add(new ColumnDefinition());filters.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(42)});filters.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(50)});filters.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(74)});filters.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(48)});
-  searchBox=Input("");searchBox.ToolTip="搜索全库名称、效果或卡牌 ID；其他职业仅可查看";searchBox.Margin=new Thickness(0,0,4,2);searchBox.TextChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};filters.Children.Add(searchBox);
+  searchBox=Input("");searchBox.ToolTip="可搜牌名、种族、品质、效果、职业、费用或 ID。多个条件用空格隔开，例如“海盗 传说”。";searchBox.Margin=new Thickness(0,0,4,2);searchBox.TextChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};filters.Children.Add(searchBox);
   costPicker=Picker(new Choice[]{new Choice("all","费用"),new Choice("0","0"),new Choice("1","1"),new Choice("2","2"),new Choice("3","3"),new Choice("4","4"),new Choice("5","5"),new Choice("6","6"),new Choice("7","7+")});costPicker.ToolTip="费用筛选";costPicker.SelectedIndex=0;costPicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(costPicker,1);filters.Children.Add(costPicker);costPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
   typePicker=Picker(new Choice[]{new Choice("all","全部"),new Choice("MINION","随从"),new Choice("SPELL","法术"),new Choice("WEAPON","武器")});typePicker.SelectedIndex=0;typePicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(typePicker,2);filters.Children.Add(typePicker);typePicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
   classFilterPicker=Picker(new Choice[]{new Choice("available","本职+中立"),new Choice("class","职业卡"),new Choice("neutral","中立卡")});classFilterPicker.SelectedIndex=0;classFilterPicker.ToolTip="筛选职业卡或中立卡；勾选全库后可查看其他职业卡";classFilterPicker.Margin=new Thickness(0,0,4,2);Grid.SetColumn(classFilterPicker,3);filters.Children.Add(classFilterPicker);classFilterPicker.SelectionChanged+=(s,e)=>{if(!refreshingDeck)RefreshCollection();};
   showAllCards=new CheckBox{Content="全库",FontSize=10,Foreground=Muted,VerticalAlignment=VerticalAlignment.Center};showAllCards.ToolTip="包含其他职业卡；可与职业卡/中立卡筛选组合使用";showAllCards.Checked+=(s,e)=>RefreshCollection();showAllCards.Unchecked+=(s,e)=>RefreshCollection();Grid.SetColumn(showAllCards,4);filters.Children.Add(showAllCards);Put(deckPanel,filters,1);
   var lists=new Grid();lists.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(1.4,GridUnitType.Star)});lists.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(5)});lists.ColumnDefinitions.Add(new ColumnDefinition());
-  collectionRows=new StackPanel();deckRows=new StackPanel();collectionCount=T("牌库",10,Muted);deckCount=T("卡组 0/30",10,Muted);lists.Children.Add(ListPane(collectionCount,collectionRows));var deckPane=new Grid();deckPane.RowDefinitions.Add(new RowDefinition{Height=new GridLength(24)});deckPane.RowDefinitions.Add(new RowDefinition());savedDeckPicker=Picker(new Choice[0]);savedDeckPicker.ToolTip="直接选择已保存卡组进行编辑";savedDeckPicker.Margin=new Thickness(0,0,0,3);deckPane.Children.Add(savedDeckPicker);savedDeckPicker.SelectionChanged+=(s,e)=>{if(syncingSavedDeckPicker)return;var choice=savedDeckPicker.SelectedItem as Choice;if(choice==null||String.IsNullOrEmpty(choice.Key))return;var saved=savedDecks.FirstOrDefault(d=>d.Id==choice.Key);if(saved!=null)LoadSavedDeckForEditing(saved);};Put(deckPane,ListPane(deckCount,deckRows),1);Grid.SetColumn(deckPane,2);lists.Children.Add(deckPane);Put(deckPanel,lists,2);
+  collectionRows=new CollectionCardList(card=>{var row=CardLine(card,0,false);ApplyFonts(row);return row;});deckRows=new StackPanel();collectionCount=T("牌库",10,Muted);deckCount=T("卡组 0/30",10,Muted);var collectionBody=new Grid();collectionBody.Children.Add(collectionRows);
+  collectionEmpty=T("",10,Muted);collectionEmpty.TextWrapping=TextWrapping.Wrap;collectionEmpty.Margin=new Thickness(5);collectionEmpty.VerticalAlignment=VerticalAlignment.Top;collectionBody.Children.Add(collectionEmpty);
+  lists.Children.Add(FramedList(collectionCount,collectionBody));var deckPane=new Grid();deckPane.RowDefinitions.Add(new RowDefinition{Height=new GridLength(24)});deckPane.RowDefinitions.Add(new RowDefinition());savedDeckPicker=Picker(new Choice[0]);savedDeckPicker.ToolTip="直接选择已保存卡组进行编辑";savedDeckPicker.Margin=new Thickness(0,0,0,3);deckPane.Children.Add(savedDeckPicker);savedDeckPicker.SelectionChanged+=(s,e)=>{if(syncingSavedDeckPicker)return;var choice=savedDeckPicker.SelectedItem as Choice;if(choice==null||String.IsNullOrEmpty(choice.Key))return;var saved=savedDecks.FirstOrDefault(d=>d.Id==choice.Key);if(saved!=null)LoadSavedDeckForEditing(saved);};Put(deckPane,ListPane(deckCount,deckRows),1);Grid.SetColumn(deckPane,2);lists.Children.Add(deckPane);Put(deckPanel,lists,2);
   var description=new StackPanel{Margin=new Thickness(5,1,5,1)};cardInfo=T("点名称查看效果，点 + 加入卡组。",10,Ink);cardEffect=T("",10,Muted);cardEffect.TextWrapping=TextWrapping.Wrap;description.Children.Add(cardInfo);description.Children.Add(cardEffect);
   var inspector=new Border{Child=new ScrollViewer{Content=description,VerticalScrollBarVisibility=ScrollBarVisibility.Auto},Background=B("#F7F8FA"),BorderBrush=Line,BorderThickness=new Thickness(1),Margin=new Thickness(0,1,0,1)};Put(deckPanel,inspector,3);
   var actions=new DockPanel();var buttons=new StackPanel{Orientation=Orientation.Horizontal,HorizontalAlignment=HorizontalAlignment.Right};DockPanel.SetDock(buttons,Dock.Right);actions.Children.Add(buttons);
@@ -59,7 +61,8 @@ public partial class PanelWindow {
   var style=new Style(typeof(ComboBoxItem));style.Setters.Add(new Setter(Control.ForegroundProperty,new DynamicResourceExtension("FieldInk")));style.Setters.Add(new Setter(Control.BackgroundProperty,new DynamicResourceExtension("FieldBg")));style.Setters.Add(new Setter(Control.FontWeightProperty,FontWeights.Normal));style.Setters.Add(new Setter(Control.PaddingProperty,new Thickness(4,3,4,3)));
   var template=new ControlTemplate(typeof(ComboBoxItem));var border=new FrameworkElementFactory(typeof(Border));border.SetValue(Border.BackgroundProperty,new TemplateBindingExtension(Control.BackgroundProperty));var content=new FrameworkElementFactory(typeof(ContentPresenter));content.SetValue(FrameworkElement.MarginProperty,new Thickness(4,3,4,3));border.AppendChild(content);template.VisualTree=border;style.Setters.Add(new Setter(Control.TemplateProperty,template));var hover=new Trigger{Property=ComboBoxItem.IsHighlightedProperty,Value=true};hover.Setters.Add(new Setter(Control.BackgroundProperty,new DynamicResourceExtension("FieldSelect")));style.Triggers.Add(hover);picker.ItemContainerStyle=style;return picker;
  }
- FrameworkElement ListPane(TextBlock title,StackPanel content){var grid=new Grid();grid.RowDefinitions.Add(new RowDefinition{Height=new GridLength(15)});grid.RowDefinitions.Add(new RowDefinition());grid.Children.Add(title);Put(grid,new Border{BorderBrush=Line,BorderThickness=new Thickness(1),Child=new ScrollViewer{Content=content,VerticalScrollBarVisibility=ScrollBarVisibility.Auto,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled}},1);return grid;}
+ FrameworkElement ListPane(TextBlock title,StackPanel content){return FramedList(title,new ScrollViewer{Content=content,VerticalScrollBarVisibility=ScrollBarVisibility.Auto,HorizontalScrollBarVisibility=ScrollBarVisibility.Disabled});}
+ FrameworkElement FramedList(TextBlock title,FrameworkElement body){var grid=new Grid();grid.RowDefinitions.Add(new RowDefinition{Height=new GridLength(15)});grid.RowDefinitions.Add(new RowDefinition());grid.Children.Add(title);Put(grid,new Border{BorderBrush=Line,BorderThickness=new Thickness(1),Child=body},1);return grid;}
  Choice[] DeckPoolChoices(){return catalog.Pools.Where(p=>!p.Archived||p.Id==draft.PoolId&&ExplorerRules.IsLockedPool(p))
   .Select(p=>new Choice(p.Id,ExplorerRules.IsLockedPool(p)?p.Name+"（锁定）":p.Name)).ToArray();}
  void SyncDeckControls(){
@@ -80,7 +83,7 @@ public partial class PanelWindow {
  void Notice(string text){deckNotice.Text=text;deckNotice.ToolTip=text;status.Text=text;}
  void RefreshDeck(){
   if(deckRows==null)return;RefreshSavedDeckPicker();deckRows.Children.Clear();foreach(var pair in draft.Cards.OrderBy(p=>catalog.Card(p.Key).Cost).ThenBy(p=>catalog.Card(p.Key).Name,StringComparer.Ordinal)){var card=catalog.Card(pair.Key);deckRows.Children.Add(CardLine(card,pair.Value,true));}
-  int size=catalog.Pool(draft.PoolId).DeckSize;deckCount.Text="卡组  "+draft.Count+" / "+size;exportButton.IsEnabled=saveDeckButton.IsEnabled=draft.Count==size;exportButton.Opacity=saveDeckButton.Opacity=draft.Count==size?1:.4;RefreshCollection();ApplyFonts(deckPanel);
+  int size=catalog.Pool(draft.PoolId).DeckSize;deckCount.Text="卡组  "+draft.Count+" / "+size;exportButton.IsEnabled=saveDeckButton.IsEnabled=draft.Count==size;exportButton.Opacity=saveDeckButton.Opacity=draft.Count==size?1:.4;RefreshCollection(false);ApplyFonts(deckPanel);
  }
  void RefreshVersionPicker(){
   if(versionPicker==null)return;var previous=versionPicker.SelectedItem as Choice;
@@ -96,14 +99,13 @@ public partial class PanelWindow {
   if(key==GvgRules.SetId)return "地精大战侏儒";
   return key==TournamentRules.SetId?"冠军的试炼":fallback;
  }
- void RefreshCollection(){
+ void RefreshCollection(bool resetScroll=true){
   if(collectionRows==null||costPicker==null||typePicker==null||classFilterPicker==null||showAllCards==null)return;var pool=catalog.Pool(draft.PoolId);string query=searchBox.Text.Trim();string cost=costPicker.SelectedItem==null?"all":((Choice)costPicker.SelectedItem).Key;string type=typePicker.SelectedItem==null?"all":((Choice)typePicker.SelectedItem).Key;
   string ownership=classFilterPicker.SelectedItem==null?"available":((Choice)classFilterPicker.SelectedItem).Key;
   string version=versionPicker==null||versionPicker.SelectedItem==null?"":((Choice)versionPicker.SelectedItem).Key;
-  var all=version.Length==0?catalog.BrowseForPool(pool):catalog.Sets
-   .Where(set=>!set.HiddenInBrowser&&CollectionVersionKey(set.Id)==version)
-   .SelectMany(set=>catalog.BrowseForPool(pool,set.Id)).Distinct()
-   .OrderBy(card=>card.Cost).ThenBy(card=>card.Name,StringComparer.Ordinal).ToList();
+  var all=BrowseCards(pool,version);
+  string[] words=query.Normalize(NormalizationForm.FormKC).Split((char[])null,StringSplitOptions.RemoveEmptyEntries);
+  int mana=cost=="all"?-1:Int32.Parse(cost);
   bool browseAll=showAllCards.IsChecked==true;
   filteredCards=all.Where(card=>{
    bool neutral=card.CardClass=="NEUTRAL";
@@ -111,11 +113,14 @@ public partial class PanelWindow {
    bool classMatches=ownership=="class"?!neutral&&(ownClass||browseAll)
     :ownership=="neutral"?neutral:ownClass||neutral||browseAll||query.Length>0;
    return classMatches&&(type=="all"||card.Type==type)
-    &&(cost=="all"||(cost=="7"?card.Cost>=7:card.Cost==Int32.Parse(cost)))&&CardSearchMatches(card,query);
+    &&(mana<0||(mana==7?card.Cost>=7:card.Cost==mana))&&CardSearchMatches(card,words);
   }).ToList();
-  collectionRows.Children.Clear();foreach(var card in filteredCards)collectionRows.Children.Add(CardLine(card,0,false));if(filteredCards.Count==0){var empty=T(query.Length==0?"当前筛选无卡牌。":"没有匹配的卡牌。可检查费用、类型筛选，或缩短关键词。",10,Muted);empty.TextWrapping=TextWrapping.Wrap;empty.Margin=new Thickness(5);collectionRows.Children.Add(empty);}collectionCount.Text="牌库  "+filteredCards.Count+" / "+all.Count;ApplyFonts(deckPanel);
+  collectionRows.ItemsSource=filteredCards;
+  if(resetScroll)collectionRows.ScrollResultsToTop();
+  collectionEmpty.Visibility=filteredCards.Count==0?Visibility.Visible:Visibility.Collapsed;
+  collectionEmpty.Text=query.Length==0?"当前筛选无卡牌。":"没有匹配的卡牌。可调整筛选条件或缩短关键词。";
+  collectionCount.Text="牌库  "+filteredCards.Count+" / "+all.Count;
  }
- static bool CardSearchMatches(CardRecord card,string query){string text=(card.Name+" "+card.Text+" "+card.Id).Normalize(NormalizationForm.FormKC);var words=query.Normalize(NormalizationForm.FormKC).Split(new[]{' ','\t','\r','\n'},StringSplitOptions.RemoveEmptyEntries);return words.All(word=>text.IndexOf(word,StringComparison.OrdinalIgnoreCase)>=0);}
  Border CardLine(CardRecord card,int quantity,bool inDeck){
   bool unavailable=!matchRules.Supports(card);bool hasRace=card.Type=="MINION"&&!String.IsNullOrEmpty(card.Race);bool hasSubline=unavailable||hasRace;var grid=new Grid{Height=hasSubline?33:22};grid.RowDefinitions.Add(new RowDefinition{Height=new GridLength(22)});if(hasSubline)grid.RowDefinitions.Add(new RowDefinition{Height=new GridLength(11)});grid.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(18)});grid.ColumnDefinitions.Add(new ColumnDefinition());grid.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(35)});grid.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(inDeck?18:32)});grid.ColumnDefinitions.Add(new ColumnDefinition{Width=new GridLength(19)});
   var cost=T(card.Cost.ToString(),10,Muted);cost.TextAlignment=TextAlignment.Center;grid.Children.Add(cost);var name=T(card.Name,10,Ink);name.TextTrimming=TextTrimming.CharacterEllipsis;Grid.SetColumn(name,1);grid.Children.Add(name);

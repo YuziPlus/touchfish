@@ -17,7 +17,7 @@ namespace Touchfish {public partial class PanelWindow {
    Check(filteredCards.Count==catalog.BrowseForPool(classic).Count,"All versions shows both packages");
    var copy=draft.Copy();versionPicker.SelectedItem=versionPicker.Items.Cast<Choice>().First(c=>c.Key=="test-naxx");
    Check(filteredCards.Count==1&&filteredCards[0].Id==card.Id,"Version filter restricts to extension cards");Check(SameDeck(draft,copy),"Changing version filter never prunes or replaces deck");
-   var row=(Border)collectionRows.Children[0];var plus=((Grid)row.Child).Children.OfType<Button>().Single();Check(!plus.IsEnabled&&plus.ToolTip.ToString().Contains("卡池外"),"Outside-pool card cannot be added despite browsing");
+   UpdateLayout();var row=(Border)((ListBoxItem)collectionRows.ItemContainerGenerator.ContainerFromIndex(0)).Content;var plus=((Grid)row.Child).Children.OfType<Button>().Single();Check(!plus.IsEnabled&&plus.ToolTip.ToString().Contains("卡池外"),"Outside-pool card cannot be added despite browsing");
    ShowDeckCard(card);Check(cardInfo.Text.Contains("纳克萨玛斯")&&cardInfo.Text.Contains("暂不可用")&&cardInfo.Text.Contains("卡池外"),"Details keep version, effect support and pool status distinct");
    searchBox.Text="找不到";Check(filteredCards.Count==0,"Search intersects version filter");searchBox.Text="测试";Check(filteredCards.Count==1,"Search finds extension card");searchBox.Text="";costPicker.SelectedItem=costPicker.Items.Cast<Choice>().First(c=>c.Key=="2");Check(filteredCards.Count==0,"Cost intersects version filter");costPicker.SelectedIndex=0;
    Check(DeckRules.CanAdd(catalog,new DeckDocument{PoolId=expanded.Id,ClassId="MAGE"},card)==null&&DeckRules.CanAdd(catalog,draft,card)!=null,"Expanded pool alone permits expanded card");
