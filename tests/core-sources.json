@@ -76,5 +76,6 @@
   "BlackrockRules.cs",
   "TournamentRules.cs",
   "TournamentClassRules.cs",
-  "TournamentClassState.cs"
+  "TournamentClassState.cs",
+  "ExplorerRules.cs"
 ]

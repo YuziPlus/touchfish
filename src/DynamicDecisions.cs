@@ -17,7 +17,7 @@ public sealed class DecisionObservation {
 }
 
 // Programs contain only immutable instructions. A frame can resume them by index.
-internal enum DecisionEffect { GiveCard, DamageEnemyHero }
+internal enum DecisionEffect { GiveCard, DamageEnemyHero, ReplaceHeroPower }
 
 internal sealed class DecisionCandidate {
  internal readonly string Id,CardId,Title,Description;
@@ -29,12 +29,16 @@ internal sealed class DecisionCandidate {
  internal DecisionCandidate(string id,string title,string description,int damage){
   Id=id;Title=title;Description=description;Amount=damage;Weight=1;Effect=DecisionEffect.DamageEnemyHero;
  }
+ internal DecisionCandidate(string abilityId,string title,string description){
+  Id=abilityId;Title=title;Description=description;Weight=1;Effect=DecisionEffect.ReplaceHeroPower;
+ }
 }
 
 internal sealed class DecisionStep {
  internal readonly string Prompt;
  readonly int sampleSize;
  readonly DecisionCandidate[] candidates;
+ readonly Func<MatchEngine,ResolutionFrame,IEnumerable<DecisionCandidate>> getCandidates;
 
  internal DecisionStep(string prompt,int sampleSize,params DecisionCandidate[] candidates){
   if(sampleSize<1||candidates.Length==0||candidates.Any(c=>c==null||String.IsNullOrEmpty(c.Id)||c.Weight<=0)||
@@ -46,8 +50,14 @@ internal sealed class DecisionStep {
   this.candidates=(DecisionCandidate[])candidates.Clone();
  }
 
- internal DecisionCandidate[] Generate(MatchEngine game){
-  var eligible=candidates.Where(c=>c.CardId==null||game.Catalog.Cards.ContainsKey(c.CardId)&&game.Rules.Supports(game.Card(c.CardId))).ToList();
+ internal DecisionStep(string prompt,int sampleSize,Func<MatchEngine,ResolutionFrame,IEnumerable<DecisionCandidate>> getCandidates){
+  if(sampleSize<1||getCandidates==null)throw new ArgumentException("决策候选来源无效。");
+  Prompt=prompt;this.sampleSize=sampleSize;this.getCandidates=getCandidates;
+ }
+
+ internal DecisionCandidate[] Generate(MatchEngine game,ResolutionFrame frame=null){
+  var options=getCandidates==null?candidates:getCandidates(game,frame);
+  var eligible=options.Where(c=>c.CardId==null||game.Catalog.Cards.ContainsKey(c.CardId)&&game.Rules.Supports(game.Card(c.CardId))).ToList();
   if(eligible.Count<=sampleSize)return eligible.ToArray();
   var chosen=new DecisionCandidate[sampleSize];
   int total=eligible.Sum(c=>c.Weight);
@@ -83,12 +93,12 @@ internal sealed class PendingDecision {
 }
 
 internal sealed class ResolutionFrame {
- internal int Seat,NextStep;
- internal string CardId;
+ internal int Seat,NextStep,Repeats,PaidCost;
+ internal string CardId,Choice;
  internal BattleUnit Summoned;
  internal BattleUnit[] CardListeners;
  internal ResolutionFrame Copy(Func<BattleUnit,BattleUnit> copyUnit){
-  return new ResolutionFrame{Seat=Seat,NextStep=NextStep,CardId=CardId,
+  return new ResolutionFrame{Seat=Seat,NextStep=NextStep,Repeats=Repeats,PaidCost=PaidCost,CardId=CardId,Choice=Choice,
    Summoned=Summoned==null?null:copyUnit(Summoned),CardListeners=CardListeners.Select(copyUnit).ToArray()};
  }
 }
@@ -96,17 +106,25 @@ internal sealed class ResolutionFrame {
 public sealed partial class MatchEngine {
  PendingDecision pendingDecision;
  ResolutionFrame decisionFrame;
- public bool HasPendingDecision{get{return pendingDecision!=null;}}
+ DecisionObservation replicaDecision;
+ bool replicaDecisionPending;
+ public bool HasPendingDecision{get{return pendingDecision!=null||replicaDecisionPending;}}
+
+ internal void ApplyDecisionView(bool pending,DecisionObservation ownDecision){
+  replicaDecisionPending=pending;
+  replicaDecision=ownDecision;
+ }
 
  public DecisionObservation ObserveDecision(int seat){
   if(seat<0||seat>1)throw new ArgumentOutOfRangeException("seat");
+  if(replicaDecision!=null&&replicaDecision.Seat==seat)return replicaDecision;
   var pending=pendingDecision;
   if(pending==null||pending.Seat!=seat)return null;
   var options=new DecisionOption[pending.Candidates.Length];
   for(int i=0;i<options.Length;i++){
    var candidate=pending.Candidates[i];
    var card=candidate.CardId==null?null:Card(candidate.CardId);
-   options[i]=card==null?new DecisionOption(candidate.Id,candidate.Title,candidate.Description,null)
+   options[i]=card==null?new DecisionOption(candidate.Id,candidate.Title,candidate.Description,candidate.Effect==DecisionEffect.ReplaceHeroPower?(int?)2:null)
     :new DecisionOption(candidate.Id,card.Name,card.Text,card.Cost);
   }
   return new DecisionObservation(pending.Id,seat,pending.Prompt,options);
@@ -123,13 +141,14 @@ public sealed partial class MatchEngine {
    switch(selected.Effect){
     case DecisionEffect.GiveCard:GiveNaxxCard(seat,selected.CardId);break;
     case DecisionEffect.DamageEnemyHero:Damage(new MatchTarget(1-seat),selected.Amount);Cleanup();break;
+    case DecisionEffect.ReplaceHeroPower:ReplaceBasicHeroPower(seat,selected.Id);break;
    }
    ContinueDecisionProgram();
   },allowExpired:true,decisionAction:true);
  }
 
- void StartDecisionProgram(int seat,CardRecord card,BattleUnit minion,BattleUnit[] listeners){
-  decisionFrame=new ResolutionFrame{Seat=seat,CardId=card.Id,Summoned=minion,CardListeners=listeners};
+ void StartDecisionProgram(int seat,CardRecord card,BattleUnit minion,BattleUnit[] listeners,int repeats,int paidCost,string choice){
+  decisionFrame=new ResolutionFrame{Seat=seat,CardId=card.Id,Summoned=minion,CardListeners=listeners,Repeats=repeats,PaidCost=paidCost,Choice=choice};
   ContinueDecisionProgram();
  }
 
@@ -137,9 +156,9 @@ public sealed partial class MatchEngine {
   var frame=decisionFrame;
   if(!Finished){
    var program=Rules.DynamicProgram(Card(frame.CardId));
-   while(frame.NextStep<program.Length){
-    var step=program.Step(frame.NextStep++);
-    var options=step.Generate(this);
+   while(frame.NextStep<program.Length*frame.Repeats){
+    var step=program.Step(frame.NextStep++%program.Length);
+    var options=step.Generate(this,frame);
     if(options.Length==0)continue;
     pendingDecision=new PendingDecision(NewEffectInstanceId(),frame.Seat,step.Prompt,options);
     return;
@@ -147,7 +166,9 @@ public sealed partial class MatchEngine {
   }
   decisionFrame=null;
   if(Finished){if(summonTriggers!=null)summonTriggers.Clear();return;}
-  CompletePlayedCard(frame.Seat,Card(frame.CardId),frame.Summoned,frame.CardListeners,stopOnFinish:true);
+  var card=Card(frame.CardId);
+  var context=new EffectContext{Game=this,Seat=frame.Seat,Card=card,Summoned=frame.Summoned,Choice=frame.Choice};
+  CompletePlayedCard(context,frame.CardListeners,frame.PaidCost,stopOnFinish:true);
  }
 }
 }

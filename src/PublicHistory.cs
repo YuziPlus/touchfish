@@ -17,8 +17,11 @@ public sealed partial class MatchEngine {
  internal void ShiftHandCosts(int seat,int delta){
   if(delta==0)return;
   NoteHistory(HistoryKind.HandCostFloorShift,seat,adjustment:delta);
-  foreach(var card in Players[seat].Hand)
+  var naga=Players[seat].Board.Where(u=>u.Health>0&&!u.Silenced&&Card(u.CardId).BaseId=="LOE_038").OrderByDescending(u=>u.Id).FirstOrDefault();
+  foreach(var card in Players[seat].Hand){
    card.CostAdjustment=ShiftCardCost(Card(card.CardId).Cost,card.CostAdjustment,delta);
+   if(naga!=null)card.ApplyAfterFixedCost(naga.Id,delta);
+  }
  }
  internal static int ShiftCardCost(int baseCost,int adjustment,int delta){
   return delta<0&&baseCost+adjustment<=0?adjustment:Math.Max(-baseCost,adjustment+delta);

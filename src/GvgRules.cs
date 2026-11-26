@@ -52,8 +52,8 @@ public static class GvgRules {
   case "PART_006":LowCostRules.Apply(new EffectContext{Game=g,Seat=c.Seat,Card=new CardRecord{BaseId="EX1_059"},Target=c.Target});break;
   case "PART_007":g.Buff(c.Target,1,0);break;
  }}
- public static bool HasDeathrattle(MatchEngine g,BattleUnit u){return !u.Silenced&&MatchEngine.Has(g.Card(u.CardId),"DEATHRATTLE")||u.ForestDeathrattles>0||u.AncestralSpirits>0;}
- public static void Death(MatchEngine g,BattleUnit dead){switch(g.Card(dead.CardId).BaseId){
+ public static bool HasDeathrattle(MatchEngine g,BattleUnit u){return DeathrattleRules.HasDeathrattle(g,u);}
+ public static void Death(MatchEngine g,BattleUnit dead,string id){switch(id){
   case "GVG_076":foreach(var t in g.Characters(0,false).Concat(g.Characters(1,false)).ToArray())g.Damage(t,2);break;
   case "GVG_078":g.GiveGvgPart(dead.Owner);g.GiveGvgPart(1-dead.Owner);break;
   case "GVG_082":case "GVG_115":g.GiveGvgPart(dead.Owner);break;

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 namespace Touchfish {
-public sealed class Enchantment {public string Kind;public int Attack,Health,Amount,ExpiresTurn=-1;public bool RemovedBySilence=true;}
+public sealed class Enchantment {public string Kind,CardId;public int Attack,Health,Amount,ExpiresTurn=-1;public bool RemovedBySilence=true;}
 public sealed class EnchantmentCollection {
  public List<Enchantment> Items=new List<Enchantment>();
  internal EnchantmentCollection CopyForSimulation(){
   var copy=new EnchantmentCollection();
-  foreach(var item in Items)copy.Items.Add(new Enchantment{Kind=item.Kind,Attack=item.Attack,Health=item.Health,Amount=item.Amount,ExpiresTurn=item.ExpiresTurn,RemovedBySilence=item.RemovedBySilence});
+  foreach(var item in Items)copy.Items.Add(new Enchantment{Kind=item.Kind,CardId=item.CardId,Attack=item.Attack,Health=item.Health,Amount=item.Amount,ExpiresTurn=item.ExpiresTurn,RemovedBySilence=item.RemovedBySilence});
   return copy;
  }
  public int Stat(bool health){

@@ -49,7 +49,7 @@ public partial class PanelWindow {
     DoMatch("mulligan",selectedIds:new int[0]);PumpLan(()=>guest.match.Players[0].MulliganDone,"Host mulligan synchronized");guest.DoMatch("mulligan",selectedIds:new int[0]);
     PumpLan(()=>match.MulliganComplete&&!guest.lanWaiting,"Mulligans finish");
     var g=lanAuthority.Game;
-    Check(g.CardPoolId==TournamentClassRules.PoolId&&guest.match.CardPoolId==g.CardPoolId,"Both peers use the full tournament pool");
+    Check(g.CardPoolId==TournamentClassRules.PoolId&&guest.match.CardPoolId==g.CardPoolId,"Both peers use the open Tournament pool");
     g.Active=1;g.Players[1].HeroAbilityId="tgt:upgraded-SHAMAN";g.Players[1].PowerUsed=false;g.Players[1].PowersThisTurn=0;g.Players[1].Mana=10;g.Players[1].Board.Clear();
     PublishLan();
     PumpLan(()=>guest.match.Players[1].HeroAbilityId=="tgt:upgraded-SHAMAN","Upgrade synchronized");

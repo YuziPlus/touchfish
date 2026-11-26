@@ -103,6 +103,11 @@ public static class AgentBridge {
  }
  static int TargetedPowerDamage(MatchEngine game,int seat,AgentObservation view){
   var player=game.Players[seat];
+  switch(player.HeroAbilityId){
+   case "tgt:basic-MAGE":return game.TournamentPowerDamage(seat,1);
+   case "tgt:basic-HUNTER":case "tgt:upgraded-MAGE":case "tgt:lightning-jolt":return game.TournamentPowerDamage(seat,2);
+   case "tgt:upgraded-HUNTER":return game.TournamentPowerDamage(seat,3);
+  }
   if(HeroReplacementRules.Ability(player.HeroAbilityId)!=null)return 0;
   if(player.Shadowform>0)return game.TournamentPowerDamage(seat,player.Shadowform+1);
   if(player.ClassId=="HUNTER")return game.TournamentPowerDamage(seat,2);

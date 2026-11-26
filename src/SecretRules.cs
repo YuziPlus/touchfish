@@ -21,7 +21,28 @@ public sealed partial class MatchEngine {
  bool SecretPresent(SecretInstance s){return secrets.Contains(s);}
  void RevealSecret(SecretInstance s){secretRevealVersion++;NoteHistory(HistoryKind.RevealSecret,s.Seat,s.CardId);secrets.Remove(s);Players[s.Seat].SecretCount=secrets.Count(x=>x.Seat==s.Seat);HunterRules.SecretRevealed(this,s.Seat);string name=Card(s.CardId).Name;Log.Add(PlayerLabel(s.Seat)+" · 奥秘触发："+name);EmitVisual("spell",s.Seat,name:"奥秘触发："+name);}
  public bool SecretSpell(int caster,ref MatchTarget target){int before=Players[1-caster].SecretCount,revealVersion=secretRevealVersion;bool minionTarget=target!=null&&!target.Hero&&Players[1-caster].Board.Count<Mode.BoardSlots;foreach(var s in SecretQueue(1-caster)){if(!SecretPresent(s))continue;string id=Card(s.CardId).BaseId;if(id=="EX1_287"){RevealSecret(s);return true;}if(id=="tt_010"&&target!=null&&!target.Hero&&Players[s.Seat].Board.Count<Mode.BoardSlots){RevealSecret(s);var bender=Summon(s.Seat,"GAME_SPELLBENDER");target=new MatchTarget(s.Seat,bender.Id);}}if(before>0&&revealVersion==secretRevealVersion&&before==Players[1-caster].SecretCount){NoteHistory(HistoryKind.NoSecretTrigger,1-caster,"EX1_287");if(minionTarget)NoteHistory(HistoryKind.NoSecretTrigger,1-caster,"tt_010");}return false;}
- public void SecretMinionPlayed(int caster,BattleUnit minion){int seat=1-caster,revealVersion=secretRevealVersion;bool check=Players[seat].SecretCount>0&&minion!=null&&Players[caster].Board.Contains(minion)&&minion.Health>0&&!Finished;foreach(var s in SecretQueue(1-caster)){if(!SecretPresent(s))continue;if(minion==null||!Players[caster].Board.Contains(minion)||minion.Health<=0||Finished)break;switch(Card(s.CardId).BaseId){case "EX1_379":RevealSecret(s);SetHealth(new MatchTarget(caster,minion.Id),1);break;case "EX1_609":RevealSecret(s);Damage(new MatchTarget(caster,minion.Id),4);Cleanup();break;case "EX1_294":if(Players[s.Seat].Board.Count<Mode.BoardSlots){RevealSecret(s);CopySecretMinion(s.Seat,minion);}break;}}if(check&&revealVersion==secretRevealVersion){NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_379");NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_609");if(Players[seat].Board.Count<Mode.BoardSlots)NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_294");}}
+ public void SecretMinionPlayed(int caster,BattleUnit minion,bool replacedHero=false){int seat=1-caster,revealVersion=secretRevealVersion;bool check=Players[seat].SecretCount>0&&minion!=null&&Players[caster].Board.Contains(minion)&&minion.Health>0&&!Finished;foreach(var s in SecretQueue(1-caster)){if(!SecretPresent(s))continue;
+  if(replacedHero&&Players[caster].HeroFormId==HeroReplacementRules.JaraxxusId&&Card(s.CardId).BaseId=="LOE_027"&&
+   Players[caster].Board.Count(u=>u.Health>0)>=3&&!Finished){RevealSecret(s);DestroyHero(caster);Cleanup();break;}
+  if(replacedHero)continue;
+  if(minion==null||!Players[caster].Board.Contains(minion)||minion.Health<=0||Finished)break;
+  switch(Card(s.CardId).BaseId){case "LOE_027":
+   if(Players[caster].Board.Count(u=>u.Health>0)>=4){RevealSecret(s);minion.DamageTaken=minion.MaxHealth;Cleanup();}
+   break;
+  case "EX1_379":RevealSecret(s);SetHealth(new MatchTarget(caster,minion.Id),1);break;case "EX1_609":RevealSecret(s);Damage(new MatchTarget(caster,minion.Id),4);Cleanup();break;case "EX1_294":if(Players[s.Seat].Board.Count<Mode.BoardSlots){RevealSecret(s);CopySecretMinion(s.Seat,minion);}break;}}if(check&&revealVersion==secretRevealVersion){if(Players[caster].Board.Count(u=>u.Health>0)>=4)NoteHistory(HistoryKind.NoSecretTrigger,seat,"LOE_027");NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_379");NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_609");if(Players[seat].Board.Count<Mode.BoardSlots)NoteHistory(HistoryKind.NoSecretTrigger,seat,"EX1_294");}}
+ internal void SecretAfterHeroPower(int caster){
+  int defender=1-caster;int before=secretRevealVersion;
+  foreach(var secret in SecretQueue(defender)){
+   if(Finished)break;
+   if(!SecretPresent(secret)||Card(secret.CardId).BaseId!="LOE_021")continue;
+   var target=RandomTarget(Characters(caster));
+   if(target==null)continue;
+   RevealSecret(secret);
+   Damage(target,SpellDamageAmount(defender,5));
+   Cleanup();
+  }
+  if(Active==caster&&Players[defender].SecretCount>0&&before==secretRevealVersion)NoteHistory(HistoryKind.NoSecretTrigger,defender,"LOE_021");
+ }
  void CopySecretMinion(int seat,BattleUnit source){Summon(seat,source.CardId,initialize:copy=>{int id=copy.Id;BattleUnitCopies.Copy(source,copy);copy.Id=id;copy.Owner=copy.OriginalOwner=seat;copy.SummonTurn=Turn;copy.AttacksUsed=0;copy.AuraHealth=0;copy.ReturnSeat=copy.ReturnTurn=-1;});}
  public bool SecretBeforeAttack(int attackerSeat,int attackerId,ref MatchTarget target){int defenderSeat=1-attackerSeat;int before=Players[defenderSeat].SecretCount,revealVersion=secretRevealVersion;bool room=Players[defenderSeat].Board.Count<Mode.BoardSlots;foreach(var s in SecretQueue(defenderSeat)){if(!SecretPresent(s))continue;if(Finished||attackerId!=0&&Unit(new MatchTarget(attackerSeat,attackerId))==null)return false;bool ownTarget=target.Seat==defenderSeat;switch(Card(s.CardId).BaseId){
   case "EX1_130":if(ownTarget&&Players[defenderSeat].Board.Count<Mode.BoardSlots){RevealSecret(s);var unit=Summon(defenderSeat,"GAME_DEFENDER");target=new MatchTarget(defenderSeat,unit.Id);}break;

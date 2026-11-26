@@ -4,7 +4,30 @@ using System.Collections.Generic;
 
 namespace Touchfish {
 public sealed class MatchTarget {public int Seat,UnitId;public MatchTarget(){}public MatchTarget(int seat,int unitId=0){Seat=seat;UnitId=unitId;}public bool Hero{get{return UnitId==0;}}}
-public sealed class HandCard {public int Id,CostAdjustment,AttackBonus,HealthBonus;public string CardId;public bool Generated;internal HandCard CopyForSimulation(){return (HandCard)MemberwiseClone();}}
+public struct HandCostChange {
+ public int AfterSource;
+ public int Adjustment;
+}
+public sealed class HandCard {
+ public int Id,CostAdjustment,AttackBonus,HealthBonus;
+ public string CardId;
+ public bool Generated;
+ public HandCostChange[] FixedCostChanges;
+ internal HandCard CopyForSimulation(){
+  var copy=(HandCard)MemberwiseClone();
+  if(FixedCostChanges!=null)copy.FixedCostChanges=(HandCostChange[])FixedCostChanges.Clone();
+  return copy;
+ }
+ internal int AdjustmentAfter(int sourceId){
+  return FixedCostChanges==null?0:FixedCostChanges.Where(change=>change.AfterSource>=sourceId).Sum(change=>change.Adjustment);
+ }
+ internal void ApplyAfterFixedCost(int sourceId,int adjustment){
+  var changes=FixedCostChanges??new HandCostChange[0];
+  if(changes.Length>0&&changes[changes.Length-1].AfterSource==sourceId){
+   changes[changes.Length-1]=new HandCostChange{AfterSource=sourceId,Adjustment=changes[changes.Length-1].Adjustment+adjustment};
+  }else FixedCostChanges=changes.Concat(new[]{new HandCostChange{AfterSource=sourceId,Adjustment=adjustment}}).ToArray();
+ }
+}
 public sealed class BattleUnit {
  public int Id,Owner,BaseAttack,BaseHealth,DamageTaken,AuraHealth,AttacksUsed,SummonTurn,FrozenTurn,DeathAnchor;
  public EnchantmentCollection Enchantments=new EnchantmentCollection();public int BuffAttack{get{return Enchantments.Stat(false);}set{Enchantments.SetStat(false,value);}}public int BuffHealth{get{return Enchantments.Stat(true);}set{Enchantments.SetStat(true,value);}}public int CommandingShoutTurn{get{return Enchantments.Expiry("commanding-shout");}set{Enchantments.SetExpiry("commanding-shout",value);}}public int OriginalOwner;
@@ -48,6 +71,8 @@ public sealed partial class MatchEngine {
  internal MatchEngine(CardCatalog catalog,GameModeDefinition mode=null){Mode=mode??GameModes.Classic;TestMode=Mode.AllowTestTools;Catalog=catalog;Rules=new MatchRules(catalog);Seed=0;random=new SimulationRandom(0);VisualSession=Guid.NewGuid().ToString("N");}
  public MatchEngine(CardCatalog catalog,DeckDocument first,DeckDocument second,int seed,bool testMode=false,GameModeDefinition mode=null,Action<MatchRules> configureEffects=null,int startingSeat=0,string firstName=null,string secondName=null){
   if(startingSeat<0||startingSeat>1)throw new ArgumentOutOfRangeException("startingSeat");Players[0].DisplayName=PlayerNames.Normalize(firstName,0);Players[1].DisplayName=PlayerNames.Normalize(secondName,1);FirstSeat=Active=startingSeat;Mode=mode??(testMode?GameModes.LocalTest:GameModes.Classic);TestMode=Mode.AllowTestTools;Catalog=catalog;CardPoolId=first.PoolId;Rules=new MatchRules(catalog);customSimulationCallbacks=configureEffects!=null;if(configureEffects!=null)configureEffects(Rules);Seed=seed;random=new SimulationRandom(seed);VisualSession=Guid.NewGuid().ToString("N");var validate=Mode.ValidateDeck??DeckRules.Validate;validate(catalog,first,Mode.RequireCompleteDeck);validate(catalog,second,Mode.RequireCompleteDeck);
+  DeckRules.RequirePlayablePool(catalog,first.PoolId);
+  DeckRules.RequirePlayablePool(catalog,second.PoolId);
   if(new[]{first.ClassId,second.ClassId}.Any(c=>!new[]{"MAGE","WARRIOR","WARLOCK","ROGUE","PRIEST","PALADIN","HUNTER","SHAMAN","DRUID"}.Contains(c)))throw new InvalidOperationException("当前对战支持经典九职业。");
   var documents=new[]{first,second};for(int seat=0;seat<2;seat++){var missing=documents[seat].Cards.Keys.Where(id=>!Rules.Supports(catalog.Card(id))).ToArray();if(missing.Length>0)throw new InvalidOperationException("卡组含未实现效果："+String.Join("、",missing.Take(4).Select(id=>catalog.Card(id).Name))+"。可选择基础练习卡组。");var p=Players[seat];p.ClassId=documents[seat].ClassId;p.Health=Mode.StartingHealth;foreach(var pair in documents[seat].Cards)for(int n=0;n<pair.Value;n++)p.Deck.Add(pair.Key);for(int n=p.Deck.Count-1;n>0;n--){int index=random.Next(n+1);string temp=p.Deck[n];p.Deck[n]=p.Deck[index];p.Deck[index]=temp;}}
   Log.Add("对局开始 · "+PlayerLabel(0)+" / "+PlayerLabel(1));Draw(FirstSeat,Mode.FirstHand);Draw(SecondSeat,Mode.SecondHand);if(TestMode)foreach(var player in Players)player.MaxMana=Mode.ManaLimit;
@@ -61,11 +86,12 @@ public sealed partial class MatchEngine {
  });}
  public CardRecord Card(string id){var auxiliary=HighCostRules.Auxiliary(id);if(auxiliary!=null)return auxiliary;if(id=="GAME_BANANA")return new CardRecord{Id=id,BaseId=id,Name="香蕉",Type="SPELL",CardClass="NEUTRAL",Cost=1,Collectible=false,Text="使一个随从获得+1/+1。",Mechanics=new string[0]};if(id=="GAME_MECHANICAL_DRAGON")return new CardRecord{Id=id,BaseId=id,Name="机械幼龙",Type="MINION",CardClass="NEUTRAL",Cost=1,Attack=2,Health=1,Race="MECHANICAL",Collectible=false,Text="",Mechanics=new string[0]};if(id=="GAME_HOUND")return new CardRecord{Id=id,BaseId=id,Name="猎犬",Type="MINION",CardClass="HUNTER",Cost=1,Attack=1,Health=1,Race="BEAST",Collectible=false,Text="冲锋。",Mechanics=new[]{"CHARGE"}};if(id=="GAME_BLOOD_FURY")return new CardRecord{Id=id,BaseId=id,Name="血怒",Type="WEAPON",CardClass="NEUTRAL",Attack=3,Durability=8,Collectible=false,Mechanics=new string[0]};if(id=="GAME_FROG")return new CardRecord{Id=id,BaseId=id,Name="青蛙",Type="MINION",CardClass="NEUTRAL",Attack=0,Health=1,Collectible=false,Text="嘲讽",Mechanics=new[]{"TAUNT"}};if(id=="GAME_DEFENDER"||id=="GAME_SPELLBENDER"||id=="GAME_SNAKE")return new CardRecord{Id=id,BaseId=id,Name=id=="GAME_DEFENDER"?"防御者":id=="GAME_SPELLBENDER"?"扰咒师":"蛇",Type="MINION",CardClass="NEUTRAL",Attack=id=="GAME_DEFENDER"?2:1,Health=id=="GAME_SPELLBENDER"?3:1,Race=id=="GAME_SNAKE"?"BEAST":null,Collectible=false,Mechanics=new string[0]};if(id=="GAME_BATTLE_AXE"||id=="GAME_HEAVY_AXE")return new CardRecord{Id=id,BaseId=id,Name=id=="GAME_BATTLE_AXE"?"战斧":"重斧",Type="WEAPON",CardClass="WARRIOR",Attack=id=="GAME_BATTLE_AXE"?2:1,Durability=id=="GAME_BATTLE_AXE"?2:3,Collectible=false,Mechanics=new string[0]};if(id=="GAME_WORTHLESS_IMP")return new CardRecord{Id=id,BaseId=id,Name="无用的小鬼",Type="MINION",CardClass="WARLOCK",Cost=1,Attack=1,Health=1,Race="DEMON",Collectible=false,Text="",Mechanics=new string[0]};if(id=="GAME_DEFIAS_BANDIT")return new CardRecord{Id=id,BaseId=id,Name="迪菲亚强盗",Type="MINION",CardClass="ROGUE",Cost=1,Attack=2,Health=1,Collectible=false,Text="",Mechanics=new string[0]};if(id=="GAME_EXCESS_MANA")return new CardRecord{Id=id,BaseId=id,Name="法力过剩",Type="SPELL",CardClass="DRUID",Cost=0,Collectible=false,Text="抽一张牌。",Mechanics=new string[0]};if(id=="GAME_HYENA")return new CardRecord{Id=id,BaseId=id,Name="土狼",Type="MINION",CardClass="NEUTRAL",Cost=2,Attack=2,Health=2,Race="BEAST",Collectible=false,Text="",Mechanics=new string[0]};if(id=="GAME_ASHBRINGER")return new CardRecord{Id=id,BaseId=id,Name="灰烬使者",Type="WEAPON",CardClass="NEUTRAL",Cost=5,Attack=5,Durability=3,Mechanics=new string[0]};if(id=="GAME_GNOLL")return new CardRecord{Id=id,BaseId=id,Name="豺狼人",Type="MINION",CardClass="NEUTRAL",Cost=2,Attack=2,Health=2,Mechanics=new[]{"TAUNT"}};if(id=="GAME_WHELP")return new CardRecord{Id=id,BaseId=id,Name="雏龙",Type="MINION",CardClass="NEUTRAL",Cost=1,Attack=1,Health=1,Race="DRAGON",Collectible=false,Text="",Mechanics=new string[0]};if(id=="GAME_COIN")return new CardRecord{Id=id,BaseId=id,Name="幸运币",Type="SPELL",CardClass="NEUTRAL",Cost=0,Text="仅在本回合获得一个法力水晶。",Mechanics=new string[0]};if(id=="GAME_DAGGER")return new CardRecord{Id=id,BaseId=id,Name="英雄匕首",Type="WEAPON",Attack=1,Durability=2,Text="1点攻击，2点耐久。",Mechanics=new string[0]};if(id=="GAME_PANTHER")return new CardRecord{Id=id,BaseId=id,Name="猎豹",Type="MINION",CardClass="NEUTRAL",Attack=3,Health=2,Race="BEAST",Mechanics=new string[0]};if(id=="GAME_TREANT_TAUNT")return new CardRecord{Id=id,BaseId=id,Name="树人",Type="MINION",CardClass="NEUTRAL",Attack=2,Health=2,Mechanics=new[]{"TAUNT"}};return Catalog.Card(id);}
  public BattleUnit Unit(MatchTarget target){return target==null||target.Hero||target.Seat<0||target.Seat>=Players.Length?null:Players[target.Seat].Board.FirstOrDefault(m=>m.Id==target.UnitId);}
- public int AttackValue(BattleUnit unit){if(!unit.Silenced&&Card(unit.CardId).BaseId=="EX1_335")return Math.Max(0,unit.Health);return Math.Max(0,unit.BaseAttack+unit.BuffAttack+unit.TempAttack+EnrageRules.AttackBonus(unit,Card(unit.CardId).BaseId)+AuraAttack(unit));}
+ public int AttackValue(BattleUnit unit){return Math.Max(0,UnflooredAttack(unit));}
+ internal int UnflooredAttack(BattleUnit unit){if(!unit.Silenced&&Card(unit.CardId).BaseId=="EX1_335")return unit.Health;return unit.BaseAttack+unit.BuffAttack+unit.TempAttack+EnrageRules.AttackBonus(unit,Card(unit.CardId).BaseId)+AuraAttack(unit);}
 
  public int HeroAttack(int seat){return Math.Max(0,WeaponAttackValue(seat)+Players[seat].TempAttack);}
- public int SpellPower(int seat){return Players[seat].Board.Where(m=>m.Health>0).Sum(m=>m.SpellDamage);}
- public string CanAttack(int seat,BattleUnit unit){if(!MulliganComplete)return "请先完成起手换牌。";if(Finished)return "对局已结束。";if(seat!=Active)return "当前不是你的回合。";if(unit==null||unit.Owner!=seat)return "请选择己方随从。";if(unit.Frozen)return "随从被冻结。";if(AttackValue(unit)<=0)return "攻击力为零。";if(unit.SummonTurn==Turn&&!HasCharge(unit))return "刚召唤的随从下回合才能攻击。";if(unit.AttacksUsed>=MinionAttackLimit(unit))return "本回合攻击次数已用完。";if(!unit.Silenced&&Has(Card(unit.CardId),"CANT_ATTACK")&&unit.Enchantments.Expiry("tgt-can-attack")!=Turn)return "该随从不能攻击。";return null;}
+ public int SpellPower(int seat){return Players[seat].Board.Where(m=>m.Health>0).Sum(m=>m.SpellDamage)+2*Players.SelectMany(p=>p.Board).Count(m=>m.Health>0&&!m.Silenced&&Card(m.CardId).BaseId=="LOE_051");}
+ public string CanAttack(int seat,BattleUnit unit){if(!MulliganComplete)return "请先完成起手换牌。";if(Finished)return "对局已结束。";if(seat!=Active)return "当前不是你的回合。";if(unit==null||unit.Owner!=seat)return "请选择己方随从。";if(unit.Frozen)return "随从被冻结。";if(ExplorerRules.StatueBlocked(this,unit))return "场上还有其他随从，雕像不能攻击。";if(AttackValue(unit)<=0)return "攻击力为零。";if(unit.SummonTurn==Turn&&!HasCharge(unit))return "刚召唤的随从下回合才能攻击。";if(unit.AttacksUsed>=MinionAttackLimit(unit))return "本回合攻击次数已用完。";if(!unit.Silenced&&Has(Card(unit.CardId),"CANT_ATTACK")&&unit.Enchantments.Expiry("tgt-can-attack")!=Turn)return "该随从不能攻击。";return null;}
  public string CanHeroAttack(int seat){if(!MulliganComplete)return "请先完成起手换牌。";var p=Players[seat];if(Finished)return "对局已结束。";if(seat!=Active)return "当前不是你的回合。";if(p.Frozen)return "英雄被冻结。";if(HeroAttack(seat)<=0)return "英雄没有攻击力。";if(p.HeroAttacks>=(p.WeaponWindfury?2:1))return "英雄本回合已攻击。";return null;}
  public ActionResult Attack(int seat,int attackerId,MatchTarget target){return Act(()=>{
   var attacker=attackerId==0?null:Players[seat].Board.FirstOrDefault(m=>m.Id==attackerId);Require(attackerId==0?CanHeroAttack(seat):CanAttack(seat,attacker));ValidateTarget(seat,target,"ENEMY_CHARACTER",false);
@@ -89,25 +115,79 @@ public sealed partial class MatchEngine {
   var card=Card(hand.CardId);
   int cost=HandCost(seat,hand);
   bool fizzle=ValidatePlay(seat,hand,card,cost,target,choice);
-  var cardListeners=Players.SelectMany(player=>player.Board).Where(u=>u.Health>0&&!u.Silenced).OrderBy(u=>u.Id).ToArray();string targetName=target==null?"":TargetLabel(target);int priorCards=CardsPlayed;bool combo=ComboRules.Active(this);p.Mana-=cost;p.Hand.Remove(hand);if(card.Type=="MINION"&&card.Race=="DRAGON")p.NextDragonDiscount=0;if(Has(card,"SECRET"))p.FreeSecretThisTurn=false;if(card.Type=="SPELL")p.PreparationDiscount=0;if(card.Type=="SPELL")RecordGraveyard(seat,seat,hand.CardId,hand.Id,GraveyardReason.SpellCast);Log.Add(PlayerLabel(seat)+" · 使用 "+(Has(card,"SECRET")?"一张奥秘":card.Name)+"（"+cost+"费）"+(card.Type!="MINION"?"":" · 第 "+((position<0||position>p.Board.Count?p.Board.Count:position)+1)+" 位")+(target==null?"":" → "+targetName));NoteHistory(HistoryKind.Played,seat,Has(card,"SECRET")?null:card.Id);CardsPlayed++;ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardPlayed,seat,card);if(card.Type=="SPELL"){if(p.LockAndLoadTurn==Turn)TournamentClassRules.RandomCard(this,seat,x=>x.CardClass=="HUNTER");ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.SpellCast,seat,card,paidCost:cost);}if(Finished)return;if(card.Type=="MINION")p.MinionsPlayedThisTurn++;if(card.Type=="SPELL"){BlackrockRules.SpellTargeted(this,seat,target);TournamentRules.SpellTargeted(this,seat,target);EmitSpell(card,seat,cost,choice);if(SecretSpell(seat,ref target)){Log.Add(PlayerLabel(seat)+" · 法术已被反制");Cleanup();ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardResolved,seat,card,listeners:cardListeners);return;}}if(DeferPyroblast(new EffectContext{Game=this,Seat=seat,Card=card,Target=target,Combo=combo,PreviousCardsPlayed=priorCards,PlayedHand=hand,Choice=choice},()=>{FlushSummonTriggers();OverloadRules.Queue(this,seat,card.Overload);Cleanup();ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.SpellResolved,seat,card,listeners:cardListeners);Cleanup();ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardResolved,seat,card,listeners:cardListeners);}))return;BattleUnit minion=null;if(card.Type=="MINION")minion=SummonHandCard(seat,hand,position,!HeroReplacementRules.ReplacesHeroOnPlay(card),true);if(card.Type=="WEAPON")Equip(seat,card.Id);if(card.Type=="MINION")ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.MinionPlayed,seat,card,summoned:minion,listeners:cardListeners,playedHand:hand);if(Rules.IsChoice(card)&&card.BaseId!=HunterRules.TrackingCardId)Log.Add(PlayerLabel(seat)+" · 抉择："+Rules.Choices(card).First(option=>option.Key==choice).Title);if(!fizzle&&Rules.DynamicProgram(card)!=null){
-   StartDecisionProgram(seat,card,minion,cardListeners);
+  var cardListeners=Players.SelectMany(player=>player.Board).Where(u=>u.Health>0&&!u.Silenced).OrderBy(u=>u.Id).ToArray();
+  string targetName=target==null?"":TargetLabel(target);
+  var context=new EffectContext{Game=this,Seat=seat,Card=card,Combo=ComboRules.Active(this),PreviousCardsPlayed=CardsPlayed,PlayedHand=hand,Choice=choice};
+  p.Mana-=cost;
+  p.Hand.Remove(hand);
+  if(card.Type=="MINION"&&card.Race=="DRAGON")p.NextDragonDiscount=0;
+  bool secret=Has(card,"SECRET");
+  if(secret)p.FreeSecretThisTurn=false;
+  if(card.Type=="SPELL"){
+   p.PreparationDiscount=0;
+   RecordGraveyard(seat,seat,hand.CardId,hand.Id,GraveyardReason.SpellCast);
+  }
+  Log.Add(PlayerLabel(seat)+" · 使用 "+(secret?"一张奥秘":card.Name)+"（"+cost+"费）"+
+   (card.Type!="MINION"?"":" · 第 "+((position<0||position>p.Board.Count?p.Board.Count:position)+1)+" 位")+
+   (target==null?"":" → "+targetName));
+  NoteHistory(HistoryKind.Played,seat,secret?null:card.Id);
+  CardsPlayed++;
+  ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardPlayed,seat,card);
+  if(card.Type=="SPELL"){
+   if(p.LockAndLoadTurn==Turn)TournamentClassRules.RandomCard(this,seat,x=>x.CardClass=="HUNTER");
+   ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.SpellCast,seat,card,paidCost:cost);
+  }
+  if(Finished)return;
+  if(card.Type=="MINION")p.MinionsPlayedThisTurn++;
+  if(card.Type=="SPELL"){
+   BlackrockRules.SpellTargeted(this,seat,target);
+   TournamentRules.SpellTargeted(this,seat,target);
+   EmitSpell(card,seat,cost,choice);
+   if(SecretSpell(seat,ref target)){
+    Log.Add(PlayerLabel(seat)+" · 法术已被反制");
+    Cleanup();
+    ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardResolved,seat,card,listeners:cardListeners);
+    return;
+   }
+  }
+  context.Target=target;
+  if(DeferPyroblast(context,()=>CompletePlayedCard(context,cardListeners,cost)))return;
+  int repeats=Has(card,"BATTLECRY")&&ExplorerRules.Has(this,seat,"LOE_077")?2:1;
+  if(card.Type=="MINION"){
+   context.Summoned=SummonHandCard(seat,hand,position,!HeroReplacementRules.ReplacesHeroOnPlay(card),true);
+   ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.MinionPlayed,seat,card,summoned:context.Summoned,listeners:cardListeners,playedHand:hand);
+  }
+  if(card.Type=="WEAPON")Equip(seat,card.Id);
+  if(Rules.IsChoice(card)&&card.BaseId!=HunterRules.TrackingCardId)
+   Log.Add(PlayerLabel(seat)+" · 抉择："+Rules.Choices(card).First(option=>option.Key==choice).Title);
+  if(!fizzle&&Rules.DynamicProgram(card)!=null){
+   StartDecisionProgram(seat,card,context.Summoned,cardListeners,repeats,cost,choice);
    return;
   }
-  if(!fizzle)ApplyCardEffect(new EffectContext{Game=this,Seat=seat,Card=card,Target=target,Summoned=minion,Combo=combo,PreviousCardsPlayed=priorCards,PlayedHand=hand,Choice=choice});
-  CompletePlayedCard(seat,card,minion,cardListeners);
+  if(!fizzle){
+   ApplyCardEffect(context);
+   if(repeats==2){
+    Cleanup();
+    if(!Finished)ApplyCardEffect(context);
+   }
+  }
+  CompletePlayedCard(context,cardListeners,cost);
  });}
 
- void CompletePlayedCard(int seat,CardRecord card,BattleUnit minion,BattleUnit[] cardListeners,bool stopOnFinish=false){
+ void CompletePlayedCard(EffectContext context,BattleUnit[] cardListeners,int paidCost,bool stopOnFinish=false){
+  int seat=context.Seat;
+  var card=context.Card;
   FlushSummonTriggers();
   if(stopOnFinish&&Finished)return;
   OverloadRules.Queue(this,seat,card.Overload);
   Cleanup();
   if(stopOnFinish&&Finished)return;
-  if(card.Type=="SPELL")ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.SpellResolved,seat,card,listeners:cardListeners);
-  if(card.Type=="MINION")SecretMinionPlayed(seat,minion);
+  if(card.Type=="SPELL")ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.SpellResolved,seat,card,
+   listeners:cardListeners,paidCost:paidCost,spell:context);
+  if(card.Type=="MINION")SecretMinionPlayed(seat,context.Summoned,HeroReplacementRules.ReplacesHeroOnPlay(card));
   if(stopOnFinish&&Finished)return;
   Cleanup();
-  ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardResolved,seat,card,listeners:cardListeners);
+  ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.CardResolved,seat,card,summoned:context.Summoned,listeners:cardListeners);
  }
 
  internal bool ValidatePlay(int seat,HandCard hand,CardRecord card,int cost,MatchTarget target,string choice){
@@ -154,6 +234,7 @@ public sealed partial class MatchEngine {
   if(mask=="FRIENDLY_MECH"&&(target==null||target.Seat!=seat||LivingUnit(target)==null||Unit(target).Race!="MECHANICAL"))throw new InvalidOperationException("请选择己方机械随从。");
   if(target!=null&&target.Seat>=0&&target.Seat<2){var gvgUnit=Unit(target);if(ability&&gvgUnit!=null&&GvgClassRules.Protected(this,gvgUnit))throw new InvalidOperationException("目标不能被法术或英雄技能指定。");if(target.Hero&&target.Seat!=seat&&GvgClassRules.HeroImmune(this,target.Seat))throw new InvalidOperationException("该英雄免疫。");}
   if(target==null||target.Seat<0||target.Seat>1)throw new InvalidOperationException("请选择一个目标。");var unit=Unit(target);if(target.Hero&&target.Seat!=seat&&Players[target.Seat].SecretImmuneTurn==Turn)throw new InvalidOperationException("该英雄本回合免疫。");if(!target.Hero&&unit==null)throw new InvalidOperationException("目标已离开战场。");if(target.Seat!=seat&&unit!=null&&unit.ImmuneUntilTurn==Turn)throw new InvalidOperationException("该随从本回合免疫。");if(target.Seat!=seat&&unit!=null&&unit.Stealth)throw new InvalidOperationException("不能指定敌方潜行随从。");if(ability&&unit!=null&&!unit.Silenced&&(Has(Card(unit.CardId),"CANT_BE_TARGETED_BY_ABILITIES")||Has(Card(unit.CardId),"ELUSIVE")))throw new InvalidOperationException("目标不能被法术或英雄技能指定。");
+  if(mask=="FRIENDLY_DEATHRATTLE_MINION"&&(target.Seat!=seat||!DeathrattleRules.HasDeathrattle(this,unit)))throw new InvalidOperationException("请选择具有亡语的友方随从。");
   if(mask=="LEGENDARY_MINION"&&(unit==null||Card(unit.CardId).Rarity!="LEGENDARY"))throw new InvalidOperationException("请选择一个传说随从。");if(mask=="BEAST_MINION"&&(unit==null||unit.Health<=0||unit.Race!="BEAST"))throw new InvalidOperationException("请选择一个野兽随从。");if(mask=="FRIENDLY_BEAST"&&(unit==null||unit.Health<=0||unit.Race!="BEAST"))throw new InvalidOperationException("请选择己方野兽随从。");if(mask=="HERO"&&!target.Hero)throw new InvalidOperationException("请选择一个英雄。");if(mask=="ENEMY_ATTACK_TWO"&&(unit==null||target.Seat==seat||AttackValue(unit)>2))throw new InvalidOperationException("请选择攻击力不超过2的敌方随从。");if(mask=="DEMON_CHARACTER"&&(target.Hero?HeroRace(target.Seat)!="DEMON":unit.Race!="DEMON"))throw new InvalidOperationException("请选择恶魔角色。");if(mask=="MURLOC_MINION"&&unit!=null&&unit.Race!="MURLOC")throw new InvalidOperationException("请选择一个鱼人随从。");if(mask=="DEMON_MINION"&&unit!=null&&unit.Race!="DEMON")throw new InvalidOperationException("请选择一个恶魔随从。");if(mask.Contains("MINION")&&unit==null)throw new InvalidOperationException("请选择随从目标。");if(mask.StartsWith("ENEMY")&&target.Seat==seat)throw new InvalidOperationException("请选择敌方目标。");if(mask.StartsWith("FRIENDLY")&&target.Seat!=seat)throw new InvalidOperationException("请选择己方目标。");if(mask=="UNDAMAGED_MINION"&&(unit==null||unit.DamageTaken!=0))throw new InvalidOperationException("只能指定未受伤的随从。");if((mask=="LOW_ATTACK"||mask=="ENEMY_LOW_ATTACK")&&(unit==null||AttackValue(unit)>3))throw new InvalidOperationException("只能指定攻击力不超过3的随从。");if(mask=="ENEMY_TAUNT_MINION"&&(unit==null||!unit.Taunt))throw new InvalidOperationException("请选择具有嘲讽的敌方随从。");if(mask=="ATTACK_SEVEN"&&(unit==null||AttackValue(unit)<7))throw new InvalidOperationException("请选择攻击力至少7的随从。");if(mask=="HIGH_ATTACK"&&(unit==null||AttackValue(unit)<5))throw new InvalidOperationException("只能指定攻击力至少5的随从。");
   if(mask=="DAMAGED_MINION"&&unit.DamageTaken==0)throw new InvalidOperationException("只能指定受伤的随从。");if(mask=="ENEMY_DAMAGED_MINION"&&unit.DamageTaken==0)throw new InvalidOperationException("只能斩杀受伤的敌方随从。");
  }
@@ -161,8 +242,8 @@ public sealed partial class MatchEngine {
  // Freeze expires after a skipped attack opportunity, including the second Windfury attack.
  bool CanThaw(BattleUnit unit){return (unit.SummonTurn!=Turn||HasCharge(unit))&&unit.AttacksUsed<MinionAttackLimit(unit);}
  public BattleUnit LivingUnit(MatchTarget target){var unit=Unit(target);return unit!=null&&unit.Health>0?unit:null;}
- public void Draw(int seat,int count,int costAdjustment=0,bool recordHistory=true){var p=Players[seat];int drawn=0;for(int i=0;i<count;i++){if(p.Deck.Count==0){int fatigue=++p.Fatigue;int visualStart=VisualEvents.Count==0?0:VisualEvents.Last().Sequence;Damage(new MatchTarget(seat),fatigue);var damage=VisualEvents.FirstOrDefault(e=>e.Sequence>visualStart&&e.Kind=="damage"&&e.Seat==seat&&e.UnitId==0);if(damage!=null)VisualEvents.Remove(damage);EmitVisual("fatigue",seat,amount:damage==null?0:damage.Amount);Log.Add(PlayerLabel(seat)+" · 疲劳伤害 "+fatigue);continue;}string id=p.Deck[0];p.Deck.RemoveAt(0);if(id=="AT_035t"&&MulliganComplete&&p.Hand.Count<Mode.HandLimit){Summon(1-seat,"AT_036t");i--;continue;}if(id=="GVG_056t"&&MulliganComplete&&p.Hand.Count<Mode.HandLimit){NoteHistory(HistoryKind.Destroy,seat,id);Damage(new MatchTarget(seat),10);Log.Add(PlayerLabel(seat)+" · 地雷爆炸");Cleanup();if(Finished)break;i--;continue;}if(p.Hand.Count<Mode.HandLimit){var drawnCard=new HandCard{Id=nextId++,CardId=id,CostAdjustment=costAdjustment,Generated=blackrockGeneratedDeck[seat].Contains(id)};ApplyTournamentDraw(seat,drawnCard);p.Hand.Add(drawnCard);if(recordHistory)NoteHistory(HistoryKind.Draw,seat,adjustment:costAdjustment);drawn++;BlackrockDrawn(seat,drawnCard);GvgDrawn(seat,id);ResolveTournamentDraw(seat,drawnCard);if(Finished)break;}else{RecordGraveyard(seat,seat,id,nextId++,GraveyardReason.Burned);var card=Card(id);NoteHistory(HistoryKind.Burn,seat,id);if(!headless){EmitVisual("burn",seat,name:card.Name);var burned=VisualEvents[VisualEvents.Count-1];burned.CardId=id;burned.CardCost=card.Cost;burned.CardText=card.Type+"\n"+(card.Type=="MINION"?card.Attack+" / "+card.Health+"\n":"")+card.Text;EmitVisual("burn-speech",seat,name:"我的手牌已经满了！");}Log.Add(PlayerLabel(seat)+" · 爆牌："+card.Name);}}if(drawn>0)Log.Add(PlayerLabel(seat)+" · 抽牌 "+drawn+" 张");}
- public int Damage(MatchTarget target,int amount){if(amount<=0||!IsPresentTarget(target))return 0;var unit=Unit(target);if(target.Hero){if(GvgClassRules.HeroImmune(this,target.Seat)||heroAttackImmune&&target.Seat==Active||SecretPreHeroDamage(target.Seat,amount))return 0;var protector=Players[target.Seat].Board.FirstOrDefault(u=>u.Health>0&&!u.Silenced&&Card(u.CardId).BaseId=="AT_124");if(protector!=null)return Damage(new MatchTarget(target.Seat,protector.Id),amount);var p=Players[target.Seat];int armor=Math.Min(p.Armor,amount);p.Armor-=armor;p.Health-=amount-armor;GvgClassRules.HeroDamaged(this,target.Seat,amount);EmitVisual("damage",target.Seat,amount:amount);SecretHeroDamaged(target.Seat,amount);return amount;}if(unit==null||unit.ImmuneUntilTurn==Turn)return 0;if(unit.Shield){unit.Shield=false;return 0;}if(unit.CommandingShoutTurn==Turn)amount=Math.Min(amount,Math.Max(0,unit.Health-1));if(amount<=0)return 0;var listeners=damageListeners??Players.SelectMany(p=>p.Board).Where(m=>m.Health>0&&!m.Silenced).OrderBy(m=>m.Id).ToArray();RememberLethalDamage(unit,amount);unit.DamageTaken+=amount;TriggerDamage(unit,amount,listeners);EmitVisual("damage",target.Seat,unit.Id,Players[target.Seat].Board.IndexOf(unit),amount);return amount;}
+ public void Draw(int seat,int count,int costAdjustment=0,bool recordHistory=true){var p=Players[seat];int drawn=0;for(int i=0;i<count;i++){if(p.Deck.Count==0){int fatigue=++p.Fatigue;int visualStart=VisualEvents.Count==0?0:VisualEvents.Last().Sequence;Damage(new MatchTarget(seat),fatigue);var damage=VisualEvents.FirstOrDefault(e=>e.Sequence>visualStart&&e.Kind=="damage"&&e.Seat==seat&&e.UnitId==0);if(damage!=null)VisualEvents.Remove(damage);EmitVisual("fatigue",seat,amount:damage==null?0:damage.Amount);Log.Add(PlayerLabel(seat)+" · 疲劳伤害 "+fatigue);continue;}string id=p.Deck[0];p.Deck.RemoveAt(0);if(id==ExplorerRules.AncientCurse&&MulliganComplete&&p.Hand.Count<Mode.HandLimit){NoteHistory(HistoryKind.Destroy,seat,id);Log.Add(PlayerLabel(seat)+" · 抽到远古诅咒");Damage(new MatchTarget(seat),7);Cleanup();if(Finished)break;i--;continue;}if(id=="AT_035t"&&MulliganComplete&&p.Hand.Count<Mode.HandLimit){Summon(1-seat,"AT_036t");i--;continue;}if(id=="GVG_056t"&&MulliganComplete&&p.Hand.Count<Mode.HandLimit){NoteHistory(HistoryKind.Destroy,seat,id);Damage(new MatchTarget(seat),10);Log.Add(PlayerLabel(seat)+" · 地雷爆炸");Cleanup();if(Finished)break;i--;continue;}if(p.Hand.Count<Mode.HandLimit){var drawnCard=new HandCard{Id=nextId++,CardId=id,CostAdjustment=costAdjustment,Generated=blackrockGeneratedDeck[seat].Contains(id)};ApplyTournamentDraw(seat,drawnCard);p.Hand.Add(drawnCard);if(recordHistory)NoteHistory(HistoryKind.Draw,seat,adjustment:costAdjustment);drawn++;BlackrockDrawn(seat,drawnCard);GvgDrawn(seat,id);ResolveTournamentDraw(seat,drawnCard);if(Finished)break;}else{RecordGraveyard(seat,seat,id,nextId++,GraveyardReason.Burned);var card=Card(id);NoteHistory(HistoryKind.Burn,seat,id);if(!headless){EmitVisual("burn",seat,name:card.Name);var burned=VisualEvents[VisualEvents.Count-1];burned.CardId=id;burned.CardCost=card.Cost;burned.CardText=card.Type+"\n"+(card.Type=="MINION"?card.Attack+" / "+card.Health+"\n":"")+card.Text;EmitVisual("burn-speech",seat,name:"我的手牌已经满了！");}Log.Add(PlayerLabel(seat)+" · 爆牌："+card.Name);}}if(drawn>0)Log.Add(PlayerLabel(seat)+" · 抽牌 "+drawn+" 张");}
+ public int Damage(MatchTarget target,int amount){if(amount<=0||!IsPresentTarget(target))return 0;var unit=Unit(target);if(target.Hero){if(GvgClassRules.HeroImmune(this,target.Seat)||heroAttackImmune&&target.Seat==Active)return 0;int heroDamage=ExplorerRules.DamageToHero(this,target.Seat,amount);if(SecretPreHeroDamage(target.Seat,heroDamage))return 0;var protector=Players[target.Seat].Board.FirstOrDefault(u=>u.Health>0&&!u.Silenced&&Card(u.CardId).BaseId=="AT_124");if(protector!=null)return Damage(new MatchTarget(target.Seat,protector.Id),amount);amount=heroDamage;var p=Players[target.Seat];int armor=Math.Min(p.Armor,amount);p.Armor-=armor;p.Health-=amount-armor;GvgClassRules.HeroDamaged(this,target.Seat,amount);EmitVisual("damage",target.Seat,amount:amount);SecretHeroDamaged(target.Seat,amount);return amount;}if(unit==null||unit.ImmuneUntilTurn==Turn)return 0;if(unit.Shield){unit.Shield=false;return 0;}if(unit.CommandingShoutTurn==Turn)amount=Math.Min(amount,Math.Max(0,unit.Health-1));if(amount<=0)return 0;var listeners=damageListeners??Players.SelectMany(p=>p.Board).Where(m=>m.Health>0&&!m.Silenced).OrderBy(m=>m.Id).ToArray();RememberLethalDamage(unit,amount);unit.DamageTaken+=amount;TriggerDamage(unit,amount,listeners);EmitVisual("damage",target.Seat,unit.Id,Players[target.Seat].Board.IndexOf(unit),amount);return amount;}
  public void Heal(MatchTarget target,int amount){if(amount<=0||target==null||target.Seat<0||target.Seat>=Players.Length)return;if(target.Hero){if(!Players[target.Seat].HeroDestroyed){int before=Players[target.Seat].Health;Players[target.Seat].Health=Math.Min(HeroHealthLimit(target.Seat),before+amount);int restored=Players[target.Seat].Health-before;if(restored>0)TriggerHealing(target,null,restored);}}else{var unit=Unit(target);if(unit==null||unit.Health<=0)return;int restored=Math.Min(unit.DamageTaken,amount);unit.DamageTaken-=restored;if(restored>0)TriggerHealing(target,unit,restored);}}
  public void Freeze(MatchTarget target){if(!IsPresentTarget(target))return;var unit=Unit(target);if(target.Hero){Players[target.Seat].Frozen=true;Players[target.Seat].FrozenTurn=Turn;Log.Add(PlayerLabel(target.Seat)+" · 英雄被冻结，不能攻击");}else if(unit!=null){unit.Frozen=true;unit.FrozenTurn=Turn;}}
  public void Buff(MatchTarget target,int attack,int health){var unit=LivingUnit(target);if(unit==null)return;unit.BuffAttack+=attack;unit.BuffHealth+=health;}

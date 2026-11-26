@@ -40,7 +40,7 @@ public sealed partial class MatchEngine {
    throw new InvalidOperationException("模拟快照需要内置规则或不含自定义结算回调的模式。");
   foreach(var player in Players){
    string ability=player.HeroAbilityId;
-   if(ability!=null&&ability!=HeroReplacementRules.InfernoId&&ability!=BlackrockRules.DieInsect)
+   if(ability!=null&&ability!=HeroReplacementRules.InfernoId&&ability!=BlackrockRules.DieInsect&&!ExplorerRules.IsBasicPower(ability))
     throw new InvalidOperationException("模拟快照需要内置英雄技能。");
   }
  }

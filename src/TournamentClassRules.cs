@@ -91,10 +91,10 @@ public static class TournamentClassRules {
    case "AT_116":if(BlackrockRules.HoldingDragon(g,s)){g.Buff(T(u),1,0);u.Taunt=true;}break;
   }
  }
- public static void Death(MatchEngine g,BattleUnit u){
-  int s=u.Owner;switch(g.Card(u.CardId).BaseId){
+ public static void Death(MatchEngine g,BattleUnit u,string id){
+  int s=u.Owner;switch(id){
    case "AT_009":for(int n=0;n<3;n++)g.GiveGvgCard(s,"VAN_EX1_277");break;
-   case "AT_019":g.Summon(s,u.CardId,g.Players[s].Board.FindIndex(x=>x.Id==u.DeathAnchor));break;
+   case "AT_019":g.Summon(s,id,g.Players[s].Board.FindIndex(x=>x.Id==u.DeathAnchor));break;
    case "AT_036":g.GiveGvgCard(s,u.CardId);g.Summon(s,"AT_036t");break;
    case "AT_038":var p=g.Players[s];p.MaxMana=Math.Max(0,p.MaxMana-1);p.Mana=Math.Min(p.Mana,p.MaxMana);break;
   }

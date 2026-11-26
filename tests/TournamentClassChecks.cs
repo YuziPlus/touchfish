@@ -11,7 +11,7 @@ public static partial class RuleTests {
   var cards=deckable.Where(c=>c.SetId==TournamentClassRules.SetId).ToArray();
   Check(deckable.Count==698&&catalog.ResolveDbf(pool,900001)==null,"Full pool contains 698 historical cards and excludes the placeholder DBF ID");
   Check(cards.Length==82&&cards.GroupBy(c=>c.CardClass).Count()==9&&cards.GroupBy(c=>c.CardClass).All(g=>g.Count()==(g.Key=="HUNTER"?10:9)),"All nine classes have their historical card counts");
-  Check(!pool.Archived&&deckable.All(matchRules.Supports),"All 698 cards are playable in the active pool");
+  Check(!pool.Archived&&deckable.All(matchRules.Supports),"All 698 cards are playable in the active Tournament pool");
   Check(!matchRules.Supports(new CardRecord{Id="AT_future",EffectId="AT_future",SetId=TournamentClassRules.SetId,Type="MINION"}),"Unregistered tournament effects do not silently become playable");
   AvianaAura(cards.Single(c=>c.Id=="AT_045"));
   foreach(var c in cards){

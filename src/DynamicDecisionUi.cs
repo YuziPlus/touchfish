@@ -5,7 +5,7 @@ namespace Touchfish {
 public partial class PanelWindow {
  FrameworkElement DynamicDecisionOverlay(){
   var decision=match.ObserveDecision(matchViewSeat);
-  if(decision==null||lanMode){
+  if(decision==null){
    livePrompt.Text="等待决策";
    return T("等待对方选择…",10,Muted);
   }
@@ -31,7 +31,7 @@ public partial class PanelWindow {
    button.Padding=new Thickness(3,1,3,1);
    button.ToolTip=option.Description;
    button.Tag=option.Id;
-   button.IsEnabled=!match.AnimationPlaying;
+   button.IsEnabled=CanSubmitDecision(decision.Seat,decision.Id);
    var source=match;
    button.Click+=(s,e)=>{if(match==source)SubmitLocalDecision(decision.Seat,decision.Id,option.Id);};
    options.Children.Add(button);
@@ -40,8 +40,18 @@ public partial class PanelWindow {
   return panel;
  }
 
+ bool CanSubmitDecision(int seat,int decisionId){
+  if(match==null||match.Finished||match.AnimationPlaying||awaitHandoff||lanMode&&(!lanReady||lanWaiting))return false;
+  var view=match.ObserveDecision(seat);
+  return view!=null&&view.Id==decisionId;
+ }
+
  void SubmitLocalDecision(int seat,int decisionId,string optionId){
-  if(match==null||lanMode||awaitHandoff)return;
+  if(!CanSubmitDecision(seat,decisionId))return;
+  if(lanMode){
+   if(seat==matchViewSeat)DoMatch("decision",decisionId,choice:optionId);
+   return;
+  }
   bool aiChoice=agentMatch&&seat==1&&localAgent!=null;
   if(!aiChoice&&seat!=matchViewSeat)return;
   var result=AgentBridge.SubmitDecision(match,seat,decisionId,optionId);

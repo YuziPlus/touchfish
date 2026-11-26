@@ -137,6 +137,7 @@ public sealed class MatchRules {
   BlackrockRules.Register(this);
   TournamentRules.Register(this);
   TournamentClassRules.Register(this);
+  if(!catalog.Pools.Any(ExplorerRules.IsLockedPool))ExplorerRules.Register(this);
   builtinTriggerCount=Triggers.Count;
   initialized=true;
   RuleModules.Configure(this);
@@ -162,6 +163,7 @@ public sealed class MatchRules {
  public bool IsChoice(CardRecord card){return card!=null&&Choices(card).Length==2;}
  public bool ValidChoice(CardRecord card,string key){return Choices(card).Any(option=>option.Key==key);}
  public MatchChoiceOption[] Choices(CardRecord card){if(card==null)return new MatchChoiceOption[0];switch(card.BaseId){
+  case "LOE_115":return new[]{new MatchChoiceOption("minion","发现随从","从随从候选中选一张。"),new MatchChoiceOption("spell","发现法术","从法术候选中选一张。")};
   case "AT_037":return new[]{new MatchChoiceOption("damage","造成伤害","造成2点伤害。"),new MatchChoiceOption("summon","召唤树苗","召唤两个1/1树苗。")};
   case "AT_042":return new[]{new MatchChoiceOption("charge","雄狮形态","2/1，冲锋。"),new MatchChoiceOption("stealth","猎豹形态","3/2，潜行。")};
   case "BRM_010":return BlackrockRules.Choices();

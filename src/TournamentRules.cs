@@ -85,8 +85,8 @@ public static class TournamentRules {
   g.Log.Add("拼点 · "+String.Join(" / ",revealed.Select(c=>c==null?"无随从":c.Name+"（"+c.Cost+"费）")));
   return revealed[seat]!=null&&(revealed[1-seat]==null||revealed[seat].Cost>revealed[1-seat].Cost);
  }
- public static void Death(MatchEngine g,BattleUnit u){
-  if(g.Card(u.CardId).BaseId=="AT_128"){if(Joust(g,u.Owner))g.GiveGvgCard(u.Owner,u.CardId);return;}
+ public static void Death(MatchEngine g,BattleUnit u,string id){
+  if(id=="AT_128"){if(Joust(g,u.Owner))g.GiveGvgCard(u.Owner,u.CardId);return;}
   if(BlackrockRules.HoldingDragon(g,u.Owner))g.DamageBatch(()=>{foreach(var t in g.Characters(0,false).Concat(g.Characters(1,false)).ToArray())g.Damage(t,3);});
  }
  static void Inspire(MatchTriggerContext context){
@@ -125,6 +125,7 @@ public sealed partial class MatchEngine {
   var p=Players[seat];p.PowersThisTurn++;p.PowersThisGame++;p.PowerDiscount=0;
   p.PowerUsed=p.PowersThisTurn>=(TournamentRules.Has(this,seat,"AT_008")?Int32.MaxValue:TournamentRules.Has(this,seat,"AT_080")?2:1);
   ConditionalTriggerRules.Resolve(this,MatchTriggerTiming.HeroPowerUsed,seat);
+  if(!Finished)SecretAfterHeroPower(seat);
  }
 }
 }

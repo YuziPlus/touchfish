@@ -52,21 +52,21 @@ public partial class PanelWindow {
   File.WriteAllText(Path.Combine(folder,"dynamic-decisions-verification.txt"),"PASS: "+(checks-before)+" WPF checks. Routed Click, no physical mouse.");
  }
 
- static System.Collections.Generic.IEnumerable<Button> DecisionButtons(DependencyObject root){
+ static System.Collections.Generic.IEnumerable<Button> DecisionButtons(DependencyObject root,string[] optionIds=null){
   var button=root as Button;
-  if(button!=null&&button.Tag is string&&((string)button.Tag).StartsWith("pick:",StringComparison.Ordinal))yield return button;
+  if(button!=null&&button.Tag is string&&(optionIds==null?((string)button.Tag).StartsWith("pick:",StringComparison.Ordinal):optionIds.Contains((string)button.Tag)))yield return button;
   var scroll=root as ScrollViewer;
   if(scroll!=null&&scroll.Content is DependencyObject){
-   foreach(var result in DecisionButtons((DependencyObject)scroll.Content))yield return result;
+   foreach(var result in DecisionButtons((DependencyObject)scroll.Content,optionIds))yield return result;
    yield break;
   }
   var panel=root as Panel;
   if(panel!=null){
-   foreach(UIElement child in panel.Children)foreach(var result in DecisionButtons(child))yield return result;
+   foreach(UIElement child in panel.Children)foreach(var result in DecisionButtons(child,optionIds))yield return result;
    yield break;
   }
   for(int i=0;i<VisualTreeHelper.GetChildrenCount(root);i++)
-   foreach(var result in DecisionButtons(VisualTreeHelper.GetChild(root,i)))yield return result;
+   foreach(var result in DecisionButtons(VisualTreeHelper.GetChild(root,i),optionIds))yield return result;
  }
 }
 }

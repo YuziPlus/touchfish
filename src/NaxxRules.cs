@@ -15,21 +15,21 @@ public static class NaxxRules {
   new ConditionalTrigger{CardId="FP1_003",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>c.Source.Enchantments.Expiry("echo-copy")==c.Game.Turn,Apply=c=>c.Game.CopyEchoAtEnd(c.Source)},
   new ConditionalTrigger{CardId="FP1_013",Timing=MatchTriggerTiming.TurnEnd,Condition=c=>true,Apply=c=>{var g=c.Game;var deaths=g.GraveyardFor(c.Source.Owner,GraveyardReason.MinionDied).Where(e=>e.Turn==g.Turn).ToArray();foreach(var death in deaths){if(g.Summon(c.Source.Owner,death.CardId)==null)break;}}}
  };
- static bool HasDeathrattle(MatchEngine g,BattleUnit u){return !u.Silenced&&MatchEngine.Has(g.Card(u.CardId),"DEATHRATTLE")||u.ForestDeathrattles>0||u.AncestralSpirits>0;}
+ static bool HasDeathrattle(MatchEngine g,BattleUnit u){return DeathrattleRules.HasDeathrattle(g,u);}
  static void ApplyRemaining(EffectContext c){if(c.Summoned==null)return;var g=c.Game;switch(c.Card.BaseId){
   case "FP1_003":c.Summoned.Enchantments.SetExpiry("echo-copy",g.Turn);break;
   case "FP1_016":foreach(var u in g.Players.SelectMany(p=>p.Board).Where(u=>u.Id!=c.Summoned.Id&&u.Health>0).ToArray())g.Silence(new MatchTarget(u.Owner,u.Id));break;
  }}
  public static int DeathrattleCount(MatchEngine g,int seat){return g.Players[seat].Board.Any(u=>u.Health>0&&!u.Silenced&&g.Card(u.CardId).BaseId=="FP1_031")?2:1;}
- public static void RemainingDeath(MatchEngine g,BattleUnit u){switch(g.Card(u.CardId).BaseId){
+ public static void RemainingDeath(MatchEngine g,BattleUnit u,string id){switch(id){
   case "FP1_001":g.RestoreHealth(u.Owner,new MatchTarget(1-u.Owner),5);break;
   case "FP1_024":foreach(var target in g.Characters(0,false).Concat(g.Characters(1,false)).ToArray())g.Damage(target,1);break;
   case "FP1_029":g.Draw(1-u.Owner,1);break;
-  case "FP1_014":case "FP1_015":string partner=g.Card(u.CardId).BaseId=="FP1_014"?"FP1_015":"FP1_014";if(g.Graveyard.Any(e=>e.Reason==GraveyardReason.MinionDied&&g.Card(e.CardId).BaseId==partner))g.Summon(u.Owner,"FP1_014t",DeathPosition(g,u));break;
+  case "FP1_014":case "FP1_015":string partner=id=="FP1_014"?"FP1_015":"FP1_014";if(g.Graveyard.Any(e=>e.Reason==GraveyardReason.MinionDied&&g.Card(e.CardId).BaseId==partner))g.Summon(u.Owner,"FP1_014t",DeathPosition(g,u));break;
  }}
  static void Reincarnate(EffectContext c){var g=c.Game;var unit=g.LivingUnit(c.Target);if(unit==null)return;int seat=unit.Owner,position=g.Players[seat].Board.IndexOf(unit);string id=unit.CardId;unit.DamageTaken=unit.MaxHealth;g.Cleanup();g.Summon(seat,id,position);}
  static void PoisonSeeds(EffectContext c){var g=c.Game;var units=g.Players.SelectMany(p=>p.Board).Where(u=>u.Health>0).ToArray();var counts=new[]{units.Count(u=>u.Owner==0),units.Count(u=>u.Owner==1)};foreach(var unit in units)unit.DamageTaken=unit.MaxHealth;g.Cleanup();for(int seat=0;seat<2;seat++)for(int n=0;n<counts[seat]&&g.Players[seat].Board.Count<g.Mode.BoardSlots;n++)g.Summon(seat,"VAN_EX1_tk9");}
- public static void Death(MatchEngine g,BattleUnit unit){int seat=unit.Owner;switch(g.Card(unit.CardId).BaseId){
+ public static void Death(MatchEngine g,BattleUnit unit,string id){int seat=unit.Owner;switch(id){
   case "FP1_011":var beasts=g.GenerationPool().Where(c=>c.Race=="BEAST"&&c.Type=="MINION").ToArray();if(beasts.Length>0)g.GiveNaxxCard(seat,beasts[g.RandomIndex(beasts.Length)].Id);break;
   case "FP1_023":var ally=g.RandomTarget(g.Characters(seat,false));if(ally!=null)g.Buff(ally,0,3);break;
   case "FP1_022":var hand=g.Players[seat].Hand;if(g.Players[seat].Board.Count>=g.Mode.BoardSlots)break;var demons=hand.Where(h=>g.Card(h.CardId).Type=="MINION"&&g.Card(h.CardId).Race=="DEMON").ToArray();if(demons.Length==0)break;var demon=demons[g.RandomIndex(demons.Length)];hand.Remove(demon);g.SummonHandCard(seat,demon,DeathPosition(g,unit));break;
