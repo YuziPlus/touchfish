@@ -74,7 +74,13 @@ public sealed class LocalAgentDefinition {
  public LocalAgentDefinition(string id,string name,string classId,Func<CardCatalog,DeckDocument> deck,Func<IMatchAgent> create){Id=id;Name=name;ClassId=classId;Deck=deck;Create=create;}
 }
 public static class MatchAgents {
- static readonly List<LocalAgentDefinition> definitions=new List<LocalAgentDefinition>{new LocalAgentDefinition("freeze","经典冰法 AI","MAGE",FreezeMageDeck.Create,()=>new FreezeMageAgent()),new LocalAgentDefinition("zoo","经典动物园 AI","WARLOCK",ZooWarlockDeck.Create,()=>new ZooWarlockAgent()),new LocalAgentDefinition("miracle","经典奇迹贼 AI","ROGUE",MiracleRogueDeck.Create,()=>new MiracleRogueAgent())};
+ static readonly List<LocalAgentDefinition> definitions=new List<LocalAgentDefinition>{
+  new LocalAgentDefinition("freeze","经典冰法 AI","MAGE",FreezeMageDeck.Create,()=>new FreezeMageAgent()),
+  new LocalAgentDefinition("zoo","经典动物园 AI","WARLOCK",ZooWarlockDeck.Create,()=>new ZooWarlockAgent()),
+  new LocalAgentDefinition("miracle","经典奇迹贼 AI","ROGUE",MiracleRogueDeck.Create,()=>new MiracleRogueAgent()),
+  new LocalAgentDefinition("secret-paladin","佛祖骑 AI","PALADIN",TournamentPaladinDecks.Secret,()=>new PaladinAgent(false)),
+  new LocalAgentDefinition("murloc-paladin","铺场鱼人骑 AI","PALADIN",TournamentPaladinDecks.Murloc,()=>new PaladinAgent(true))
+ };
  public static LocalAgentDefinition[] All{get{return definitions.ToArray();}}
  public static LocalAgentDefinition Find(string id){return definitions.FirstOrDefault(d=>d.Id==id);}
  public static void Register(LocalAgentDefinition definition){if(definition==null||String.IsNullOrWhiteSpace(definition.Id)||definition.Id=="test"||Find(definition.Id)!=null||String.IsNullOrWhiteSpace(definition.Name)||String.IsNullOrWhiteSpace(definition.ClassId)||definition.Deck==null||definition.Create==null)throw new ArgumentException("人机定义无效或重复。");definitions.Add(definition);}
