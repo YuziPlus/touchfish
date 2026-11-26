@@ -34,6 +34,7 @@ public static partial class RuleTests {
   foreach(var definition in MatchAgents.All){
    var enemy=definition.Deck(catalog);
    var own=matchRules.TrainingDeck("MAGE");
+   if(own.PoolId!=enemy.PoolId)own=DeckRules.ForCurrentPlay(catalog,own);
    var game=BeliefGame(own,enemy,619);
    string original=SimulationState(game);
    var builder=DeterminizationBuilder.Capture(game,0);

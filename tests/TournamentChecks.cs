@@ -34,9 +34,7 @@ public static partial class RuleTests {
   game=TgtGame();var bolf=game.Summon(0,"AT_124");int health=game.Players[0].Health;game.Damage(new MatchTarget(0),5);
   Check(game.Players[0].Health==health&&bolf.DamageTaken==5,"Bolf redirects damage");
   game.Silence(BT(bolf));game.Damage(new MatchTarget(0),2);Check(game.Players[0].Health==health-2,"Silence stops redirection");
-  game=TgtGame();game.Players[0].Deck.Clear();game.Players[1].Deck.Clear();game.Players[0].Deck.Add("AT_125");game.Players[1].Deck.Add("AT_082");
-  Check(TournamentRules.Joust(game,0)&&!TournamentRules.Joust(game,1),"Joust compares printed costs");
-  game.Players[1].Deck.Clear();game.Players[1].Deck.Add("AT_125");Check(!TournamentRules.Joust(game,0),"Joust ties lose");
+  TournamentJoustReveals();
   foreach(string profession in new[]{"MAGE","PRIEST","WARRIOR","WARLOCK","HUNTER","PALADIN","ROGUE","DRUID","SHAMAN"}){
    game=TgtGame(profession);BrmPlay(game,"AT_132");
    Check(game.Players[0].HeroAbilityId=="tgt:upgraded-"+profession,"Upgrade "+profession);
@@ -66,6 +64,42 @@ public static partial class RuleTests {
   game=TgtGame();var ice=game.Summon(0,"AT_125");Check(!game.Attack(0,ice.Id,new MatchTarget(1)).Success,"Icehowl cannot hit hero");
   game=TgtGame();var grave=game.Summon(0,"AT_128");game.Silence(BT(grave));grave.DamageTaken=99;game.Cleanup();
   Check(!game.Players[0].Hand.Any(c=>c.CardId=="AT_128"),"Silenced knight stays dead");
+ }
+ static void TournamentJoustReveals(){
+  var game=TgtGame("HUNTER");
+  var own=new[]{"VAN_CS2_029","AT_125","VAN_CS2_024","AT_125"};
+  var enemy=new[]{"VAN_CS2_023","AT_082","VAN_CS2_027"};
+  game.Players[0].Deck.Clear();game.Players[0].Deck.AddRange(own);
+  game.Players[1].Deck.Clear();game.Players[1].Deck.AddRange(enemy);
+  BrmPlay(game,"AT_133");
+  var reveal=game.VisualEvents.Single(item=>item.Kind=="joust");
+  Check(reveal.JoustCards.SequenceEqual(new[]{"AT_125","AT_082"})&&reveal.JoustWinner==0,
+   "Gadgetzan Jouster reveals only the compared minions and marks the higher printed cost");
+  Check(game.Players[0].Deck.SequenceEqual(own)&&game.Players[1].Deck.SequenceEqual(enemy),
+   "Joust reveals in place and preserves both deck orders exactly");
+  for(int seat=0;seat<2;seat++){
+   var view=LanProtocol.View(game,seat,"joust",1);
+   var remote=LanProtocol.ReadView(catalog,view);
+   var shared=remote.VisualEvents.Single(item=>item.Kind=="joust");
+   Check(shared.JoustCards.SequenceEqual(reveal.JoustCards)&&shared.JoustWinner==0
+    &&remote.Players[1-seat].Deck.All(id=>id=="HIDDEN"),
+    "Both LAN views get the comparison without the other deck or the revealed indices");
+  }
+  Check(!TournamentRules.Joust(game,1)&&game.VisualEvents.Last().JoustWinner==0,
+   "A higher opposing card wins the comparison but does not activate the initiating card");
+  game.Players[1].Deck[1]="AT_125";
+  Check(!TournamentRules.Joust(game,0)&&game.VisualEvents.Last().JoustWinner==-1,"Ties have no winner");
+  game.Players[1].Deck[1]="AT_082";
+  game.Players[0].Deck[1]="VAN_CS2_026";
+  var remaining=game.Players[0].Deck.Take(3).ToArray();
+  BrmPlay(game,"AT_058");
+  Check(game.Players[0].Hand.Count(card=>card.CardId=="AT_125")==1
+   &&game.Players[0].Deck.SequenceEqual(remaining)&&game.Players[1].Deck.SequenceEqual(enemy),
+   "Winning Elekk separately draws a minion and keeps the remaining cards in order");
+  game.Players[0].Deck.Add("AT_125");
+  game.Players[1].Deck.Clear();game.Players[1].Deck.Add("VAN_CS2_023");
+  Check(TournamentRules.Joust(game,0)&&game.VisualEvents.Last().JoustCards[1]==null,
+   "A deck with only spells shows no minion");
  }
  static void AvianaAura(CardRecord card){
   string auraId=card.Id;

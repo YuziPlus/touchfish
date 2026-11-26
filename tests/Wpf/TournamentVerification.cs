@@ -66,6 +66,20 @@ public partial class PanelWindow {
     guest.DoMatch("play",minion,null,1);
     PumpLan(()=>!guest.lanWaiting&&guest.match.Players[1].Board.Count==2,"Guest spends the final mana to summon the discounted minion");
     Check(g.Players[1].Mana==0&&guest.match.Players[1].Mana==0,"Authority and guest agree on the discounted payment");
+    var hostOrder=new[]{"VAN_CS2_029","AT_082","VAN_CS2_024"};
+    var guestOrder=new[]{"VAN_CS2_023","AT_125","VAN_CS2_027"};
+    g.Players[0].Deck.Clear();g.Players[0].Deck.AddRange(hostOrder);
+    g.Players[1].Deck.Clear();g.Players[1].Deck.AddRange(guestOrder);
+    g.Players[1].Mana=10;
+    int jouster=NaxxUiHand(g,"AT_133",1);PublishLan();
+    PumpLan(()=>guest.match.Players[1].Hand.Any(card=>card.Id==jouster),"Jouster ready in guest hand");
+    guest.DoMatch("play",jouster,null,2);
+    PumpLan(()=>!guest.lanWaiting&&guest.match.VisualEvents.Any(item=>item.Kind=="joust"),"Guest receives the joust visual event");
+    var comparison=guest.match.VisualEvents.Single(item=>item.Kind=="joust");
+    Check(comparison.JoustCards.SequenceEqual(new[]{"AT_082","AT_125"})&&comparison.JoustWinner==1
+     &&g.VisualEvents.Any(item=>item.Kind=="joust"&&item.JoustWinner==1),"Both ends get the same public comparison");
+    Check(guest.match.Players[0].Deck.All(card=>card=="HIDDEN")&&g.Players[0].Deck.SequenceEqual(hostOrder)
+     &&g.Players[1].Deck.SequenceEqual(guestOrder),"LAN reveal preserves authoritative deck order and hides the rest of the opposing deck");
    }finally{guest.LeaveLan();guest.Close();LeaveLan();}
   }
   if(!VerificationRun.Visual)return;

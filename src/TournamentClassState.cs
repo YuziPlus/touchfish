@@ -48,15 +48,9 @@ public sealed partial class MatchEngine {
   for(int s=0;s<2;s++){int count=attacker.Enchantments.Counter("tgt-glory-"+s);for(int n=0;n<count;n++)RestoreHealth(s,new MatchTarget(s),4);}
  }
  internal void ElekkJoust(int seat){
-  var choices=new string[2];
-  for(int n=0;n<2;n++){
-   var pool=Players[n].Deck.Where(id=>Card(id).Type=="MINION").ToArray();
-   if(pool.Length>0)choices[n]=pool[RandomIndex(pool.Length)];
-  }
-  Log.Add("拼点 · "+String.Join(" / ",choices.Select(id=>id==null?"无随从":Card(id).Name+"（"+Card(id).Cost+"费）")));
-  if(choices[seat]==null||choices[1-seat]!=null&&Card(choices[seat]).Cost<=Card(choices[1-seat]).Cost)return;
-  int index=Players[seat].Deck.IndexOf(choices[seat]);
-  Players[seat].Deck.RemoveAt(index);Players[seat].Deck.Insert(0,choices[seat]);Draw(seat,1);
+  int winner;
+  var positions=TournamentRules.RevealJoust(this,seat,out winner);
+  if(winner==seat)DrawFromDeck(seat,1,positions[seat]);
  }
  internal void PullTournamentSecrets(int seat){
   foreach(var id in Players[seat].Deck.Where(id=>Has(Card(id),"SECRET")).Distinct().ToArray()){

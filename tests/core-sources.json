@@ -65,6 +65,7 @@
   "FreezeMageAgent.cs",
   "FreezeMageDefense.cs",
   "ZooWarlockAgent.cs",
+  "PaladinAgent.cs",
   "MiracleRogueDeck.cs",
   "MiracleRogueAgent.cs",
   "MiracleBurstPlanner.cs",

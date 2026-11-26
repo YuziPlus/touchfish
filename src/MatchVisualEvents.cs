@@ -6,6 +6,8 @@ namespace Touchfish {
 public sealed class MatchVisualEvent {
  public int RecipientSeat=-1;
  public int Sequence,Action,Seat,UnitId,Slot=-1,TargetSeat=-1,TargetUnitId,Amount,CardCost,PaidCost,HealthBefore,Overkill;public string Kind,CardName,CardId,CardText;
+ public string[] JoustCards;
+ public int JoustWinner=-1;
 }
 public sealed class MatchVisualCursor {
  string session;int sequence;
@@ -24,6 +26,14 @@ public partial class MatchEngine {
   if(MatchEngine.Has(card,"SECRET")){EmitVisual("spell",seat,name:"一张奥秘");return;}
   EmitVisual("spell",seat,name:card.Name);var item=VisualEvents[VisualEvents.Count-1];item.CardId=card.Id;item.CardCost=card.Cost;item.PaidCost=paidCost;item.CardText=card.Text;
   if(Rules.IsChoice(card)&&choice!=null)item.CardText+="\n本次抉择："+System.Linq.Enumerable.First(Rules.Choices(card),option=>option.Key==choice).Title;
+ }
+ internal void EmitJoust(int seat,CardRecord[] revealed,int winner){
+  if(headless)return;
+  EmitVisual("joust",seat);
+  var item=VisualEvents[VisualEvents.Count-1];
+  // Only reveal identities. The sampled deck positions stay on the authority.
+  item.JoustCards=Array.ConvertAll(revealed,card=>card==null?null:card.Id);
+  item.JoustWinner=winner;
  }
  public void EmitVisual(string kind,int seat,int unitId=0,int slot=-1,int amount=0,string name=null){if(headless)return;VisualEvents.Add(new MatchVisualEvent{Sequence=++visualSequence,Action=visualAction,Kind=kind,Seat=seat,UnitId=unitId,Slot=slot,Amount=amount,CardName=name});if(VisualEvents.Count>128)VisualEvents.RemoveAt(0);}
 }

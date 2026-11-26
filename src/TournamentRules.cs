@@ -77,13 +77,26 @@ public static class TournamentRules {
   if(pool.Length>0)g.GiveGvgCard(s,pool[g.RandomIndex(pool.Length)].Id);
  }
  public static bool Joust(MatchEngine g,int seat){
+  int winner;
+  RevealJoust(g,seat,out winner);
+  return winner==seat;
+ }
+ internal static int[] RevealJoust(MatchEngine g,int seat,out int winner){
+  var positions=new[]{-1,-1};
   var revealed=new CardRecord[2];
   for(int s=0;s<2;s++){
-   var cards=g.Players[s].Deck.Where(id=>g.Card(id).Type=="MINION").ToArray();
-   if(cards.Length>0)revealed[s]=g.Card(cards[g.RandomIndex(cards.Length)]);
+   var deck=g.Players[s].Deck;
+   var minionSlots=Enumerable.Range(0,deck.Count).Where(index=>g.Card(deck[index]).Type=="MINION").ToArray();
+   if(minionSlots.Length==0)continue;
+   positions[s]=minionSlots[g.RandomIndex(minionSlots.Length)];
+   revealed[s]=g.Card(deck[positions[s]]);
   }
   g.Log.Add("拼点 · "+String.Join(" / ",revealed.Select(c=>c==null?"无随从":c.Name+"（"+c.Cost+"费）")));
-  return revealed[seat]!=null&&(revealed[1-seat]==null||revealed[seat].Cost>revealed[1-seat].Cost);
+  int firstCost=revealed[0]==null?-1:revealed[0].Cost;
+  int secondCost=revealed[1]==null?-1:revealed[1].Cost;
+  winner=firstCost==secondCost?-1:firstCost>secondCost?0:1;
+  g.EmitJoust(seat,revealed,winner);
+  return positions;
  }
  public static void Death(MatchEngine g,BattleUnit u,string id){
   if(id=="AT_128"){if(Joust(g,u.Owner))g.GiveGvgCard(u.Owner,u.CardId);return;}
